@@ -6,7 +6,7 @@
   - [Boilerplate](#boilerplate)
   - [Offline functionality](#offline-functionality)
 - [Basic Types](#basic-types)
-  - [Ripple Address](#ripple-address)
+  - [Address](#address)
   - [Account Sequence Number](#account-sequence-number)
   - [Currency](#currency)
   - [Value](#value)
@@ -77,13 +77,13 @@
 
 # Introduction
 
-RippleAPI is the official client library to the Ripple Consensus Ledger. Currently, RippleAPI is only available in JavaScript. 
+RippleAPI is the official client library to the XRP Ledger. Currently, RippleAPI is only available in JavaScript.
 Using RippleAPI, you can:
 
-* [Query transactions from the network](#gettransaction)
+* [Query transactions from the XRP Ledger history](#gettransaction)
 * [Sign](#sign) transactions securely without connecting to any server
-* [Submit](#submit) transactions to the Ripple Consensus Ledger, including [Payments](#payment), [Orders](#order), [Settings changes](#settings), and [other types](#transaction-types)
-* [Generate a new Ripple Address](#generateaddress)
+* [Submit](#submit) transactions to the XRP Ledger, including [Payments](#payment), [Orders](#order), [Settings changes](#settings), and [other types](#transaction-types)
+* [Generate a new XRP Ledger Address](#generateaddress)
 * ... and [much more](#api-methods).
 
 RippleAPI only provides access to *validated*, *immutable* transaction data.
@@ -93,7 +93,7 @@ RippleAPI only provides access to *validated*, *immutable* transaction data.
 Use the following [boilerplate code](https://en.wikipedia.org/wiki/Boilerplate_code) to wrap your custom code using RippleAPI.
 
 ```javascript
-const {RippleAPI} = require('ripple-lib');
+const RippleAPI = require('ripple-lib').RippleAPI;
 
 const api = new RippleAPI({
   server: 'wss://s1.ripple.com' // Public rippled server hosted by Ripple, Inc.
@@ -116,9 +116,9 @@ api.connect().then(() => {
 }).catch(console.error);
 ```
 
-RippleAPI is designed to work in [NodeJS](https://nodejs.org) (version `0.12.0` or greater) using [Babel](https://babeljs.io/) for [ECMAScript 6](https://babeljs.io/docs/learn-es2015/) support.
+RippleAPI is designed to work in [Node.js](https://nodejs.org) version **6.11.3**. RippleAPI may work on older Node.js versions if you use [Babel](https://babeljs.io/) for [ECMAScript 6](https://babeljs.io/docs/learn-es2015/) support.
 
-The code samples in this documentation are written in ES6, but `RippleAPI` will work with ES5 also. Regardless of whether you use ES5 or ES6, the methods that return promises will return [ES6-style promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+The code samples in this documentation are written with ECMAScript 6 (ES6) features, but `RippleAPI` also works with ECMAScript 5 (ES5). Regardless of whether you use ES5 or ES6, the methods that return Promises return [ES6-style promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 <aside class="notice">
 All the code snippets in this documentation assume that you have surrounded them with this boilerplate.
@@ -155,19 +155,13 @@ If you omit the `server` parameter, RippleAPI operates [offline](#offline-functi
 
 ### Installation ###
 
-1. Install [NodeJS](https://nodejs.org) and the Node Package Manager (npm). Most Linux distros have a package for NodeJS, but make sure you have version `0.12.0` or higher.
-2. Use npm to install [Babel](https://babeljs.io/) globally:
-      `npm install -g babel-cli`
-3. Use npm to install RippleAPI:
+1. Install [Node.js](https://nodejs.org) and the Node Package Manager (npm). Most Linux distros have a package for Node.js; check that it's the version you want.
+2. Use npm to install RippleAPI:
       `npm install ripple-lib`
 
-After you have installed ripple-lib, you can create scripts using the [boilerplate](#boilerplate) and run them using babel-node:
-      `babel-node script.js`
+After you have installed ripple-lib, you can create scripts using the [boilerplate](#boilerplate) and run them using the Node.js executable, typically named `node`:
 
-<aside class="notice">
-Instead of using babel-node in production, we recommend using Babel to transpile to ECMAScript 5 first.
-</aside>
-
+      `node script.js`
 
 ## Offline functionality
 
@@ -176,13 +170,13 @@ RippleAPI can also function without internet connectivity. This can be useful in
 To instantiate RippleAPI in offline mode, use the following boilerplate code:
 
 ```javascript
-const {RippleAPI} = require('ripple-lib');
+const RippleAPI = require('ripple-lib').RippleAPI;
 
 const api = new RippleAPI();
 /* insert code here */
 ```
 
-Methods that depend on the state of the Ripple Consensus Ledger are unavailable in offline mode. To prepare transactions offline, you **must** specify  the `fee`, `sequence`, and `maxLedgerVersion` parameters in the [transaction instructions](#transaction-instructions). The following methods should work offline:
+Methods that depend on the state of the XRP Ledger are unavailable in offline mode. To prepare transactions offline, you **must** specify  the `fee`, `sequence`, and `maxLedgerVersion` parameters in the [transaction instructions](#transaction-instructions). You can use the following methods while offline:
 
 * [preparePayment](#preparepayment)
 * [prepareTrustline](#preparetrustline)
@@ -196,24 +190,23 @@ Methods that depend on the state of the Ripple Consensus Ledger are unavailable 
 * [generateAddress](#generateaddress)
 * [computeLedgerHash](#computeledgerhash)
 
-
 # Basic Types
 
-## Ripple Address
+## Address
 
 ```json
 "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59"
 ```
 
-Every Ripple account has an *address*, which is a base58-encoding of a hash of the account's public key. Ripple addresses always start with the lowercase letter `r`.
+Every XRP Ledger account has an *address*, which is a base58-encoding of a hash of the account's public key. XRP Ledger addresses always start with the lowercase letter `r`.
 
 ## Account Sequence Number
 
-Every Ripple account has a *sequence number* that is used to keep transactions in order. Every transaction must have a sequence number. A transaction can only be executed if it has the next sequence number in order, of the account sending it. This prevents one transaction from executing twice and transactions executing out of order. The sequence number starts at `1` and increments for each transaction that the account makes.
+Every XRP Ledger account has a *sequence number* that is used to keep transactions in order. Every transaction must have a sequence number. A transaction can only be executed if it has the next sequence number in order, of the account sending it. This prevents one transaction from executing twice and transactions executing out of order. The sequence number starts at `1` and increments for each transaction that the account makes.
 
 ## Currency
 
-Currencies are represented as either 3-character currency codes or 40-character uppercase hexadecimal strings. We recommend using uppercase [ISO 4217 Currency Codes](http://www.xe.com/iso4217.php) only. The string "XRP" is disallowed on trustlines because it is reserved for the Ripple native currency. The following characters are permitted: all uppercase and lowercase letters, digits, as well as the symbols `?`, `!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `<`, `>`, `(`, `)`, `{`, `}`, `[`, `]`, and `|`.
+Currencies are represented as either 3-character currency codes or 40-character uppercase hexadecimal strings. We recommend using uppercase [ISO 4217 Currency Codes](http://www.xe.com/iso4217.php) only. The string "XRP" is disallowed on trustlines because it is reserved for the XRP Ledger's native currency. The following characters are permitted: all uppercase and lowercase letters, digits, as well as the symbols `?`, `!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `<`, `>`, `(`, `)`, `{`, `}`, `[`, `]`, and `|`.
 
 ## Value
 A *value* is a quantity of a currency represented as a decimal string. Be careful: JavaScript's native number format does not have sufficient precision to represent all values. XRP has different precision from other currencies.
@@ -254,7 +247,7 @@ A *balance* is an amount than can have a negative value.
 Name | Type | Description
 ---- | ---- | -----------
 currency | [currency](#currency) | The three-character code or hexadecimal string used to denote currencies
-counterparty | [address](#ripple-address) | *Optional* The Ripple address of the account that owes or is owed the funds (omitted if `currency` is "XRP")
+counterparty | [address](#address) | *Optional* The Ripple address of the account that owes or is owed the funds (omitted if `currency` is "XRP")
 value | [value](#value) | *Optional* The quantity of the currency, denoted as a string to retain floating point precision
 
 # Transaction Overview
@@ -266,11 +259,11 @@ A transaction type is specified by the strings in the first column in the table 
 Type | Description
 ---- | -----------
 [payment](#payment) | A `payment` transaction represents a transfer of value from one account to another. Depending on the [path](https://ripple.com/build/paths/) taken, additional exchanges of value may occur atomically to facilitate the payment.
-[order](#order) | An `order` transaction creates a limit order. It defines an intent to exchange currencies, and creates an order in the Ripple Consensus Ledger's order book if not completely fulfilled when placed. Orders can be partially fulfilled.
-[orderCancellation](#order-cancellation) | An `orderCancellation` transaction cancels an order in the Ripple Consensus Ledger's order book.
+[order](#order) | An `order` transaction creates a limit order. It defines an intent to exchange currencies, and creates an order in the XRP Ledger's order book if not completely fulfilled when placed. Orders can be partially fulfilled.
+[orderCancellation](#order-cancellation) | An `orderCancellation` transaction cancels an order in the XRP Ledger's order book.
 [trustline](#trustline) | A `trustline` transactions creates or modifies a trust line between two accounts.
-[settings](#settings) | A `settings` transaction modifies the settings of an account in the Ripple Consensus Ledger.
-[escrowCreation](#escrow-creation) | An `escrowCreation` transaction creates an escrow on the ledger, which locks XRP until a cryptographic condition is met or it expires. It is like an escrow service where the Ripple network acts as the escrow agent.
+[settings](#settings) | A `settings` transaction modifies the settings of an account in the XRP Ledger.
+[escrowCreation](#escrow-creation) | An `escrowCreation` transaction creates an escrow on the ledger, which locks XRP until a cryptographic condition is met or it expires. It is like an escrow service where the XRP Ledger acts as the escrow agent.
 [escrowCancellation](#escrow-cancellation) | An `escrowCancellation` transaction unlocks the funds in an escrow and sends them back to the creator of the escrow, but it will only work after the escrow expires.
 [escrowExecution](#escrow-execution) | An `escrowExecution` transaction unlocks the funds in an escrow and sends them to the destination of the escrow, but it will only work if the cryptographic condition is provided.
 
@@ -293,7 +286,7 @@ Executing a transaction with `RippleAPI` requires the following four steps:
 
 ## Transaction Fees
 
-Every transaction must destroy a small amount of XRP as a cost to send the transaction. This is also called a *transaction fee*. The transaction cost is designed to increase along with the load on the Ripple network, making it very expensive to deliberately or inadvertently overload the network.
+Every transaction must destroy a small amount of XRP as a cost to send the transaction. This is also called a *transaction fee*. The transaction cost is designed to increase along with the load on the XRP Ledger, making it very expensive to deliberately or inadvertently overload the peer-to-peer network that powers the XRP Ledger.
 
 You can choose the size of the fee you want to pay or let a default be used. You can get an estimate of the fee required to be included in the next ledger closing with the [getFee](#getfee) method.
 
@@ -310,7 +303,7 @@ maxLedgerVersionOffset | integer | *Optional* Offset from current validated legd
 sequence | [sequence](#account-sequence-number) | *Optional* The initiating account's sequence number for this transaction.
 signersCount | integer | *Optional* Number of signers that will be signing this transaction.
 
-We recommended that you specify a `maxLedgerVersion` so that you can quickly determine that a failed transaction will never succeeed in the future. It is impossible for a transaction to succeed after the network ledger version exceeds the transaction's `maxLedgerVersion`. If you omit `maxLedgerVersion`, the "prepare*" method automatically supplies a `maxLedgerVersion` equal to the current ledger plus 3, which it includes in the return value from the "prepare*" method.
+We recommended that you specify a `maxLedgerVersion` so that you can quickly determine that a failed transaction will never succeeed in the future. It is impossible for a transaction to succeed after the XRP Ledger's consensus-validated ledger version exceeds the transaction's `maxLedgerVersion`. If you omit `maxLedgerVersion`, the "prepare*" method automatically supplies a `maxLedgerVersion` equal to the current ledger plus 3, which it includes in the return value from the "prepare*" method.
 
 ## Transaction ID
 
@@ -343,15 +336,15 @@ See [Transaction Types](#transaction-types) for a description.
 Name | Type | Description
 ---- | ---- | -----------
 source | object | The source of the funds to be sent.
-*source.* address | [address](#ripple-address) | The address to send from.
+*source.* address | [address](#address) | The address to send from.
 *source.* amount | [laxAmount](#amount) | An exact amount to send. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with source.maxAmount)
 *source.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Ripple account.
 *source.* maxAmount | [laxAmount](#amount) | The maximum amount to send. (This field is exclusive with source.amount)
 destination | object | The destination of the funds to be sent.
-*destination.* address | [address](#ripple-address) | The address to receive at.
+*destination.* address | [address](#address) | The address to receive at.
 *destination.* amount | [laxAmount](#amount) | An exact amount to deliver to the recipient. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with destination.minAmount).
 *destination.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Ripple account.
-*destination.* address | [address](#ripple-address) | The address to send to.
+*destination.* address | [address](#address) | The address to send to.
 *destination.* minAmount | [laxAmount](#amount) | The minimum amount to be delivered. (This field is exclusive with destination.amount)
 allowPartialPayment | boolean | *Optional* A boolean that, if set to true, indicates that this payment should go through even if the whole amount cannot be delivered because of a lack of liquidity or funds in the source account account
 invoiceID | string | *Optional* A 256-bit hash that can be used to identify a particular payment.
@@ -392,7 +385,7 @@ See [Transaction Types](#transaction-types) for a description.
 Name | Type | Description
 ---- | ---- | -----------
 currency | [currency](#currency) | The currency this trustline applies to.
-counterparty | [address](#ripple-address) | The address of the account this trustline extends trust to.
+counterparty | [address](#address) | The address of the account this trustline extends trust to.
 limit | [value](#value) | The maximum amount that the owner of the trustline can be owed through the trustline.
 authorized | boolean | *Optional* If true, authorize the counterparty to hold issuances from this account.
 frozen | boolean | *Optional* If true, the trustline is frozen, which means that funds can only be sent to the owner.
@@ -497,14 +490,14 @@ memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the
 messageKey | string | *Optional* Public key for sending encrypted messages to this account. Conventionally, it should be a secp256k1 key, the same encryption that is used by the rest of Ripple.
 noFreeze | boolean | *Optional* Permanently give up the ability to freeze individual trust lines. This flag can never be disabled after being enabled.
 passwordSpent | boolean | *Optional* Indicates that the account has used its free SetRegularKey transaction.
-regularKey | [address](#ripple-address),null | *Optional* The public key of a new keypair, to use as the regular key to this account, as a base-58-encoded string in the same format as an account address. Use `null` to remove the regular key.
+regularKey | [address](#address),null | *Optional* The public key of a new keypair, to use as the regular key to this account, as a base-58-encoded string in the same format as an account address. Use `null` to remove the regular key.
 requireAuthorization | boolean | *Optional* If set, this account must individually approve other users in order for those users to hold this account’s issuances.
 requireDestinationTag | boolean | *Optional* Requires incoming payments to specify a destination tag.
 signers | object | *Optional* Settings that determine what sets of accounts can be used to sign a transaction on behalf of this account using multisigning.
 *signers.* threshold | integer | *Optional* A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is equal or greater than this value. To delete the signers setting, use the value `0`.
 *signers.* weights | array | *Optional* Weights of signatures for each signer.
 *signers.* weights[] | object | An association of an address and a weight.
-*signers.weights[].* address | [address](#ripple-address) | A Ripple account address
+*signers.weights[].* address | [address](#address) | A Ripple account address
 *signers.weights[].* weight | integer | The weight that the signature of this account counts as towards the threshold.
 transferRate | number,null | *Optional*  The fee to charge when users transfer this account’s issuances, as the decimal amount that must be sent to deliver 1 unit. Has precision up to 9 digits beyond the decimal point. Use `null` to set no fee.
 
@@ -532,7 +525,7 @@ See [Transaction Types](#transaction-types) for a description.
 Name | Type | Description
 ---- | ---- | -----------
 amount | [value](#value) | Amount of XRP for sender to escrow.
-destination | [address](#ripple-address) | Address to receive escrowed XRP.
+destination | [address](#address) | Address to receive escrowed XRP.
 allowCancelAfter | date-time string | *Optional* If present, the escrow may be cancelled after this time.
 allowExecuteAfter | date-time string | *Optional* If present, the escrow can not be executed before this time.
 condition | string | *Optional* A hex value representing a [PREIMAGE-SHA-256 crypto-condition](https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1). If present, `fulfillment` is required upon execution.
@@ -558,7 +551,7 @@ See [Transaction Types](#transaction-types) for a description.
 
 Name | Type | Description
 ---- | ---- | -----------
-owner | [address](#ripple-address) | The address of the owner of the escrow to cancel.
+owner | [address](#address) | The address of the owner of the escrow to cancel.
 escrowSequence | [sequence](#account-sequence-number) | The [account sequence number](#account-sequence-number) of the [Escrow Creation](#escrow-creation) transaction for the escrow to cancel.
 memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the transaction.
 
@@ -579,7 +572,7 @@ See [Transaction Types](#transaction-types) for a description.
 
 Name | Type | Description
 ---- | ---- | -----------
-owner | [address](#ripple-address) | The address of the owner of the escrow to execute.
+owner | [address](#address) | The address of the owner of the escrow to execute.
 escrowSequence | [sequence](#account-sequence-number) | The [account sequence number](#account-sequence-number) of the [Escrow Creation](#escrow-creation) transaction for the escrow to execute.
 condition | string | *Optional* A hex value representing a [PREIMAGE-SHA-256 crypto-condition](https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1). This must match the original `condition` from the escrow creation transaction.
 fulfillment | string | *Optional* A hex value representing the [PREIMAGE-SHA-256 crypto-condition](https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1) fulfillment for `condition`.
@@ -605,7 +598,7 @@ See [Transaction Types](#transaction-types) for a description.
 Name | Type | Description
 ---- | ---- | -----------
 amount | [value](#value) | Amount of XRP for sender to set aside in this channel.
-destination | [address](#ripple-address) | Address to receive XRP claims against this channel.
+destination | [address](#address) | Address to receive XRP claims against this channel.
 settleDelay | number | Amount of seconds the source address must wait before closing the channel if it has unclaimed XRP.
 publicKey | string | Public key of the key pair the source will use to sign claims against this channel.
 cancelAfter | date-time string | *Optional* Time when this channel expires.
@@ -879,7 +872,7 @@ This method returns a promise that resolves with a transaction object containing
 Name | Type | Description
 ---- | ---- | -----------
 id | [id](#transaction-id) | A hash of the transaction that can be used to identify it.
-address | [address](#ripple-address) | The address of the account that initiated the transaction.
+address | [address](#address) | The address of the account that initiated the transaction.
 sequence | [sequence](#account-sequence-number) | The account sequence number of the transaction for the account that initiated it.
 type | [transactionType](#transaction-types) | The type of the transaction.
 specification | object | A specification that would produce the same outcome as this transaction. The structure of the specification depends on the value of the `type` field (see [Transaction Types](#transaction-types) for details). *Note:* This is **not** necessarily the same as the original specification.
@@ -1017,10 +1010,10 @@ Retrieves historical transactions of an account.
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account to get transactions for.
+address | [address](#address) | The address of the account to get transactions for.
 options | object | *Optional* Options to filter the resulting transactions.
 *options.* binary | boolean | *Optional* If true, the transactions will be sent from the server in a condensed binary format rather than JSON.
-*options.* counterparty | [address](#ripple-address) | *Optional* If provided, only return transactions with this account as a counterparty to the transaction.
+*options.* counterparty | [address](#address) | *Optional* If provided, only return transactions with this account as a counterparty to the transaction.
 *options.* earliestFirst | boolean | *Optional* If true, sort transactions so that the earliest ones come first. By default, the newest transactions will come first.
 *options.* excludeFailures | boolean | *Optional* If true, the result will omit transactions that did not succeed.
 *options.* initiated | boolean | *Optional* If true, return only transactions initiated by the account specified by `address`. If false, return only transactions not initiated by the account specified by `address`.
@@ -1254,9 +1247,9 @@ Returns trustlines for a specified account.
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account to get trustlines for.
+address | [address](#address) | The address of the account to get trustlines for.
 options | object | *Optional* Options to filter and determine which trustlines to return.
-*options.* counterparty | [address](#ripple-address) | *Optional* Only return trustlines with this counterparty.
+*options.* counterparty | [address](#address) | *Optional* Only return trustlines with this counterparty.
 *options.* currency | [currency](#currency) | *Optional* Only return trustlines for this currency.
 *options.* ledgerVersion | integer | *Optional* Return trustlines as they were in this historical ledger version.
 *options.* limit | integer | *Optional* Return at most this many trustlines.
@@ -1398,9 +1391,9 @@ Returns balances for a specified account.
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account to get balances for.
+address | [address](#address) | The address of the account to get balances for.
 options | object | *Optional* Options to filter and determine which balances to return.
-*options.* counterparty | [address](#ripple-address) | *Optional* Only return balances with this counterparty.
+*options.* counterparty | [address](#address) | *Optional* Only return balances with this counterparty.
 *options.* currency | [currency](#currency) | *Optional* Only return balances for this currency.
 *options.* ledgerVersion | integer | *Optional* Return balances as they were in this historical ledger version.
 *options.* limit | integer | *Optional* Return at most this many balances.
@@ -1413,7 +1406,7 @@ Name | Type | Description
 ---- | ---- | -----------
 currency | [currency](#currency) | The three-character code or hexadecimal string used to denote currencies
 value | [signedValue](#value) | The balance on the trustline
-counterparty | [address](#ripple-address) | *Optional* The Ripple address of the account that owes or is owed the funds.
+counterparty | [address](#address) | *Optional* The Ripple address of the account that owes or is owed the funds.
 
 ### Example
 
@@ -1564,9 +1557,9 @@ Returns aggregate balances by currency plus a breakdown of assets and obligation
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The Ripple address of the account to get the balance sheet of.
+address | [address](#address) | The Ripple address of the account to get the balance sheet of.
 options | object | *Optional* Options to determine how the balances will be calculated.
-*options.* excludeAddresses | array\<[address](#ripple-address)\> | *Optional* Addresses to exclude from the balance totals.
+*options.* excludeAddresses | array\<[address](#address)\> | *Optional* Addresses to exclude from the balance totals.
 *options.* ledgerVersion | integer | *Optional* Get the balance sheet as of this historical ledger version.
 
 ### Return Value
@@ -1661,14 +1654,14 @@ Name | Type | Description
 ---- | ---- | -----------
 pathfind | object | Specification of a pathfind request.
 *pathfind.* source | object | Properties of the source of funds.
-*pathfind.source.* address | [address](#ripple-address) | The Ripple address of the account where funds will come from.
+*pathfind.source.* address | [address](#address) | The Ripple address of the account where funds will come from.
 *pathfind.source.* amount | [laxAmount](#amount) | *Optional* The amount of funds to send.
 *pathfind.source.* currencies | array | *Optional* An array of currencies (with optional counterparty) that may be used in the payment paths.
 *pathfind.source.* currencies[] | object | A currency with optional counterparty.
 *pathfind.source.currencies[].* currency | [currency](#currency) | The three-character code or hexadecimal string used to denote currencies
-*pathfind.source.currencies[].* counterparty | [address](#ripple-address) | *Optional* The counterparty for the currency; if omitted any counterparty may be used.
+*pathfind.source.currencies[].* counterparty | [address](#address) | *Optional* The counterparty for the currency; if omitted any counterparty may be used.
 *pathfind.* destination | object | Properties of the destination of funds.
-*pathfind.destination.* address | [address](#ripple-address) | The address to send to.
+*pathfind.destination.* address | [address](#address) | The address to send to.
 *pathfind.destination.* amount | [laxLaxAmount](#amount) | The amount to be received by the receiver (`value` may be ommitted if a source amount is specified).
 
 ### Return Value
@@ -1678,15 +1671,15 @@ This method returns a promise that resolves with an array of objects with the fo
 Name | Type | Description
 ---- | ---- | -----------
 source | object | Properties of the source of the payment.
-*source.* address | [address](#ripple-address) | The address to send from.
+*source.* address | [address](#address) | The address to send from.
 *source.* amount | [laxAmount](#amount) | An exact amount to send. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with source.maxAmount)
 *source.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Ripple account.
 *source.* maxAmount | [laxAmount](#amount) | The maximum amount to send. (This field is exclusive with source.amount)
 destination | object | Properties of the destination of the payment.
-*destination.* address | [address](#ripple-address) | The address to receive at.
+*destination.* address | [address](#address) | The address to receive at.
 *destination.* amount | [laxAmount](#amount) | An exact amount to deliver to the recipient. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with destination.minAmount).
 *destination.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Ripple account.
-*destination.* address | [address](#ripple-address) | The address to send to.
+*destination.* address | [address](#address) | The address to send to.
 *destination.* minAmount | [laxAmount](#amount) | The minimum amount to be delivered. (This field is exclusive with destination.amount)
 paths | string | The paths of trustlines and orders to use in executing the payment.
 
@@ -1781,7 +1774,7 @@ Returns open orders for the specified account. Open orders are orders that have 
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The Ripple address of the account to get open orders for.
+address | [address](#address) | The Ripple address of the account to get open orders for.
 options | object | *Optional* Options that determine what orders will be returned.
 *options.* ledgerVersion | integer | *Optional* Return orders as of this historical ledger version.
 *options.* limit | integer | *Optional* At most this many orders will be returned.
@@ -1794,7 +1787,7 @@ Name | Type | Description
 ---- | ---- | -----------
 specification | [order](#order) | An order specification that would create an order equivalent to the current state of this order.
 properties | object | Properties of the order not in the specification.
-*properties.* maker | [address](#ripple-address) | The address of the account that submitted the order.
+*properties.* maker | [address](#address) | The address of the account that submitted the order.
 *properties.* sequence | [sequence](#account-sequence-number) | The account sequence number of the transaction that created this order.
 *properties.* makerExchangeRate | [value](#value) | The exchange rate from the point of view of the account that submitted the order (also known as "quality").
 
@@ -2161,7 +2154,7 @@ Returns open orders for the specified account. Open orders are orders that have 
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | Address of an account to use as point-of-view. (This affects which unfunded offers are returned.)
+address | [address](#address) | Address of an account to use as point-of-view. (This affects which unfunded offers are returned.)
 orderbook | object | The order book to get.
 *orderbook.* base | object | A currency-counterparty pair, or just currency if it's XRP
 *orderbook.* counter | object | A currency-counterparty pair, or just currency if it's XRP
@@ -2179,7 +2172,7 @@ bids | array | The buy orders in the order book.
 bids[] | object | An order in the order book.
 *bids[].* specification | [order](#order) | An order specification that would create an order equivalent to the current state of this order.
 *bids[].* properties | object | Properties of the order not in the specification.
-*bids[].properties.* maker | [address](#ripple-address) | The address of the account that submitted the order.
+*bids[].properties.* maker | [address](#address) | The address of the account that submitted the order.
 *bids[].properties.* sequence | [sequence](#account-sequence-number) | The account sequence number of the transaction that created this order.
 *bids[].properties.* makerExchangeRate | [value](#value) | The exchange rate from the point of view of the account that submitted the order (also known as "quality").
 *bids[].* state | object | *Optional* The state of the order.
@@ -2189,7 +2182,7 @@ asks | array | The sell orders in the order book.
 asks[] | object | An order in the order book.
 *asks[].* specification | [order](#order) | An order specification that would create an order equivalent to the current state of this order.
 *asks[].* properties | object | Properties of the order not in the specification.
-*asks[].properties.* maker | [address](#ripple-address) | The address of the account that submitted the order.
+*asks[].properties.* maker | [address](#address) | The address of the account that submitted the order.
 *asks[].properties.* sequence | [sequence](#account-sequence-number) | The account sequence number of the transaction that created this order.
 *asks[].properties.* makerExchangeRate | [value](#value) | The exchange rate from the point of view of the account that submitted the order (also known as "quality").
 *asks[].* state | object | *Optional* The state of the order.
@@ -2714,7 +2707,7 @@ Returns settings for the specified account. Note: For account data that is not m
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account to get the settings of.
+address | [address](#address) | The address of the account to get the settings of.
 options | object | *Optional* Options that affect what to return.
 *options.* ledgerVersion | integer | *Optional* Get the settings as of this historical ledger version.
 
@@ -2735,14 +2728,14 @@ memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the
 messageKey | string | *Optional* Public key for sending encrypted messages to this account. Conventionally, it should be a secp256k1 key, the same encryption that is used by the rest of Ripple.
 noFreeze | boolean | *Optional* Permanently give up the ability to freeze individual trust lines. This flag can never be disabled after being enabled.
 passwordSpent | boolean | *Optional* Indicates that the account has used its free SetRegularKey transaction.
-regularKey | [address](#ripple-address),null | *Optional* The public key of a new keypair, to use as the regular key to this account, as a base-58-encoded string in the same format as an account address. Use `null` to remove the regular key.
+regularKey | [address](#address),null | *Optional* The public key of a new keypair, to use as the regular key to this account, as a base-58-encoded string in the same format as an account address. Use `null` to remove the regular key.
 requireAuthorization | boolean | *Optional* If set, this account must individually approve other users in order for those users to hold this account’s issuances.
 requireDestinationTag | boolean | *Optional* Requires incoming payments to specify a destination tag.
 signers | object | *Optional* Settings that determine what sets of accounts can be used to sign a transaction on behalf of this account using multisigning.
 *signers.* threshold | integer | *Optional* A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is equal or greater than this value. To delete the signers setting, use the value `0`.
 *signers.* weights | array | *Optional* Weights of signatures for each signer.
 *signers.* weights[] | object | An association of an address and a weight.
-*signers.weights[].* address | [address](#ripple-address) | A Ripple account address
+*signers.weights[].* address | [address](#address) | A Ripple account address
 *signers.weights[].* weight | integer | The weight that the signature of this account counts as towards the threshold.
 transferRate | number,null | *Optional*  The fee to charge when users transfer this account’s issuances, as the decimal amount that must be sent to deliver 1 unit. Has precision up to 9 digits beyond the decimal point. Use `null` to set no fee.
 
@@ -2776,7 +2769,7 @@ Returns information for the specified account. Note: For account data that is mo
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account to get the account info of.
+address | [address](#address) | The address of the account to get the account info of.
 options | object | *Optional* Options that affect what to return.
 *options.* ledgerVersion | integer | *Optional* Get the account info as of this historical ledger version.
 
@@ -2831,8 +2824,8 @@ This method returns a promise that resolves with an object with the following st
 
 Name | Type | Description
 ---- | ---- | -----------
-account | [address](#ripple-address) | Address that created the payment channel.
-destination | [address](#ripple-address) | Address to receive XRP claims against this channel.
+account | [address](#address) | Address that created the payment channel.
+destination | [address](#address) | Address to receive XRP claims against this channel.
 amount | [value](#value) | The total amount of XRP funded in this channel.
 balance | [value](#value) | The total amount of XRP delivered by this channel.
 settleDelay | number | Amount of seconds the source address must wait before closing the channel if it has unclaimed XRP.
@@ -2940,7 +2933,7 @@ Prepare a payment transaction. The prepared transaction must subsequently be [si
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 payment | [payment](#payment) | The specification of the payment to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3009,7 +3002,7 @@ Prepare a trustline transaction. The prepared transaction must subsequently be [
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 trustline | [trustline](#trustline) | The specification of the trustline to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3076,7 +3069,7 @@ Prepare an order transaction. The prepared transaction must subsequently be [sig
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 order | [order](#order) | The specification of the order to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3141,7 +3134,7 @@ Prepare an order cancellation transaction. The prepared transaction must subsequ
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 orderCancellation | [orderCancellation](#order-cancellation) | The specification of the order cancellation to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3193,7 +3186,7 @@ Prepare a settings transaction. The prepared transaction must subsequently be [s
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 settings | [settings](#settings) | The specification of the settings to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3256,7 +3249,7 @@ Prepare an escrow creation transaction. The prepared transaction must subsequent
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 escrowCreation | [escrowCreation](#escrow-creation) | The specification of the escrow creation to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3312,7 +3305,7 @@ Prepare an escrow cancellation transaction. The prepared transaction must subseq
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 escrowCancellation | [escrowCancellation](#escrow-cancellation) | The specification of the escrow cancellation to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3367,7 +3360,7 @@ Prepare an escrow execution transaction. The prepared transaction must subsequen
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 escrowExecution | [escrowExecution](#escrow-execution) | The specification of the escrow execution to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3424,7 +3417,7 @@ Prepare a payment channel creation transaction. The prepared transaction must su
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 paymentChannelCreate | [paymentChannelCreate](#payment-channel-create) | The specification of the payment channel to create.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3481,7 +3474,7 @@ Prepare a payment channel claim transaction. The prepared transaction must subse
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 paymentChannelClaim | [paymentChannelClaim](#payment-channel-claim) | Details of the channel and claim.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3535,7 +3528,7 @@ Prepare a payment channel fund transaction. The prepared transaction must subseq
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 paymentChannelFund | [paymentChannelFund](#payment-channel-fund) | The channel to fund, and the details of how to fund it.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3593,7 +3586,7 @@ Name | Type | Description
 txJSON | string | Transaction represented as a JSON string in rippled format.
 secret | secret string | The secret of the account that is initiating the transaction.
 options | object | *Optional* Options that control the type of signature that will be generated.
-*options.* signAs | [address](#ripple-address) | *Optional* The account that the signature should count for in multisigning.
+*options.* signAs | [address](#address) | *Optional* The account that the signature should count for in multisigning.
 
 ### Return Value
 
@@ -3701,7 +3694,7 @@ return api.submit(signedTransaction)
 
 `generateAddress(): {address: string, secret: string}`
 
-Generate a new Ripple address and corresponding secret.
+Generate a new XRP Ledger address and corresponding secret.
 
 ### Parameters
 
@@ -3717,7 +3710,7 @@ This method returns an object with the following structure:
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | A randomly generated Ripple account address.
+address | [address](#address) | A randomly generated Ripple account address.
 secret | secret string | The secret corresponding to the `address`.
 
 ### Example
@@ -3739,7 +3732,7 @@ return api.generateAddress();
 
 `signPaymentChannelClaim(channel: string, amount: string, privateKey: string): string`
 
-Sign a payment channel claim. The signature can be submitted in a subsequent [PaymentChannelClaim](#preparePaymmentChannelClaim) transaction.
+Sign a payment channel claim. The signature can be submitted in a subsequent [PaymentChannelClaim](#preparepaymentchannelclaim) transaction.
 
 ### Parameters
 
