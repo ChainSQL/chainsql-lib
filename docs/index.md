@@ -788,10 +788,10 @@ return api.getServerInfo().then(info => {/* ... */});
   "serverState": "full",
   "validatedLedger": {
     "age": 5,
-    "baseFeeXRP": "0.00001",
+    "baseFeeZXC": "0.00001",
     "hash": "4482DEE5362332F54A4036ED57EE1767C9F33CF7CE5A6670355C16CECE381D46",
-    "reserveBaseXRP": "20",
-    "reserveIncrementXRP": "5",
+    "reserveBaseZXC": "20",
+    "reserveIncrementZXC": "5",
     "ledgerVersion": 6595042
   },
   "validationQuorum": 3
@@ -3892,12 +3892,12 @@ api.on('ledger', ledger => {
 
 ```json
 {
-  "baseFeeXRP": "0.00001",
+  "baseFeeZXC": "0.00001",
   "ledgerVersion": 14804627,
   "ledgerHash": "9141FA171F2C0CE63E609466AF728FF66C12F7ACD4B4B50B0947A7F3409D593A",
   "ledgerTimestamp": "2015-07-23T05:50:40.000Z",
-  "reserveBaseXRP": "20",
-  "reserveIncrementXRP": "5",
+  "reserveBaseZXC": "20",
+  "reserveIncrementZXC": "5",
   "transactionCount": 19,
   "validatedLedgerVersions": "13983423-14804627"
 }

@@ -9,19 +9,19 @@
     },
     "destination": {
       "$ref": "address",
-      "description": "Address to receive XRP claims against this channel."
+      "description": "Address to receive ZXC claims against this channel."
     },
     "amount": {
       "$ref": "value",
-      "description": "The total amount of XRP funded in this channel."
+      "description": "The total amount of ZXC funded in this channel."
     },
     "balance": {
       "$ref": "value",
-      "description": "The total amount of XRP delivered by this channel."
+      "description": "The total amount of ZXC delivered by this channel."
     },
     "settleDelay": {
       "type": "number",
-      "description": "Amount of seconds the source address must wait before closing the channel if it has unclaimed XRP."
+      "description": "Amount of seconds the source address must wait before closing the channel if it has unclaimed ZXC."
     },
     "expiration": {
       "type": "string",

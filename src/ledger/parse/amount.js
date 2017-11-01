@@ -7,7 +7,7 @@ import type {Amount, RippledAmount} from '../../common/types.js'
 function parseAmount(amount: RippledAmount): Amount {
   if (typeof amount === 'string') {
     return {
-      currency: 'XRP',
+      currency: 'ZXC',
       value: utils.common.dropsToXrp(amount)
     }
   }

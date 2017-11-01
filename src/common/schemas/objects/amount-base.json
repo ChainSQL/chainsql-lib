@@ -13,7 +13,7 @@
       "$ref": "currency"
     },
     "counterparty": {
-      "description": "The Ripple address of the account that owes or is owed the funds (omitted if `currency` is \"XRP\")",
+      "description": "The Ripple address of the account that owes or is owed the funds (omitted if `currency` is \"ZXC\")",
       "$ref": "address"
     }
   },
@@ -24,7 +24,7 @@
       "properties": {
         "currency": {
           "not": {
-            "enum": ["XRP"]
+            "enum": ["ZXC"]
           }
         }
       },
@@ -33,7 +33,7 @@
     {
       "properties": {
         "currency": {
-          "enum": ["XRP"]
+          "enum": ["ZXC"]
         }
       },
       "not": {

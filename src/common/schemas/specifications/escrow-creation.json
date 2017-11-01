@@ -6,11 +6,11 @@
   "properties": {
     "amount": {
       "$ref": "value",
-      "description": "Amount of XRP for sender to escrow."
+      "description": "Amount of ZXC for sender to escrow."
     },
     "destination": {
       "$ref": "address",
-      "description": "Address to receive escrowed XRP."
+      "description": "Address to receive escrowed ZXC."
     },
     "memos": {"$ref": "memos"},
     "condition": {

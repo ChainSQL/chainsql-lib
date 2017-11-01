@@ -15,7 +15,7 @@
       "type": "boolean",
       "description": "If set, this account must individually approve other users in order for those users to hold this account’s issuances."
     },
-    "disallowIncomingXRP": {
+    "disallowIncomingZXC": {
       "type": "boolean",
       "description": "Indicates that client applications should not send XRP to this account. Not enforced by rippled."
     },

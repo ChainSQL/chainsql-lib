@@ -14,7 +14,7 @@ const address = addresses.ACCOUNT;
 const utils = RippleAPI._PRIVATE.ledgerUtils;
 const ledgerClosed = require('./fixtures/rippled/ledger-close-newer');
 const schemaValidator = RippleAPI._PRIVATE.schemaValidator;
-const binary = require('ripple-binary-codec');
+const binary = require('chainsql-binary-codec');
 assert.options.strict = true;
 
 // how long before each test case times out

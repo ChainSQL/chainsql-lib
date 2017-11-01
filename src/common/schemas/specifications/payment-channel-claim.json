@@ -10,11 +10,11 @@
     },
     "amount": {
       "$ref": "value",
-      "description": "XRP balance of this channel after claim is processed."
+      "description": "ZXC balance of this channel after claim is processed."
     },
     "balance": {
       "$ref": "value",
-      "description": "Amount of XRP authorized by signature."
+      "description": "Amount of ZXC authorized by signature."
     },
     "signature": {
       "$ref": "signature",

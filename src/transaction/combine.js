@@ -1,7 +1,7 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
-const binary = require('ripple-binary-codec')
+const binary = require('chainsql-binary-codec')
 const utils = require('./utils')
 const BigNumber = require('bignumber.js')
 const {decodeAddress} = require('ripple-address-codec')

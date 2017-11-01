@@ -141,7 +141,7 @@ function setupAccounts(testcase) {
           counterparty: masterAccount
         },
         totalPrice: {
-          currency: 'XRP',
+          currency: 'ZXC',
           value: '432'
         }
       };
@@ -152,7 +152,7 @@ function setupAccounts(testcase) {
       const orderSpecification = {
         direction: 'buy',
         quantity: {
-          currency: 'XRP',
+          currency: 'ZXC',
           value: '1741'
         },
         totalPrice: {
@@ -217,7 +217,7 @@ describe('integration tests', function() {
 
 
   it('payment', function() {
-    const amount = {currency: 'XRP', value: '0.000001'};
+    const amount = {currency: 'ZXC', value: '0.000001'};
     const paymentSpecification = {
       source: {
         address: address,
@@ -245,7 +245,7 @@ describe('integration tests', function() {
         counterparty: 'rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q'
       },
       totalPrice: {
-        currency: 'XRP',
+        currency: 'ZXC',
         value: '0.0002'
       }
     };
@@ -351,7 +351,7 @@ describe('integration tests', function() {
   it('getOrderbook', function() {
     const orderbook = {
       base: {
-        currency: 'XRP'
+        currency: 'ZXC'
       },
       counter: {
         currency: 'USD',
@@ -365,13 +365,13 @@ describe('integration tests', function() {
       assert(bid && bid.specification && bid.specification.quantity);
       assert(bid.specification.totalPrice);
       assert.strictEqual(bid.specification.direction, 'buy');
-      assert.strictEqual(bid.specification.quantity.currency, 'XRP');
+      assert.strictEqual(bid.specification.quantity.currency, 'ZXC');
       assert.strictEqual(bid.specification.totalPrice.currency, 'USD');
       const ask = book.asks[0];
       assert(ask && ask.specification && ask.specification.quantity);
       assert(ask.specification.totalPrice);
       assert.strictEqual(ask.specification.direction, 'sell');
-      assert.strictEqual(ask.specification.quantity.currency, 'XRP');
+      assert.strictEqual(ask.specification.quantity.currency, 'ZXC');
       assert.strictEqual(ask.specification.totalPrice.currency, 'USD');
     });
   });

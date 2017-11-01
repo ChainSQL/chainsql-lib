@@ -24,7 +24,7 @@ function xrpToDrops(xrp: string): string {
 }
 
 function toRippledAmount(amount: Amount): RippledAmount {
-  if (amount.currency === 'XRP') {
+  if (amount.currency === 'ZXC') {
     return xrpToDrops(amount.value)
   }
   return {

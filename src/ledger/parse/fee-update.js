@@ -5,10 +5,10 @@ const {dropsToXrp} = require('./utils')
 function parseFeeUpdate(tx: Object) {
   const baseFeeDrops = (new BigNumber(tx.BaseFee, 16)).toString()
   return {
-    baseFeeXRP: dropsToXrp(baseFeeDrops),
+    baseFeeZXC: dropsToXrp(baseFeeDrops),
     referenceFeeUnits: tx.ReferenceFeeUnits,
-    reserveBaseXRP: dropsToXrp(tx.ReserveBase),
-    reserveIncrementXRP: dropsToXrp(tx.ReserveIncrement)
+    reserveBaseZXC: dropsToXrp(tx.ReserveBase),
+    reserveIncrementZXC: dropsToXrp(tx.ReserveIncrement)
   }
 }
 
