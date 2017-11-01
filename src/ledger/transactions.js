@@ -2,7 +2,7 @@
 /* eslint-disable max-params */
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
-const binary = require('ripple-binary-codec')
+const binary = require('chainsql-binary-codec')
 const {computeTransactionHash} = require('ripple-hashes')
 const utils = require('./utils')
 const parseTransaction = require('./parse/transaction')
