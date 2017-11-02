@@ -45,9 +45,9 @@ function getServerInfo(connection: Connection): Promise<GetServerInfoResponse> {
     renameKeys(info, {hostid: 'hostID'})
     if (info.validatedLedger) {
       renameKeys(info.validatedLedger, {
-        baseFeeZXC: 'baseFeeZxc',
-        reserveBaseZXC: 'reserveBaseZXC',
-        reserveIncZXC: 'reserveIncrementZXC',
+        baseFeeZxc: 'baseFeeZXC',
+        reserveBaseZxc: 'reserveBaseZXC',
+        reserveIncZxc: 'reserveIncrementZXC',
         seq: 'ledgerVersion'
       })
       info.validatedLedger.baseFeeZXC =
