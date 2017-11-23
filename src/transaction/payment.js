@@ -37,11 +37,11 @@ function isXRPToXRPPayment(payment: Payment): boolean {
     _.get(payment, 'source.amount.currency'))
   const destinationCurrency = _.get(payment, 'destination.amount.currency',
     _.get(payment, 'destination.minAmount.currency'))
-  return sourceCurrency === 'XRP' && destinationCurrency === 'XRP'
+  return sourceCurrency === 'ZXC' && destinationCurrency === 'ZXC'
 }
 
 function isIOUWithoutCounterparty(amount: Amount): boolean {
-  return amount && amount.currency !== 'XRP'
+  return amount && amount.currency !== 'ZXC'
     && amount.counterparty === undefined
 }
 
@@ -63,7 +63,7 @@ function applyAnyCounterpartyEncoding(payment: Payment): void {
 function createMaximalAmount(amount: Amount): Amount {
   const maxXRPValue = '100000000000'
   const maxIOUValue = '9999999999999999e80'
-  const maxValue = amount.currency === 'XRP' ? maxXRPValue : maxIOUValue
+  const maxValue = amount.currency === 'ZXC' ? maxXRPValue : maxIOUValue
   return _.assign({}, amount, {value: maxValue})
 }
 
@@ -119,7 +119,7 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
     txJSON.Flags |= paymentFlags.LimitQuality
   }
   if (!isXRPToXRPPayment(payment)) {
-    // Don't set SendMax for XRP->XRP payment
+    // Don't set SendMax for ZXC->ZXC payment
     // temREDUNDANT_SEND_MAX removed in:
     // https://github.com/ripple/rippled/commit/
     //  c522ffa6db2648f1d8a987843e7feabf1a0b7de8/
@@ -139,7 +139,7 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
       txJSON.Paths = JSON.parse(payment.paths)
     }
   } else if (payment.allowPartialPayment === true) {
-    throw new ValidationError('XRP to XRP payments cannot be partial payments')
+    throw new ValidationError('ZXC to ZXC payments cannot be partial payments')
   }
 
   return txJSON

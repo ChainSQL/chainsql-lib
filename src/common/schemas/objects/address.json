@@ -5,5 +5,5 @@
   "type": "string",
   "format": "address",
   "link": "address",
-  "pattern": "^r[1-9A-HJ-NP-Za-km-z]{25,34}$"
+  "pattern": "^z[1-9A-HJ-NP-Za-km-z]{25,34}$"
 }

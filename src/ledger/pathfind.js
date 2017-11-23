@@ -57,7 +57,7 @@ function requestPathFind(connection: Connection, pathfind: PathFind): Promise {
 
 function addDirectXrpPath(paths: RippledPathsResponse, xrpBalance: string
 ): RippledPathsResponse {
-  // Add XRP "path" only if the source acct has enough XRP to make the payment
+  // Add ZXC "path" only if the source acct has enough ZXC to make the payment
   const destinationAmount = paths.destination_amount
   if ((new BigNumber(xrpBalance)).greaterThanOrEqualTo(destinationAmount)) {
     paths.alternatives.unshift({
@@ -69,16 +69,16 @@ function addDirectXrpPath(paths: RippledPathsResponse, xrpBalance: string
 }
 
 function isRippledIOUAmount(amount: RippledAmount) {
-  // rippled XRP amounts are specified as decimal strings
+  // rippled ZXC amounts are specified as decimal strings
   return (typeof amount === 'object') &&
-    amount.currency && (amount.currency !== 'XRP')
+    amount.currency && (amount.currency !== 'ZXC')
 }
 
 function conditionallyAddDirectXRPPath(connection: Connection, address: string,
   paths: RippledPathsResponse
 ): Promise {
   if (isRippledIOUAmount(paths.destination_amount)
-      || !_.includes(paths.destination_currencies, 'XRP')) {
+      || !_.includes(paths.destination_currencies, 'ZXC')) {
     return Promise.resolve(paths)
   }
   return utils.getXRPBalance(connection, address, undefined).then(

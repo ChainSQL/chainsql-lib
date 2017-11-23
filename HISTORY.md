@@ -28,7 +28,7 @@
 ## 0.16.0
 
 __BREAKING CHANGES__
-+ [Fix types of XRP values in `getServerInfo` response](https://github.com/ripple/ripple-lib/commit/99d08065e4bda3dda6ae1f183adbd11abc70a9b7)
++ [Fix types of ZXC values in `getServerInfo` response](https://github.com/ripple/ripple-lib/commit/99d08065e4bda3dda6ae1f183adbd11abc70a9b7)
 + [Change error event format and fix crash due to error event on websocket](https://github.com/ripple/ripple-lib/commit/9cd72595f0efc062d77b9d625695d6030c524cc6)
 
 __OTHER CHANGES__
@@ -191,7 +191,7 @@ __OTHER CHANGES__
 + [Fix taker_gets_funded exceeding offer.TakerGets](https://github.com/ripple/ripple-lib/commit/b19ecb4482b589d575382b7a5d0480b963383bb1)
 + [Fix unsymmetric memo serializing](https://github.com/ripple/ripple-lib/commit/1ed36fabdbd54f4d31078c2b0eaa3becc0fe2821)
 + [Fix IOU value passed to `Amount.from_json()`](https://github.com/ripple/ripple-lib/commit/fd1b64393dffb3d1819cd40b8d43df43a4db042d)
-+ [Update transaction binary parsing to account for XRP delivered amounts](https://github.com/ripple/ripple-lib/commit/35a346a674e6ee1e1e495db93700d55984efc7dd)
++ [Update transaction binary parsing to account for ZXC delivered amounts](https://github.com/ripple/ripple-lib/commit/35a346a674e6ee1e1e495db93700d55984efc7dd)
 + [Bumped dependencies](https://github.com/ripple/ripple-lib/commit/f9bc7cc746b44b24b61bbe260ae2e9d9617286da)
 
 ## 0.11.0
@@ -241,7 +241,7 @@ are locally determined to have expired: `tejMaxLedger`.
 + [Add a "core" browser build of ripple-lib which has a subset of features and smaller file size](https://github.com/ripple/ripple-lib/pull/205)
 + [Update binformat with missing fields from rippled](https://github.com/ripple/ripple-lib/commit/cae980788efb00191bfd0988ed836d60cdf7a9a2)
 + [Wait for transaction validation before returning `tec` error](https://github.com/ripple/ripple-lib/commit/6bdd4b2670906588852fc4dda457607b4aac08e4)
-+ [Change default `max_fee` on `Remote` to `1 XRP`](https://github.com/ripple/ripple-lib/commit/d6b1728c23ff85c3cc791bed6982a750641fd95f)
++ [Change default `max_fee` on `Remote` to `1 ZXC`](https://github.com/ripple/ripple-lib/commit/d6b1728c23ff85c3cc791bed6982a750641fd95f)
 + [Fix: Request ledger_accept should return the Remote](https://github.com/ripple/ripple-lib/pull/209)
 
 ## 0.9.2
@@ -358,7 +358,7 @@ __OTHER CHANGES__
         parseBinary: false
       }
     ```
-+ Added full currency name support, e.g. `Currency.from_json('XRP').to_human({full_name:'Ripples'})` will return `XRP - Ripples`
++ Added full currency name support, e.g. `Currency.from_json('ZXC').to_human({full_name:'Ripples'})` will return `ZXC - Ripples`
 + Improved interest bearing currency support, e.g. `Currency.from_human('USD - US Dollar (2.5%pa)')`
 + Improve test coverage
 + Added blob vault client.  The vault client facilitates interaction with ripple's namespace and blob vault or 3rd party blob vaults using ripple's blob vault software (https://github.com/ripple/ripple-blobvault). A list of the available functions can be found at [docs/VAULTCLIENT.md](docs/VAULTCLIENT.md)

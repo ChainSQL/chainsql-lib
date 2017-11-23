@@ -17,7 +17,7 @@
     },
     "disallowIncomingZXC": {
       "type": "boolean",
-      "description": "Indicates that client applications should not send XRP to this account. Not enforced by rippled."
+      "description": "Indicates that client applications should not send ZXC to this account. Not enforced by rippled."
     },
     "disableMasterKey": {
       "type": "boolean",

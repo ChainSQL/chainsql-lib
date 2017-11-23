@@ -12,7 +12,7 @@ module.exports = {
   },
   preparePayment: {
     normal: require('./prepare-payment'),
-    minAmountXRP: require('./prepare-payment-min-xrp'),
+    minAmountXRP: require('./prepare-payment-min-zxc'),
     minAmount: require('./prepare-payment-min'),
     wrongAddress: require('./prepare-payment-wrong-address'),
     wrongAmount: require('./prepare-payment-wrong-amount'),
@@ -77,7 +77,7 @@ module.exports = {
   },
   getOrderbook: {
     normal: require('./get-orderbook'),
-    withXRP: require('./get-orderbook-with-xrp')
+    withXRP: require('./get-orderbook-with-zxc')
   },
   computeLedgerHash: {
     header: require('./compute-ledger-hash'),

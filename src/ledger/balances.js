@@ -29,7 +29,7 @@ function formatBalances(options, balances) {
   )) {
     const xrpBalance = {
       currency: 'ZXC',
-      value: balances.xrp
+      value: balances.zxc
     }
     result.unshift(xrpBalance)
   }
@@ -58,7 +58,7 @@ function getBalances(address: string, options: TrustlinesOptions = {}
         utils.getXRPBalance(this.connection, address, ledgerVersion)),
     this.getTrustlines(address, options)
   ]).then(results =>
-    formatBalances(options, {xrp: results[0], trustlines: results[1]}))
+    formatBalances(options, {zxc: results[0], trustlines: results[1]}))
 }
 
 module.exports = getBalances

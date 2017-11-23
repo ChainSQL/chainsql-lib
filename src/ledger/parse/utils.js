@@ -1,7 +1,7 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
-const transactionParser = require('ripple-lib-transactionparser')
+const transactionParser = require('chainsql-lib-transactionparser')
 const utils = require('../utils')
 const BigNumber = require('bignumber.js')
 const parseAmount = require('./amount')
@@ -12,9 +12,9 @@ function adjustQualityForXRP(
   quality: string, takerGetsCurrency: string, takerPaysCurrency: string
 ) {
   // quality = takerPays.value/takerGets.value
-  // using drops (1e-6 XRP) for XRP values
-  const numeratorShift = (takerPaysCurrency === 'XRP' ? -6 : 0)
-  const denominatorShift = (takerGetsCurrency === 'XRP' ? -6 : 0)
+  // using drops (1e-6 ZXC) for ZXC values
+  const numeratorShift = (takerPaysCurrency === 'ZXC' ? -6 : 0)
+  const denominatorShift = (takerGetsCurrency === 'ZXC' ? -6 : 0)
   const shift = numeratorShift - denominatorShift
   return shift === 0 ? quality :
     (new BigNumber(quality)).shift(shift).toString()

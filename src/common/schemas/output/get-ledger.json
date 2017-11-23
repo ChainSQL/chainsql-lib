@@ -41,7 +41,7 @@
     },
     "totalDrops": {
       "$ref": "value",
-      "description": "Total number of drops (1/1,000,000th of an XRP) in the network, as a quoted integer. (This decreases as transaction fees cause XRP to be destroyed.)"
+      "description": "Total number of drops (1/1,000,000th of an ZXC) in the network, as a quoted integer. (This decreases as transaction fees cause ZXC to be destroyed.)"
     },
     "transactionHash": {
       "$ref": "hash256",

@@ -24,7 +24,7 @@ export type LaxLaxAmount = {
   counterparty?: string
 }
 
-// A currency-counterparty pair, or just currency if it's XRP
+// A currency-counterparty pair, or just currency if it's ZXC
 export type Issue = {
   currency: string,
   counterparty?: string

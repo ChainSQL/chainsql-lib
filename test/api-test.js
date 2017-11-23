@@ -62,7 +62,7 @@ describe('RippleAPI', function() {
         _.partial(checkResult, responses.preparePayment.normal, 'prepare'));
     });
 
-    it('preparePayment - min amount xrp', function() {
+    it('preparePayment - min amount zxc', function() {
       const localInstructions = _.defaults({
         maxFee: '0.000012'
       }, instructions);
@@ -79,10 +79,10 @@ describe('RippleAPI', function() {
           responses.preparePayment.minAmountXRPXRP, 'prepare'));
     });
 
-    it('preparePayment - XRP to XRP no partial', function() {
+    it('preparePayment - ZXC to ZXC no partial', function() {
       assert.throws(() => {
         this.api.preparePayment(address, requests.preparePayment.wrongPartial);
-      }, /XRP to XRP payments cannot be partial payments/);
+      }, /ZXC to ZXC payments cannot be partial payments/);
     });
 
     it('preparePayment - address must match payment.source.address', function(
@@ -1067,7 +1067,7 @@ describe('RippleAPI', function() {
       }, this.api.errors.ValidationError);
     });
 
-    it('with XRP', function() {
+    it('with ZXC', function() {
       return this.api.getOrderbook(address, requests.getOrderbook.withXRP).then(
         _.partial(checkResult, responses.getOrderbook.withXRP, 'getOrderbook'));
     });
@@ -1222,15 +1222,15 @@ describe('RippleAPI', function() {
   });
 
   // @TODO
-  // need decide what to do with currencies/XRP:
-  // if add 'XRP' in currencies, then there will be exception in
+  // need decide what to do with currencies/ZXC:
+  // if add 'ZXC' in currencies, then there will be exception in
   // xrpToDrops function (called from toRippledAmount)
   it('getPaths USD 2 USD', function() {
     return this.api.getPaths(requests.getPaths.UsdToUsd).then(
       _.partial(checkResult, responses.getPaths.UsdToUsd, 'getPaths'));
   });
 
-  it('getPaths XRP 2 XRP', function() {
+  it('getPaths ZXC 2 ZXC', function() {
     return this.api.getPaths(requests.getPaths.XrpToXrp).then(
       _.partial(checkResult, responses.getPaths.XrpToXrp, 'getPaths'));
   });
@@ -1243,7 +1243,7 @@ describe('RippleAPI', function() {
     });
   });
 
-  it('getPaths - XRP 2 XRP - not enough', function() {
+  it('getPaths - ZXC 2 ZXC - not enough', function() {
     return this.api.getPaths(requests.getPaths.XrpToXrpNotEnough).then(() => {
       assert(false, 'Should throw NotFoundError');
     }).catch(error => {

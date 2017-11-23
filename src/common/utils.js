@@ -19,8 +19,8 @@ function dropsToXrp(drops: string): string {
   return (new BigNumber(drops)).dividedBy(1000000.0).toString()
 }
 
-function xrpToDrops(xrp: string): string {
-  return (new BigNumber(xrp)).times(1000000.0).floor().toString()
+function xrpToDrops(zxc: string): string {
+  return (new BigNumber(zxc)).times(1000000.0).floor().toString()
 }
 
 function toRippledAmount(amount: Amount): RippledAmount {

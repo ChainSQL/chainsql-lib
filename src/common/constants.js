@@ -5,7 +5,7 @@ const accountRootFlags = {
   PasswordSpent: 0x00010000, // password set fee is spent
   RequireDestTag: 0x00020000, // require a DestinationTag for payments
   RequireAuth: 0x00040000, // require a authorization to hold IOUs
-  DisallowXRP: 0x00080000, // disallow sending XRP
+  DisallowXRP: 0x00080000, // disallow sending ZXC
   DisableMaster: 0x00100000,  // force regular key
   NoFreeze: 0x00200000, // permanently disallowed freezing trustlines
   GlobalFreeze: 0x00400000, // trustlines globally frozen

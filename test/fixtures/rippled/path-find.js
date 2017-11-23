@@ -39,7 +39,7 @@ function(request_id, sendingAccount, destinationAccount, destinationAmount) {
                 'type_hex': '0000000000000001'
               },
               {
-                'currency': 'XRP',
+                'currency': 'ZXC',
                 'type': 16,
                 'type_hex': '0000000000000010'
               },
@@ -62,7 +62,7 @@ function(request_id, sendingAccount, destinationAccount, destinationAmount) {
                 'type_hex': '0000000000000001'
               },
               {
-                'currency': 'XRP',
+                'currency': 'ZXC',
                 'type': 16,
                 'type_hex': '0000000000000010'
               },
@@ -90,7 +90,7 @@ function(request_id, sendingAccount, destinationAccount, destinationAmount) {
                 'type_hex': '0000000000000001'
               },
               {
-                'currency': 'XRP',
+                'currency': 'ZXC',
                 'type': 16,
                 'type_hex': '0000000000000010'
               },
@@ -153,7 +153,7 @@ function(request_id, sendingAccount, destinationAccount, destinationAmount) {
                 'type_hex': '0000000000000001'
               },
               {
-                'currency': 'XRP',
+                'currency': 'ZXC',
                 'type': 16,
                 'type_hex': '0000000000000010'
               },
@@ -176,7 +176,7 @@ function(request_id, sendingAccount, destinationAccount, destinationAmount) {
                 'type_hex': '0000000000000001'
               },
               {
-                'currency': 'XRP',
+                'currency': 'ZXC',
                 'type': 16,
                 'type_hex': '0000000000000010'
               },
@@ -298,7 +298,7 @@ function(request_id, sendingAccount, destinationAccount, destinationAmount) {
         'EUR',
         '015841551A748AD2C1F76FF6ECB0CCCD00000000',
         'MXN',
-        'XRP'
+        'ZXC'
       ]
     }
   });
@@ -323,7 +323,7 @@ function(request_id, sendingAccount, destinationAccount) {
                 'type_hex': '0000000000000001'
               },
               {
-                'currency': 'XRP',
+                'currency': 'ZXC',
                 'type': 16,
                 'type_hex': '0000000000000010'
               }
@@ -345,7 +345,7 @@ function(request_id, sendingAccount, destinationAccount) {
                 'type_hex': '0000000000000001'
               },
               {
-                'currency': 'XRP',
+                'currency': 'ZXC',
                 'type': 16,
                 'type_hex': '0000000000000010'
               }
@@ -357,7 +357,7 @@ function(request_id, sendingAccount, destinationAccount) {
                 'type_hex': '0000000000000001'
               },
               {
-                'currency': 'XRP',
+                'currency': 'ZXC',
                 'type': 16,
                 'type_hex': '0000000000000010'
               }
@@ -374,7 +374,7 @@ function(request_id, sendingAccount, destinationAccount) {
                 'type_hex': '0000000000000001'
               },
               {
-                'currency': 'XRP',
+                'currency': 'ZXC',
                 'type': 16,
                 'type_hex': '0000000000000010'
               }
@@ -391,7 +391,7 @@ function(request_id, sendingAccount, destinationAccount) {
                 'type_hex': '0000000000000001'
               },
               {
-                'currency': 'XRP',
+                'currency': 'ZXC',
                 'type': 16,
                 'type_hex': '0000000000000010'
               }
@@ -407,7 +407,7 @@ function(request_id, sendingAccount, destinationAccount) {
       'destination_account': destinationAccount,
       'destination_currencies': [
         'USD',
-        'XRP'
+        'ZXC'
       ]
     }
   });

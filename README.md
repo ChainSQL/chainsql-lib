@@ -1,6 +1,6 @@
 # ripple-lib
 
-A JavaScript API for interacting with the XRP Ledger
+A JavaScript API for interacting with the ZXC Ledger
 
 [![Circle CI](https://circleci.com/gh/ripple/ripple-lib/tree/develop.svg?style=svg)](https://circleci.com/gh/ripple/ripple-lib/tree/develop) [![Coverage Status](https://coveralls.io/repos/ripple/ripple-lib/badge.png?branch=develop)](https://coveralls.io/r/ripple/ripple-lib?branch=develop)
 
@@ -10,8 +10,8 @@ A JavaScript API for interacting with the XRP Ledger
 
 + Connect to a `rippled` server from Node.js or a web browser
 + Issue [rippled API](https://ripple.com/build/rippled-apis/) requests
-+ Listen to events on the XRP Ledger (transaction, ledger, etc.)
-+ Sign and submit transactions to the XRP Ledger
++ Listen to events on the ZXC Ledger (transaction, ledger, etc.)
++ Sign and submit transactions to the ZXC Ledger
 
 ## Getting Started
 
