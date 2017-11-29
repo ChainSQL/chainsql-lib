@@ -13,7 +13,7 @@
     "balanceChanges": {
       "r9UHu5CWni1qRY7Q4CfFZLGvXo2pGQy96b": [
         {
-          "currency": "XRP",
+          "currency": "ZXC",
           "value": "-0.012"
         }
       ]
@@ -28,7 +28,7 @@
             "value": "237"
           },
           "totalPrice": {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "0.0002"
           },
           "makerExchangeRate": "1185000",

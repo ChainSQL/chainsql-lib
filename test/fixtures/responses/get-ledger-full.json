@@ -19,14 +19,14 @@
         "source": {
           "address": "r3kmLJN5D28dHuH8vZNUZpMC43pEHpaocV",
           "maxAmount": {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "10000"
           }
         },
         "destination": {
           "address": "rLQBHVhFnaC5gLEkgr6HgBJJ3bgeZHg9cj",
           "amount": {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "10000"
           }
         }
@@ -34,16 +34,20 @@
       "outcome": {
         "result": "tesSUCCESS",
         "fee": "0.00001",
+        "deliveredAmount": {
+          "currency": "ZXC",
+          "value": "10000"
+        },
         "balanceChanges": {
           "rLQBHVhFnaC5gLEkgr6HgBJJ3bgeZHg9cj": [
             {
-              "currency": "XRP",
+              "currency": "ZXC",
               "value": "10000"
             }
           ],
           "r3kmLJN5D28dHuH8vZNUZpMC43pEHpaocV": [
             {
-              "currency": "XRP",
+              "currency": "ZXC",
               "value": "-10000.00001"
             }
           ]

@@ -14,7 +14,7 @@
       "source": {
         "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
         "maxAmount": {
-          "currency": "XRP",
+          "currency": "ZXC",
           "value": "1.112209"
         }
       },
@@ -30,6 +30,11 @@
     "outcome": {
       "result": "tesSUCCESS",
       "fee": "0.00001",
+      "deliveredAmount": {
+        "currency": "USD",
+        "value": "0.001",
+        "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
+      },
       "balanceChanges": {
         "rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo": [
           {
@@ -52,13 +57,13 @@
         ],
         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59": [
           {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "-1.101208"
           }
         ],
         "r9tGqzZgKxVFvzKFdUqXAqTzazWBUia8Qr": [
           {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "1.101198"
           },
           {
@@ -73,7 +78,7 @@
           {
             "direction": "buy",
             "quantity": {
-              "currency": "XRP",
+              "currency": "ZXC",
               "value": "1.101198"
             },
             "totalPrice": {
@@ -106,7 +111,7 @@
       "source": {
         "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
         "maxAmount": {
-          "currency": "XRP",
+          "currency": "ZXC",
           "value": "1.112209"
         }
       },
@@ -122,6 +127,11 @@
     "outcome": {
       "result": "tesSUCCESS",
       "fee": "0.00001",
+      "deliveredAmount": {
+        "currency": "USD",
+        "value": "0.001",
+        "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
+      },
       "balanceChanges": {
         "rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo": [
           {
@@ -144,13 +154,13 @@
         ],
         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59": [
           {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "-1.101208"
           }
         ],
         "r9tGqzZgKxVFvzKFdUqXAqTzazWBUia8Qr": [
           {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "1.101198"
           },
           {
@@ -165,7 +175,7 @@
           {
             "direction": "buy",
             "quantity": {
-              "currency": "XRP",
+              "currency": "ZXC",
               "value": "1.101198"
             },
             "totalPrice": {

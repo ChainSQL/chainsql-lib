@@ -9,7 +9,7 @@
     },
     "xrpBalance": {
       "$ref": "value",
-      "description": "The XRP balance owned by the account."
+      "description": "The ZXC balance owned by the account."
     },
     "ownerCount": {
       "type": "integer",
@@ -31,7 +31,7 @@
   },
   "required": [
     "sequence",
-    "xrpBalance",
+    "zxcBalance",
     "ownerCount",
     "previousAffectingTransactionID",
     "previousAffectingTransactionLedgerVersion"

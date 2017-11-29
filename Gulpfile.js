@@ -8,24 +8,49 @@ var rename = require('gulp-rename');
 var webpack = require('webpack');
 var bump = require('gulp-bump');
 var argv = require('yargs').argv;
+var assert = require('assert');
+var fs = require('fs');
 
 var pkg = require('./package.json');
+
+var uglifyOptions = {
+  mangle: {
+    except: ['_', 'RippleError', 'RippledError', 'UnexpectedError',
+    'LedgerVersionError', 'ConnectionError', 'NotConnectedError',
+    'DisconnectedError', 'TimeoutError', 'ResponseFormatError',
+    'ValidationError', 'NotFoundError', 'MissingLedgerHistoryError',
+    'PendingLedgerVersionError'
+    ]
+  }
+};
 
 function webpackConfig(extension, overrides) {
   overrides = overrides || {};
   var defaults = {
     cache: true,
+    externals: [{
+      'lodash': '_'
+    }],
     entry: './src/index.js',
     output: {
       library: 'ripple',
       path: './build/',
       filename: ['ripple-', extension].join(pkg.version)
     },
+    plugins: [
+      new webpack.NormalModuleReplacementPlugin(/^ws$/, './wswrapper'),
+      new webpack.NormalModuleReplacementPlugin(/^\.\/wallet$/, './wallet-web'),
+      new webpack.NormalModuleReplacementPlugin(/^.*setup-api$/,
+        './setup-api-web')
+    ],
     module: {
       loaders: [{
+        test: /jayson/,
+        loader: 'null'
+      }, {
         test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader?optional=runtime'
+        exclude: [/node_modules/],
+        loader: 'babel-loader'
       }, {
         test: /\.json/,
         loader: 'json-loader'
@@ -35,15 +60,70 @@ function webpackConfig(extension, overrides) {
   return _.assign({}, defaults, overrides);
 }
 
+function webpackConfigForWebTest(testFileName, path) {
+  var match = testFileName.match(/\/?([^\/]*)-test.js$/);
+  if (!match) {
+    assert(false, 'wrong filename:' + testFileName);
+  }
+  var configOverrides = {
+    externals: [{
+      'lodash': '_',
+      'ripple-api': 'ripple',
+      'net': 'null'
+    }],
+    entry: testFileName,
+    output: {
+      library: match[1].replace(/-/g, '_'),
+      path: './test-compiled-for-web/' + (path ? path : ''),
+      filename: match[1] + '-test.js'
+    }
+  };
+  return webpackConfig('.js', configOverrides);
+}
+
+gulp.task('build-tests', function(callback) {
+  var times = 0;
+  function done() {
+    if (++times >= 5) {
+      callback();
+    }
+  }
+  webpack(webpackConfigForWebTest('./test/rangeset-test.js'), done);
+  webpack(webpackConfigForWebTest('./test/connection-test.js'), done);
+  webpack(webpackConfigForWebTest('./test/api-test.js'), done);
+  webpack(webpackConfigForWebTest('./test/broadcast-api-test.js'), done);
+  webpack(webpackConfigForWebTest('./test/integration/integration-test.js',
+    'integration/'), done);
+});
+
+function createLink(from, to) {
+  if (fs.existsSync(to)) {
+    fs.unlinkSync(to);
+  }
+  fs.linkSync(from, to);
+}
+
+function createBuildLink(callback) {
+  return function(err, res) {
+    createLink('./build/ripple-' + pkg.version + '.js',
+      './build/ripple-latest.js');
+    callback(err, res);
+  };
+}
+
 gulp.task('build', function(callback) {
-  webpack(webpackConfig('.js'), callback);
+  webpack(webpackConfig('.js'), createBuildLink(callback));
 });
 
 gulp.task('build-min', ['build'], function() {
   return gulp.src(['./build/ripple-', '.js'].join(pkg.version))
-  .pipe(uglify())
+  .pipe(uglify(uglifyOptions))
   .pipe(rename(['ripple-', '-min.js'].join(pkg.version)))
-  .pipe(gulp.dest('./build/'));
+  .pipe(gulp.dest('./build/'))
+  .on('end', function() {
+    createLink('./build/ripple-' + pkg.version + '-min.js',
+      './build/ripple-latest-min.js');
+  });
 });
 
 gulp.task('build-debug', function(callback) {

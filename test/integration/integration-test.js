@@ -6,13 +6,14 @@ const assert = require('assert');
 const errors = require('../../src/common/errors');
 const wallet = require('./wallet');
 const requests = require('../fixtures/requests');
-const RippleAPI = require('../../src').RippleAPI;
+const RippleAPI = require('ripple-api').RippleAPI;
 const {isValidAddress} = require('ripple-address-codec');
 const {isValidSecret} = require('../../src/common');
 const {payTo, ledgerAccept} = require('./utils');
 
 
-const TIMEOUT = 10000;   // how long before each test case times out
+// how long before each test case times out
+const TIMEOUT = process.browser ? 25000 : 10000;
 const INTERVAL = 1000;   // how long to wait between checks for validated ledger
 
 const serverUrl = 'ws://127.0.0.1:6006';
@@ -75,6 +76,9 @@ function setup(server = 'wss://s1.ripple.com') {
   console.log('CONNECTING...');
   return this.api.connect().then(() => {
     console.log('CONNECTED...');
+  }, error => {
+    console.log('ERROR:', error);
+    throw error;
   });
 }
 
@@ -137,7 +141,7 @@ function setupAccounts(testcase) {
           counterparty: masterAccount
         },
         totalPrice: {
-          currency: 'XRP',
+          currency: 'ZXC',
           value: '432'
         }
       };
@@ -148,7 +152,7 @@ function setupAccounts(testcase) {
       const orderSpecification = {
         direction: 'buy',
         quantity: {
-          currency: 'XRP',
+          currency: 'ZXC',
           value: '1741'
         },
         totalPrice: {
@@ -213,7 +217,7 @@ describe('integration tests', function() {
 
 
   it('payment', function() {
-    const amount = {currency: 'XRP', value: '0.000001'};
+    const amount = {currency: 'ZXC', value: '0.000001'};
     const paymentSpecification = {
       source: {
         address: address,
@@ -241,7 +245,7 @@ describe('integration tests', function() {
         counterparty: 'rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q'
       },
       totalPrice: {
-        currency: 'XRP',
+        currency: 'ZXC',
         value: '0.0002'
       }
     };
@@ -347,7 +351,7 @@ describe('integration tests', function() {
   it('getOrderbook', function() {
     const orderbook = {
       base: {
-        currency: 'XRP'
+        currency: 'ZXC'
       },
       counter: {
         currency: 'USD',
@@ -361,13 +365,13 @@ describe('integration tests', function() {
       assert(bid && bid.specification && bid.specification.quantity);
       assert(bid.specification.totalPrice);
       assert.strictEqual(bid.specification.direction, 'buy');
-      assert.strictEqual(bid.specification.quantity.currency, 'XRP');
+      assert.strictEqual(bid.specification.quantity.currency, 'ZXC');
       assert.strictEqual(bid.specification.totalPrice.currency, 'USD');
       const ask = book.asks[0];
       assert(ask && ask.specification && ask.specification.quantity);
       assert(ask.specification.totalPrice);
       assert.strictEqual(ask.specification.direction, 'sell');
-      assert.strictEqual(ask.specification.quantity.currency, 'XRP');
+      assert.strictEqual(ask.specification.quantity.currency, 'ZXC');
       assert.strictEqual(ask.specification.totalPrice.currency, 'USD');
     });
   });

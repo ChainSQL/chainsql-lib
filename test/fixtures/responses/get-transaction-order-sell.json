@@ -11,7 +11,7 @@
       "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
     },
     "totalPrice": {
-      "currency": "XRP",
+      "currency": "ZXC",
       "value": "254391353"
     }
   },
@@ -22,7 +22,7 @@
     "balanceChanges": {
       "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh": [
         {
-          "currency": "XRP",
+          "currency": "ZXC",
           "value": "-0.000012"
         }
       ]

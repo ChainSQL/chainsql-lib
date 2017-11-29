@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; // eslint-disable-line
 const _ = require('lodash');
 const assert = require('assert');
 const WebSocketServer = require('ws').Server;
@@ -9,6 +9,7 @@ const hashes = require('./fixtures/hashes');
 const transactionsResponse = require('./fixtures/rippled/account-tx');
 const accountLinesResponse = require('./fixtures/rippled/account-lines');
 const fullLedger = require('./fixtures/rippled/ledger-full-38129.json');
+const {getFreePort} = require('./utils/net-utils');
 
 function isUSD(json) {
   return json === 'USD' || json === '0000000000000000000000005553440000000000';
@@ -46,7 +47,7 @@ function createLedgerResponse(request, response) {
   return JSON.stringify(newResponse);
 }
 
-module.exports = function(port) {
+module.exports = function createMockRippled(port) {
   const mock = new WebSocketServer({port: port});
   _.assign(mock, EventEmitter2.prototype);
 
@@ -71,12 +72,20 @@ module.exports = function(port) {
   };
 
   mock.on('connection', function(conn) {
+    if (mock.config.breakNextConnection) {
+      mock.config.breakNextConnection = false;
+      conn.terminate();
+      return;
+    }
     this.socket = conn;
+    conn.config = {};
     conn.on('message', function(requestJSON) {
       const request = JSON.parse(requestJSON);
       mock.emit('request_' + request.command, request, conn);
     });
   });
+
+  mock.config = {};
 
   mock.onAny(function() {
     if (this.event.indexOf('request_') !== 0) {
@@ -95,10 +104,55 @@ module.exports = function(port) {
     mock.expectedRequests[this.event] -= 1;
   });
 
+  mock.on('request_config', function(request, conn) {
+    assert.strictEqual(request.command, 'config');
+    conn.config = _.assign(conn.config, request.data);
+  });
+
+  mock.on('request_test_command', function(request, conn) {
+    assert.strictEqual(request.command, 'test_command');
+    if (request.data.disconnectIn) {
+      setTimeout(conn.terminate.bind(conn), request.data.disconnectIn);
+    } else if (request.data.openOnOtherPort) {
+      getFreePort().then(newPort => {
+        createMockRippled(newPort);
+        conn.send(createResponse(request, {status: 'success', type: 'response',
+          result: {port: newPort}}
+        ));
+      });
+    } else if (request.data.closeServerAndReopen) {
+      setTimeout(() => {
+        conn.terminate();
+        close.call(mock, () => {
+          setTimeout(() => {
+            createMockRippled(port);
+          }, request.data.closeServerAndReopen);
+        });
+      }, 10);
+    }
+  });
+
+  mock.on('request_global_config', function(request, conn) {
+    assert.strictEqual(request.command, 'global_config');
+    mock.config = _.assign(conn.config, request.data);
+  });
+
+  mock.on('request_echo', function(request, conn) {
+    assert.strictEqual(request.command, 'echo');
+    conn.send(JSON.stringify(request.data));
+  });
+
   mock.on('request_server_info', function(request, conn) {
     assert.strictEqual(request.command, 'server_info');
-    if (mock.returnErrorOnServerInfo) {
+    if (conn.config.returnErrorOnServerInfo) {
       conn.send(createResponse(request, fixtures.server_info.error));
+    } else if (conn.config.disconnectOnServerInfo) {
+      conn.close();
+    } else if (conn.config.serverInfoWithoutValidated) {
+      conn.send(createResponse(request, fixtures.server_info.noValidated));
+    } else if (mock.config.returnSyncingServerInfo) {
+      mock.config.returnSyncingServerInfo--;
+      conn.send(createResponse(request, fixtures.server_info.syncing));
     } else {
       conn.send(createResponse(request, fixtures.server_info.normal));
     }
@@ -106,7 +160,10 @@ module.exports = function(port) {
 
   mock.on('request_subscribe', function(request, conn) {
     assert.strictEqual(request.command, 'subscribe');
-    if (request.accounts) {
+    if (mock.config.returnEmptySubscribeRequest) {
+      mock.config.returnEmptySubscribeRequest--;
+      conn.send(createResponse(request, fixtures.empty));
+    } else if (request.accounts) {
       assert(_.indexOf(_.values(addresses), request.accounts[0]) !== -1);
     }
     conn.send(createResponse(request, fixtures.subscribe));
@@ -148,12 +205,34 @@ module.exports = function(port) {
         createLedgerResponse(request, fixtures.ledger.withoutCloseTime));
     } else if (request.ledger_index === 4181996) {
       conn.send(createLedgerResponse(request, fixtures.ledger.withSettingsTx));
+    } else if (request.ledger_index === 100000) {
+      conn.send(
+        createLedgerResponse(request, fixtures.ledger.withPartialPayment));
+    } else if (request.ledger_index === 100001) {
+      conn.send(
+        createLedgerResponse(request, fixtures.ledger.pre2014withPartial));
     } else if (request.ledger_index === 38129) {
       const response = _.assign({}, fixtures.ledger.normal,
         {result: {ledger: fullLedger}});
       conn.send(createLedgerResponse(request, response));
     } else {
       conn.send(createLedgerResponse(request, fixtures.ledger.normal));
+    }
+  });
+
+  mock.on('request_ledger_entry', function(request, conn) {
+    assert.strictEqual(request.command, 'ledger_entry');
+    if (request.index ===
+        'E30E709CF009A1F26E0E5C48F7AA1BFB79393764F15FB108BDC6E06D3CBD8415') {
+      conn.send(createResponse(request, fixtures.payment_channel.normal));
+    } else if (request.index ===
+        'D77CD4713AA08195E6B6D0E5BC023DA11B052EBFF0B5B22EDA8AE85345BCF661') {
+      conn.send(createResponse(request, fixtures.payment_channel.full));
+    } else if (request.index ===
+        '8EF9CCB9D85458C8D020B3452848BBB42EAFDDDB69A93DD9D1223741A4CA562B') {
+      conn.send(createResponse(request, fixtures.escrow));
+    } else {
+      conn.send(createResponse(request, fixtures.ledger_entry.error));
     }
   });
 
@@ -210,22 +289,26 @@ module.exports = function(port) {
       conn.send(createResponse(request, fixtures.tx.OfferWithExpiration));
     } else if (request.transaction ===
         '144F272380BDB4F1BD92329A2178BABB70C20F59042C495E10BF72EBFB408EE1') {
-      conn.send(createResponse(request, fixtures.tx.SuspendedPaymentCreation));
-    } else if (request.transaction ===
-        '144F272380BDB4F1BD92329A2178BABB70C20F59042C495E10BF72EBFB408EE2') {
-      conn.send(createResponse(request,
-        fixtures.tx.SuspendedPaymentCreationIOU));
+      conn.send(createResponse(request, fixtures.tx.EscrowCreation));
     } else if (request.transaction ===
         'F346E542FFB7A8398C30A87B952668DAB48B7D421094F8B71776DA19775A3B22') {
-      conn.send(createResponse(request,
-        fixtures.tx.SuspendedPaymentCancellation));
+      conn.send(createResponse(request, fixtures.tx.EscrowCancellation));
     } else if (request.transaction ===
         'CC5277137B3F25EE8B86259C83CB0EAADE818505E4E9BCBF19B1AC6FD136993B') {
-      conn.send(createResponse(request, fixtures.tx.SuspendedPaymentExecution));
+      conn.send(createResponse(request, fixtures.tx.EscrowExecution));
     } else if (request.transaction ===
         'CC5277137B3F25EE8B86259C83CB0EAADE818505E4E9BCBF19B1AC6FD1369931') {
       conn.send(createResponse(request,
-        fixtures.tx.SuspendedPaymentExecutionSimple));
+        fixtures.tx.EscrowExecutionSimple));
+    } else if (request.transaction ===
+        '0E9CA3AB1053FC0C1CBAA75F636FE1EC92F118C7056BBEF5D63E4C116458A16D') {
+      conn.send(createResponse(request, fixtures.tx.PaymentChannelCreate));
+    } else if (request.transaction ===
+        'CD053D8867007A6A4ACB7A432605FE476D088DCB515AFFC886CF2B4EB6D2AE8B') {
+      conn.send(createResponse(request, fixtures.tx.PaymentChannelFund));
+    } else if (request.transaction ===
+        '81B9ECAE7195EB6E8034AEDF44D8415A7A803E14513FDBB34FA984AB37D59563') {
+      conn.send(createResponse(request, fixtures.tx.PaymentChannelClaim));
     } else if (request.transaction ===
         'AFB3ADF22F3C605E23FAEFAA185F3BD763C4692CAC490D9819D117CD33BFAA11') {
       conn.send(createResponse(request, fixtures.tx.Unrecognized));
@@ -235,6 +318,12 @@ module.exports = function(port) {
     } else if (request.transaction ===
         '4FB3ADF22F3C605E23FAEFAA185F3BD763C4692CAC490D9819D117CD33BFAA13') {
       conn.send(createResponse(request, fixtures.tx.LedgerZero));
+    } else if (request.transaction ===
+        'A971B83ABED51D83749B73F3C1AAA627CD965AFF74BE8CD98299512D6FB0658F') {
+      conn.send(createResponse(request, fixtures.tx.Amendment));
+    } else if (request.transaction ===
+        'C6A40F56127436DCD830B1B35FF939FD05B5747D30D6542572B7A835239817AF') {
+      conn.send(createResponse(request, fixtures.tx.SetFee));
     } else {
       assert(false, 'Unrecognized transaction hash: ' + request.transaction);
     }
@@ -310,6 +399,8 @@ module.exports = function(port) {
     }
     if (request.source_account === addresses.NOTFOUND) {
       response = createResponse(request, fixtures.path_find.srcActNotFound);
+    } else if (request.source_account === addresses.SOURCE_LOW_FUNDS) {
+      response = createResponse(request, fixtures.path_find.sourceAmountLow);
     } else if (request.source_account === addresses.OTHER_ACCOUNT) {
       response = createResponse(request, fixtures.path_find.sendUSD);
     } else if (request.source_account === addresses.THIRD_ACCOUNT) {

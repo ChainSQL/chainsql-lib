@@ -6,10 +6,11 @@
     "value": "10.1"
   },
   "totalPrice": {
-    "currency": "XRP",
+    "currency": "ZXC",
     "value": "2"
   },
   "immediateOrCancel": true,
+  "orderToReplace": 12345,
   "memos": [
     {
       "type": "test",

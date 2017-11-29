@@ -1,4 +1,4 @@
-'use strict';
+'use strict'; // eslint-disable-line strict
 
 module.exports = {
   generateAddress: require('./generate-address.json'),
@@ -7,14 +7,18 @@ module.exports = {
   getBalanceSheet: require('./get-balance-sheet.json'),
   getOrderbook: {
     normal: require('./get-orderbook.json'),
-    withXRP: require('./get-orderbook-with-xrp.json')
+    withXRP: require('./get-orderbook-with-zxc.json')
   },
   getOrders: require('./get-orders.json'),
   getPaths: {
     XrpToUsd: require('./get-paths.json'),
     UsdToUsd: require('./get-paths-send-usd.json'),
-    XrpToXrp: require('./get-paths-xrp-to-xrp.json'),
+    XrpToXrp: require('./get-paths-zxc-to-zxc.json'),
     sendAll: require('./get-paths-send-all.json')
+  },
+  getPaymentChannel: {
+    normal: require('./get-payment-channel.json'),
+    full: require('./get-payment-channel-full.json')
   },
   getServerInfo: require('./get-server-info.json'),
   getSettings: require('./get-settings.json'),
@@ -34,16 +38,22 @@ module.exports = {
     trustlineFrozenOff: require('./get-transaction-trust-set-frozen-off.json'),
     trustlineNoQuality: require('./get-transaction-trust-no-quality.json'),
     notValidated: require('./get-transaction-not-validated.json'),
-    suspendedPaymentCreation:
-      require('./get-transaction-suspended-payment-create.json'),
-    SuspendedPaymentCreationIOU:
-      require('./get-transaction-suspended-payment-create-iou.json'),
-    suspendedPaymentCancellation:
-      require('./get-transaction-suspended-payment-cancellation.json'),
-    suspendedPaymentExecution:
-      require('./get-transaction-suspended-payment-execution.json'),
-    suspendedPaymentExecutionSimple:
-      require('./get-transaction-suspended-payment-execution-simple.json')
+    escrowCreation:
+      require('./get-transaction-escrow-create.json'),
+    escrowCancellation:
+      require('./get-transaction-escrow-cancellation.json'),
+    escrowExecution:
+      require('./get-transaction-escrow-execution.json'),
+    escrowExecutionSimple:
+      require('./get-transaction-escrow-execution-simple.json'),
+    paymentChannelCreate:
+      require('./get-transaction-payment-channel-create.json'),
+    paymentChannelFund:
+      require('./get-transaction-payment-channel-fund.json'),
+    paymentChannelClaim:
+      require('./get-transaction-payment-channel-claim.json'),
+    amendment: require('./get-transaction-amendment.json'),
+    feeUpdate: require('./get-transaction-fee-update.json')
   },
   getTransactions: {
     normal: require('./get-transactions.json'),
@@ -57,7 +67,9 @@ module.exports = {
     header: require('./get-ledger'),
     full: require('./get-ledger-full'),
     withSettingsTx: require('./get-ledger-with-settings-tx'),
-    withStateAsHashes: require('./get-ledger-with-state-as-hashes')
+    withStateAsHashes: require('./get-ledger-with-state-as-hashes'),
+    withPartial: require('./get-ledger-with-partial-payment'),
+    pre2014withPartial: require('./get-ledger-pre2014-with-partial')
   },
   prepareOrder: {
     buy: require('./prepare-order.json'),
@@ -71,8 +83,8 @@ module.exports = {
   },
   preparePayment: {
     normal: require('./prepare-payment.json'),
-    minAmountXRP: require('./prepare-payment-min-amount-xrp.json'),
-    minAmountXRPXRP: require('./prepare-payment-min-amount-xrp-xrp.json'),
+    minAmountXRP: require('./prepare-payment-min-amount-zxc.json'),
+    minAmountXRPXRP: require('./prepare-payment-min-amount-zxc-zxc.json'),
     allOptions: require('./prepare-payment-all-options.json'),
     noCounterparty: require('./prepare-payment-no-counterparty.json'),
     minAmount: require('./prepare-payment-min-amount.json')
@@ -91,17 +103,30 @@ module.exports = {
     noMaxLedgerVersion: require('./prepare-settings-no-maxledgerversion.json'),
     signers: require('./prepare-settings-signers.json')
   },
-  prepareSuspendedPaymentCreation: {
-    normal: require('./prepare-suspended-payment-creation'),
-    full: require('./prepare-suspended-payment-creation-full')
+  prepareEscrowCreation: {
+    normal: require('./prepare-escrow-creation'),
+    full: require('./prepare-escrow-creation-full')
   },
-  prepareSuspendedPaymentExecution: {
-    normal: require('./prepare-suspended-payment-execution'),
-    simple: require('./prepare-suspended-payment-execution-simple')
+  prepareEscrowExecution: {
+    normal: require('./prepare-escrow-execution'),
+    simple: require('./prepare-escrow-execution-simple')
   },
-  prepareSuspendedPaymentCancellation: {
-    normal: require('./prepare-suspended-payment-cancellation'),
-    memos: require('./prepare-suspended-payment-cancellation-memos')
+  prepareEscrowCancellation: {
+    normal: require('./prepare-escrow-cancellation'),
+    memos: require('./prepare-escrow-cancellation-memos')
+  },
+  preparePaymentChannelCreate: {
+    normal: require('./prepare-payment-channel-create'),
+    full: require('./prepare-payment-channel-create-full')
+  },
+  preparePaymentChannelFund: {
+    normal: require('./prepare-payment-channel-fund'),
+    full: require('./prepare-payment-channel-fund-full')
+  },
+  preparePaymentChannelClaim: {
+    normal: require('./prepare-payment-channel-claim'),
+    renew: require('./prepare-payment-channel-claim-renew'),
+    close: require('./prepare-payment-channel-claim-close')
   },
   prepareTrustline: {
     simple: require('./prepare-trustline-simple.json'),
@@ -110,9 +135,10 @@ module.exports = {
   },
   sign: {
     normal: require('./sign.json'),
-    suspended: require('./sign-suspended.json'),
+    escrow: require('./sign-escrow.json'),
     signAs: require('./sign-as')
   },
+  signPaymentChannelClaim: require('./sign-payment-channel-claim'),
   combine: {
     single: require('./combine.json')
   },

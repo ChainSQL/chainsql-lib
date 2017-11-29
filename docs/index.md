@@ -6,7 +6,7 @@
   - [Boilerplate](#boilerplate)
   - [Offline functionality](#offline-functionality)
 - [Basic Types](#basic-types)
-  - [Ripple Address](#ripple-address)
+  - [Address](#address)
   - [Account Sequence Number](#account-sequence-number)
   - [Currency](#currency)
   - [Value](#value)
@@ -24,9 +24,12 @@
   - [Order](#order)
   - [Order Cancellation](#order-cancellation)
   - [Settings](#settings)
-  - [Suspended Payment Creation](#suspended-payment-creation)
-  - [Suspended Payment Cancellation](#suspended-payment-cancellation)
-  - [Suspended Payment Execution](#suspended-payment-execution)
+  - [Escrow Creation](#escrow-creation)
+  - [Escrow Cancellation](#escrow-cancellation)
+  - [Escrow Execution](#escrow-execution)
+  - [Payment Channel Create](#payment-channel-create)
+  - [Payment Channel Fund](#payment-channel-fund)
+  - [Payment Channel Claim](#payment-channel-claim)
 - [API Methods](#api-methods)
   - [connect](#connect)
   - [disconnect](#disconnect)
@@ -44,35 +47,43 @@
   - [getOrderbook](#getorderbook)
   - [getSettings](#getsettings)
   - [getAccountInfo](#getaccountinfo)
+  - [getPaymentChannel](#getpaymentchannel)
   - [getLedger](#getledger)
   - [preparePayment](#preparepayment)
   - [prepareTrustline](#preparetrustline)
   - [prepareOrder](#prepareorder)
   - [prepareOrderCancellation](#prepareordercancellation)
   - [prepareSettings](#preparesettings)
-  - [prepareSuspendedPaymentCreation](#preparesuspendedpaymentcreation)
-  - [prepareSuspendedPaymentCancellation](#preparesuspendedpaymentcancellation)
-  - [prepareSuspendedPaymentExecution](#preparesuspendedpaymentexecution)
+  - [prepareEscrowCreation](#prepareescrowcreation)
+  - [prepareEscrowCancellation](#prepareescrowcancellation)
+  - [prepareEscrowExecution](#prepareescrowexecution)
+  - [preparePaymentChannelCreate](#preparepaymentchannelcreate)
+  - [preparePaymentChannelClaim](#preparepaymentchannelclaim)
+  - [preparePaymentChannelFund](#preparepaymentchannelfund)
   - [sign](#sign)
   - [combine](#combine)
   - [submit](#submit)
   - [generateAddress](#generateaddress)
+  - [signPaymentChannelClaim](#signpaymentchannelclaim)
+  - [verifyPaymentChannelClaim](#verifypaymentchannelclaim)
   - [computeLedgerHash](#computeledgerhash)
 - [API Events](#api-events)
   - [ledger](#ledger)
   - [error](#error)
+  - [connected](#connected)
+  - [disconnected](#disconnected)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Introduction
 
-RippleAPI is the official client library to the Ripple Consensus Ledger. Currently, RippleAPI is only available in JavaScript. 
+RippleAPI is the official client library to the ZXC Ledger. Currently, RippleAPI is only available in JavaScript.
 Using RippleAPI, you can:
 
-* [Query transactions from the network](#gettransaction)
+* [Query transactions from the ZXC Ledger history](#gettransaction)
 * [Sign](#sign) transactions securely without connecting to any server
-* [Submit](#submit) transactions to the Ripple Consensus Ledger, including [Payments](#payment), [Orders](#order), [Settings changes](#settings), and [other types](#transaction-types)
-* [Generate a new Ripple Address](#generateaddress)
+* [Submit](#submit) transactions to the ZXC Ledger, including [Payments](#payment), [Orders](#order), [Settings changes](#settings), and [other types](#transaction-types)
+* [Generate a new ZXC Ledger Address](#generateaddress)
 * ... and [much more](#api-methods).
 
 RippleAPI only provides access to *validated*, *immutable* transaction data.
@@ -82,13 +93,21 @@ RippleAPI only provides access to *validated*, *immutable* transaction data.
 Use the following [boilerplate code](https://en.wikipedia.org/wiki/Boilerplate_code) to wrap your custom code using RippleAPI.
 
 ```javascript
-const {RippleAPI} = require('ripple-lib');
+const RippleAPI = require('ripple-lib').RippleAPI;
 
 const api = new RippleAPI({
   server: 'wss://s1.ripple.com' // Public rippled server hosted by Ripple, Inc.
 });
 api.on('error', (errorCode, errorMessage) => {
   console.log(errorCode + ': ' + errorMessage);
+});
+api.on('connected', () => {
+  console.log('connected');
+});
+api.on('disconnected', (code) => {
+  // code - [close code](https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent) sent by the server
+  // will be 1000 if this was normal closure
+  console.log('disconnected, code:', code);
 });
 api.connect().then(() => {
   /* insert code here */
@@ -97,9 +116,9 @@ api.connect().then(() => {
 }).catch(console.error);
 ```
 
-RippleAPI is designed to work in [NodeJS](https://nodejs.org) (version `0.12.0` or greater) using [Babel](https://babeljs.io/) for [ECMAScript 6](https://babeljs.io/docs/learn-es2015/) support.
+RippleAPI is designed to work in [Node.js](https://nodejs.org) version **6.11.3**. RippleAPI may work on older Node.js versions if you use [Babel](https://babeljs.io/) for [ECMAScript 6](https://babeljs.io/docs/learn-es2015/) support.
 
-The code samples in this documentation are written in ES6, but `RippleAPI` will work with ES5 also. Regardless of whether you use ES5 or ES6, the methods that return promises will return [ES6-style promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+The code samples in this documentation are written with ECMAScript 6 (ES6) features, but `RippleAPI` also works with ECMAScript 5 (ES5). Regardless of whether you use ES5 or ES6, the methods that return Promises return [ES6-style promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 <aside class="notice">
 All the code snippets in this documentation assume that you have surrounded them with this boilerplate.
@@ -136,19 +155,13 @@ If you omit the `server` parameter, RippleAPI operates [offline](#offline-functi
 
 ### Installation ###
 
-1. Install [NodeJS](https://nodejs.org) and the Node Package Manager (npm). Most Linux distros have a package for NodeJS, but make sure you have version `0.12.0` or higher.
-2. Use npm to install [Babel](https://babeljs.io/) globally:
-      `npm install -g babel`
-3. Use npm to install RippleAPI:
+1. Install [Node.js](https://nodejs.org) and the Node Package Manager (npm). Most Linux distros have a package for Node.js; check that it's the version you want.
+2. Use npm to install RippleAPI:
       `npm install ripple-lib`
 
-After you have installed ripple-lib, you can create scripts using the [boilerplate](#boilerplate) and run them using babel-node:
-      `babel-node script.js`
+After you have installed ripple-lib, you can create scripts using the [boilerplate](#boilerplate) and run them using the Node.js executable, typically named `node`:
 
-<aside class="notice">
-Instead of using babel-node in production, we recommend using Babel to transpile to ECMAScript 5 first.
-</aside>
-
+      `node script.js`
 
 ## Offline functionality
 
@@ -157,51 +170,50 @@ RippleAPI can also function without internet connectivity. This can be useful in
 To instantiate RippleAPI in offline mode, use the following boilerplate code:
 
 ```javascript
-const {RippleAPI} = require('ripple-lib');
+const RippleAPI = require('ripple-lib').RippleAPI;
 
 const api = new RippleAPI();
 /* insert code here */
 ```
 
-Methods that depend on the state of the Ripple Consensus Ledger are unavailable in offline mode. To prepare transactions offline, you **must** specify  the `fee`, `sequence`, and `maxLedgerVersion` parameters in the [transaction instructions](#transaction-instructions). The following methods should work offline:
+Methods that depend on the state of the ZXC Ledger are unavailable in offline mode. To prepare transactions offline, you **must** specify  the `fee`, `sequence`, and `maxLedgerVersion` parameters in the [transaction instructions](#transaction-instructions). You can use the following methods while offline:
 
 * [preparePayment](#preparepayment)
 * [prepareTrustline](#preparetrustline)
 * [prepareOrder](#prepareorder)
 * [prepareOrderCancellation](#prepareordercancellation)
 * [prepareSettings](#preparesettings)
-* [prepareSuspendedPaymentCreation](#preparesuspendedpaymentcreation)
-* [prepareSuspendedPaymentCancellation](#preparesuspendedpaymentcancellation)
-* [prepareSuspendedPaymentExecution](#preparesuspendedpaymentexecution)
+* [prepareEscrowCreation](#prepareescrowcreation)
+* [prepareEscrowCancellation](#prepareescrowcancellation)
+* [prepareEscrowExecution](#prepareescrowexecution)
 * [sign](#sign)
 * [generateAddress](#generateaddress)
 * [computeLedgerHash](#computeledgerhash)
 
-
 # Basic Types
 
-## Ripple Address
+## Address
 
 ```json
 "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59"
 ```
 
-Every Ripple account has an *address*, which is a base58-encoding of a hash of the account's public key. Ripple addresses always start with the lowercase letter `r`.
+Every ZXC Ledger account has an *address*, which is a base58-encoding of a hash of the account's public key. ZXC Ledger addresses always start with the lowercase letter `r`.
 
 ## Account Sequence Number
 
-Every Ripple account has a *sequence number* that is used to keep transactions in order. Every transaction must have a sequence number. A transaction can only be executed if it has the next sequence number in order, of the account sending it. This prevents one transaction from executing twice and transactions executing out of order. The sequence number starts at `1` and increments for each transaction that the account makes.
+Every ZXC Ledger account has a *sequence number* that is used to keep transactions in order. Every transaction must have a sequence number. A transaction can only be executed if it has the next sequence number in order, of the account sending it. This prevents one transaction from executing twice and transactions executing out of order. The sequence number starts at `1` and increments for each transaction that the account makes.
 
 ## Currency
 
-Currencies are represented as either 3-character currency codes or 40-character uppercase hexadecimal strings. We recommend using uppercase [ISO 4217 Currency Codes](http://www.xe.com/iso4217.php) only. The string "XRP" is disallowed on trustlines because it is reserved for the Ripple native currency. The following characters are permitted: all uppercase and lowercase letters, digits, as well as the symbols `?`, `!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `<`, `>`, `(`, `)`, `{`, `}`, `[`, `]`, and `|`.
+Currencies are represented as either 3-character currency codes or 40-character uppercase hexadecimal strings. We recommend using uppercase [ISO 4217 Currency Codes](http://www.xe.com/iso4217.php) only. The string "ZXC" is disallowed on trustlines because it is reserved for the ZXC Ledger's native currency. The following characters are permitted: all uppercase and lowercase letters, digits, as well as the symbols `?`, `!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `<`, `>`, `(`, `)`, `{`, `}`, `[`, `]`, and `|`.
 
 ## Value
-A *value* is a quantity of a currency represented as a decimal string. Be careful: JavaScript's native number format does not have sufficient precision to represent all values. XRP has different precision from other currencies.
+A *value* is a quantity of a currency represented as a decimal string. Be careful: JavaScript's native number format does not have sufficient precision to represent all values. ZXC has different precision from other currencies.
 
-**XRP** has 6 significant digits past the decimal point. In other words, XRP cannot be divided into positive values smaller than `0.000001` (1e-6). XRP has a maximum value of `100000000000` (1e11).
+**ZXC** has 6 significant digits past the decimal point. In other words, ZXC cannot be divided into positive values smaller than `0.000001` (1e-6). ZXC has a maximum value of `100000000000` (1e11).
 
-**Non-XRP values** have 15 decimal digits of precision, with a maximum value of `9999999999999999e80`. The smallest positive non-XRP value is `1e-81`.
+**Non-ZXC values** have 16 decimal digits of precision, with a maximum value of `9999999999999999e80`. The smallest positive non-ZXC value is `1e-81`.
 
 
 ## Amount
@@ -216,15 +228,15 @@ Example amount:
 }
 ```
 
-Example XRP amount:
+Example ZXC amount:
 ```json
 {
-  "currency": "XRP",
+  "currency": "ZXC",
   "value": "2000"
 }
 ```
 
-An *amount* is data structure representing a currency, a quantity of that currency, and the counterparty on the trustline that holds the value. For XRP, there is no counterparty.
+An *amount* is data structure representing a currency, a quantity of that currency, and the counterparty on the trustline that holds the value. For ZXC, there is no counterparty.
 
 A *lax amount* allows the counterparty to be omitted for all currencies. If the counterparty is not specified in an amount within a transaction specification, then any counterparty may be used for that amount.
 
@@ -235,7 +247,7 @@ A *balance* is an amount than can have a negative value.
 Name | Type | Description
 ---- | ---- | -----------
 currency | [currency](#currency) | The three-character code or hexadecimal string used to denote currencies
-counterparty | [address](#ripple-address) | *Optional* The Ripple address of the account that owes or is owed the funds (omitted if `currency` is "XRP")
+counterparty | [address](#address) | *Optional* The Ripple address of the account that owes or is owed the funds (omitted if `currency` is "ZXC")
 value | [value](#value) | *Optional* The quantity of the currency, denoted as a string to retain floating point precision
 
 # Transaction Overview
@@ -247,15 +259,13 @@ A transaction type is specified by the strings in the first column in the table 
 Type | Description
 ---- | -----------
 [payment](#payment) | A `payment` transaction represents a transfer of value from one account to another. Depending on the [path](https://ripple.com/build/paths/) taken, additional exchanges of value may occur atomically to facilitate the payment.
-[order](#order) | An `order` transaction creates a limit order. It defines an intent to exchange currencies, and creates an order in the Ripple Consensus Ledger's order book if not completely fulfilled when placed. Orders can be partially fulfilled.
-[orderCancellation](#order-cancellation) | An `orderCancellation` transaction cancels an order in the Ripple Consensus Ledger's order book.
+[order](#order) | An `order` transaction creates a limit order. It defines an intent to exchange currencies, and creates an order in the ZXC Ledger's order book if not completely fulfilled when placed. Orders can be partially fulfilled.
+[orderCancellation](#order-cancellation) | An `orderCancellation` transaction cancels an order in the ZXC Ledger's order book.
 [trustline](#trustline) | A `trustline` transactions creates or modifies a trust line between two accounts.
-[settings](#settings) | A `settings` transaction modifies the settings of an account in the Ripple Consensus Ledger.
-[suspendedPaymentCreation](#suspended-payment-creation) | A `suspendedPaymentCreation` transaction creates a suspended payment on the ledger, which locks XRP until a cryptographic condition is met or it expires. It is like an escrow service where the Ripple network acts as the escrow agent.
-[suspendedPaymentCancellation](#suspended-payment-cancellation) | A `suspendedPaymentCancellation` transaction unlocks the funds in a suspended payment and sends them back to the creator of the suspended payment, but it will only work after the suspended payment expires.
-[suspendedPaymentExecution](#suspended-payment-execution) | A `suspendedPaymentExecution` transaction unlocks the funds in a suspended payment and sends them to the destination of the suspended payment, but it will only work if the cryptographic condition is provided.
-
-The three "suspended payment" transaction types are not supported by the production Ripple peer-to-peer network at this time. They are available for testing purposes if you [configure RippleAPI](#boilerplate) to connect to the [Ripple Test Net](https://ripple.com/build/ripple-test-net/) instead.
+[settings](#settings) | A `settings` transaction modifies the settings of an account in the ZXC Ledger.
+[escrowCreation](#escrow-creation) | An `escrowCreation` transaction creates an escrow on the ledger, which locks ZXC until a cryptographic condition is met or it expires. It is like an escrow service where the ZXC Ledger acts as the escrow agent.
+[escrowCancellation](#escrow-cancellation) | An `escrowCancellation` transaction unlocks the funds in an escrow and sends them back to the creator of the escrow, but it will only work after the escrow expires.
+[escrowExecution](#escrow-execution) | An `escrowExecution` transaction unlocks the funds in an escrow and sends them to the destination of the escrow, but it will only work if the cryptographic condition is provided.
 
 ## Transaction Flow
 
@@ -267,16 +277,16 @@ Executing a transaction with `RippleAPI` requires the following four steps:
     * [prepareOrder](#prepareorder)
     * [prepareOrderCancellation](#prepareordercancellation)
     * [prepareSettings](#preparesettings)
-    * [prepareSuspendedPaymentCreation](#preparesuspendedpaymentcreation)
-    * [prepareSuspendedPaymentCancellation](#preparesuspendedpaymentcancellation)
-    * [prepareSuspendedPaymentExecution](#preparesuspendedpaymentexecution)
+    * [prepareEscrowCreation](#prepareescrowcreation)
+    * [prepareEscrowCancellation](#prepareescrowcancellation)
+    * [prepareEscrowExecution](#prepareescrowexecution)
 2. [Sign](#sign) - Cryptographically sign the transaction locally and save the [transaction ID](#transaction-id). Signing is how the owner of an account authorizes a transaction to take place. For multisignature transactions, the `signedTransaction` fields returned by `sign` must be collected and passed to the [combine](#combine) method.
 3. [Submit](#submit) - Submit the transaction to the connected server.
 4. Verify - Verify that the transaction got validated by querying with [getTransaction](#gettransaction). This is necessary because transactions may fail even if they were successfully submitted.
 
 ## Transaction Fees
 
-Every transaction must destroy a small amount of XRP as a cost to send the transaction. This is also called a *transaction fee*. The transaction cost is designed to increase along with the load on the Ripple network, making it very expensive to deliberately or inadvertently overload the network.
+Every transaction must destroy a small amount of ZXC as a cost to send the transaction. This is also called a *transaction fee*. The transaction cost is designed to increase along with the load on the ZXC Ledger, making it very expensive to deliberately or inadvertently overload the peer-to-peer network that powers the ZXC Ledger.
 
 You can choose the size of the fee you want to pay or let a default be used. You can get an estimate of the fee required to be included in the next ledger closing with the [getFee](#getfee) method.
 
@@ -293,7 +303,7 @@ maxLedgerVersionOffset | integer | *Optional* Offset from current validated legd
 sequence | [sequence](#account-sequence-number) | *Optional* The initiating account's sequence number for this transaction.
 signersCount | integer | *Optional* Number of signers that will be signing this transaction.
 
-We recommended that you specify a `maxLedgerVersion` so that you can quickly determine that a failed transaction will never succeeed in the future. It is impossible for a transaction to succeed after the network ledger version exceeds the transaction's `maxLedgerVersion`. If you omit `maxLedgerVersion`, the "prepare*" method automatically supplies a `maxLedgerVersion` equal to the current ledger plus 3, which it includes in the return value from the "prepare*" method.
+We recommended that you specify a `maxLedgerVersion` so that you can quickly determine that a failed transaction will never succeeed in the future. It is impossible for a transaction to succeed after the ZXC Ledger's consensus-validated ledger version exceeds the transaction's `maxLedgerVersion`. If you omit `maxLedgerVersion`, the "prepare*" method automatically supplies a `maxLedgerVersion` equal to the current ledger plus 3, which it includes in the return value from the "prepare*" method.
 
 ## Transaction ID
 
@@ -326,15 +336,15 @@ See [Transaction Types](#transaction-types) for a description.
 Name | Type | Description
 ---- | ---- | -----------
 source | object | The source of the funds to be sent.
-*source.* address | [address](#ripple-address) | The address to send from.
+*source.* address | [address](#address) | The address to send from.
 *source.* amount | [laxAmount](#amount) | An exact amount to send. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with source.maxAmount)
 *source.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Ripple account.
 *source.* maxAmount | [laxAmount](#amount) | The maximum amount to send. (This field is exclusive with source.amount)
 destination | object | The destination of the funds to be sent.
-*destination.* address | [address](#ripple-address) | The address to receive at.
+*destination.* address | [address](#address) | The address to receive at.
 *destination.* amount | [laxAmount](#amount) | An exact amount to deliver to the recipient. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with destination.minAmount).
 *destination.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Ripple account.
-*destination.* address | [address](#ripple-address) | The address to send to.
+*destination.* address | [address](#address) | The address to send to.
 *destination.* minAmount | [laxAmount](#amount) | The minimum amount to be delivered. (This field is exclusive with destination.amount)
 allowPartialPayment | boolean | *Optional* A boolean that, if set to true, indicates that this payment should go through even if the whole amount cannot be delivered because of a lack of liquidity or funds in the source account account
 invoiceID | string | *Optional* A 256-bit hash that can be used to identify a particular payment.
@@ -375,7 +385,7 @@ See [Transaction Types](#transaction-types) for a description.
 Name | Type | Description
 ---- | ---- | -----------
 currency | [currency](#currency) | The currency this trustline applies to.
-counterparty | [address](#ripple-address) | The address of the account this trustline extends trust to.
+counterparty | [address](#address) | The address of the account this trustline extends trust to.
 limit | [value](#value) | The maximum amount that the owner of the trustline can be owed through the trustline.
 authorized | boolean | *Optional* If true, authorize the counterparty to hold issuances from this account.
 frozen | boolean | *Optional* If true, the trustline is frozen, which means that funds can only be sent to the owner.
@@ -420,6 +430,7 @@ expirationTime | date-time string | *Optional* Time after which the offer is no 
 fillOrKill | boolean | *Optional* Treat the offer as a [Fill or Kill order](http://en.wikipedia.org/wiki/Fill_or_kill). Only attempt to match existing offers in the ledger, and only do so if the entire quantity can be exchanged.
 immediateOrCancel | boolean | *Optional* Treat the offer as an [Immediate or Cancel order](http://en.wikipedia.org/wiki/Immediate_or_cancel). If enabled, the offer will never become a ledger node: it only attempts to match existing offers in the ledger.
 memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the transaction.
+orderToReplace | [sequence](#account-sequence-number) | *Optional* The [account sequence number](#account-sequence-number) of an order to cancel before the new order is created, effectively replacing the old order.
 passive | boolean | *Optional* If enabled, the offer will not consume offers that exactly match it, and instead becomes an Offer node in the ledger. It will still consume offers that cross it.
 
 ### Example
@@ -434,7 +445,7 @@ passive | boolean | *Optional* If enabled, the offer will not consume offers tha
     "value": "10.1"
   },
   "totalPrice": {
-    "currency": "XRP",
+    "currency": "ZXC",
     "value": "2"
   },
   "passive": true,
@@ -470,7 +481,7 @@ Name | Type | Description
 ---- | ---- | -----------
 defaultRipple | boolean | *Optional* Enable [rippling](https://ripple.com/knowledge_center/understanding-the-noripple-flag/) on this account’s trust lines by default. (New in [rippled 0.27.3](https://github.com/ripple/rippled/releases/tag/0.27.3))
 disableMasterKey | boolean | *Optional* Disallows use of the master key to sign transactions for this account.
-disallowIncomingXRP | boolean | *Optional* Indicates that client applications should not send XRP to this account. Not enforced by rippled.
+disallowIncomingXRP | boolean | *Optional* Indicates that client applications should not send ZXC to this account. Not enforced by rippled.
 domain | string | *Optional*  The domain that owns this account, as a hexadecimal string representing the ASCII for the domain in lowercase.
 emailHash | string,null | *Optional* Hash of an email address to be used for generating an avatar image. Conventionally, clients use Gravatar to display this image. Use `null` to clear.
 enableTransactionIDTracking | boolean | *Optional* Track the ID of this account’s most recent transaction.
@@ -479,16 +490,16 @@ memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the
 messageKey | string | *Optional* Public key for sending encrypted messages to this account. Conventionally, it should be a secp256k1 key, the same encryption that is used by the rest of Ripple.
 noFreeze | boolean | *Optional* Permanently give up the ability to freeze individual trust lines. This flag can never be disabled after being enabled.
 passwordSpent | boolean | *Optional* Indicates that the account has used its free SetRegularKey transaction.
-regularKey | [address](#ripple-address),null | *Optional* The public key of a new keypair, to use as the regular key to this account, as a base-58-encoded string in the same format as an account address. Use `null` to remove the regular key.
+regularKey | [address](#address),null | *Optional* The public key of a new keypair, to use as the regular key to this account, as a base-58-encoded string in the same format as an account address. Use `null` to remove the regular key.
 requireAuthorization | boolean | *Optional* If set, this account must individually approve other users in order for those users to hold this account’s issuances.
 requireDestinationTag | boolean | *Optional* Requires incoming payments to specify a destination tag.
 signers | object | *Optional* Settings that determine what sets of accounts can be used to sign a transaction on behalf of this account using multisigning.
 *signers.* threshold | integer | *Optional* A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is equal or greater than this value. To delete the signers setting, use the value `0`.
 *signers.* weights | array | *Optional* Weights of signatures for each signer.
 *signers.* weights[] | object | An association of an address and a weight.
-*signers.weights[].* address | [address](#ripple-address) | A Ripple account address
+*signers.weights[].* address | [address](#address) | A Ripple account address
 *signers.weights[].* weight | integer | The weight that the signature of this account counts as towards the threshold.
-transferRate | number,null | *Optional*  The fee to charge when users transfer this account’s issuances, represented as billionths of a unit. Use `null` to set no fee.
+transferRate | number,null | *Optional*  The fee to charge when users transfer this account’s issuances, as the decimal amount that must be sent to deliver 1 unit. Has precision up to 9 digits beyond the decimal point. Use `null` to set no fee.
 
 ### Example
 
@@ -507,59 +518,41 @@ transferRate | number,null | *Optional*  The fee to charge when users transfer t
 ```
 
 
-## Suspended Payment Creation
+## Escrow Creation
 
 See [Transaction Types](#transaction-types) for a description.
 
 Name | Type | Description
 ---- | ---- | -----------
-source | object | Fields pertaining to the source of the payment.
-*source.* address | [address](#ripple-address) | The address to send from.
-*source.* maxAmount | [laxAmount](#amount) | The maximum amount to send. (This field is exclusive with source.amount)
-*source.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Ripple account.
-destination | object | Fields pertaining to the destination of the payment.
-*destination.* address | [address](#ripple-address) | The address to receive at.
-*destination.* amount | [laxAmount](#amount) | An exact amount to deliver to the recipient. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with destination.minAmount).
-*destination.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Ripple account.
-allowCancelAfter | date-time string | *Optional* If present, the suspended payment may be cancelled after this time.
-allowExecuteAfter | date-time string | *Optional* If present, the suspended payment can not be executed before this time.
-digest | string | *Optional* If present, proof is required upon execution.
+amount | [value](#value) | Amount of ZXC for sender to escrow.
+destination | [address](#address) | Address to receive escrowed ZXC.
+allowCancelAfter | date-time string | *Optional* If present, the escrow may be cancelled after this time.
+allowExecuteAfter | date-time string | *Optional* If present, the escrow can not be executed before this time.
+condition | string | *Optional* A hex value representing a [PREIMAGE-SHA-256 crypto-condition](https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1). If present, `fulfillment` is required upon execution.
+destinationTag | integer | *Optional* Destination tag.
 memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the transaction.
+sourceTag | integer | *Optional* Source tag.
 
 ### Example
 
 
 ```json
 {
-  "source": {
-    "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-    "maxAmount": {
-      "value": "0.01",
-      "currency": "USD",
-      "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
-    }
-  },
-  "destination": {
-    "address": "rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo",
-    "amount": {
-      "value": "0.01",
-      "currency": "USD",
-      "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
-    }
-  },
+  "destination": "rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo",
+  "amount": "0.01",
   "allowCancelAfter": "2014-09-24T21:21:50.000Z"
 }
 ```
 
 
-## Suspended Payment Cancellation
+## Escrow Cancellation
 
 See [Transaction Types](#transaction-types) for a description.
 
 Name | Type | Description
 ---- | ---- | -----------
-owner | [address](#ripple-address) | The address of the owner of the suspended payment to cancel.
-suspensionSequence | [sequence](#account-sequence-number) | The [account sequence number](#account-sequence-number) of the [Suspended Payment Creation](#suspended-payment-creation) transaction for the suspended payment to cancel.
+owner | [address](#address) | The address of the owner of the escrow to cancel.
+escrowSequence | [sequence](#account-sequence-number) | The [account sequence number](#account-sequence-number) of the [Escrow Creation](#escrow-creation) transaction for the escrow to cancel.
 memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the transaction.
 
 ### Example
@@ -568,23 +561,22 @@ memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the
 ```json
 {
   "owner": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-  "suspensionSequence": 1234
+  "escrowSequence": 1234
 }
 ```
 
 
-## Suspended Payment Execution
+## Escrow Execution
 
 See [Transaction Types](#transaction-types) for a description.
 
 Name | Type | Description
 ---- | ---- | -----------
-owner | [address](#ripple-address) | The address of the owner of the suspended payment to execute.
-suspensionSequence | [sequence](#account-sequence-number) | The [account sequence number](#account-sequence-number) of the [Suspended Payment Creation](#suspended-payment-creation) transaction for the suspended payment to execute.
-digest | string | *Optional* The original `digest` from the suspended payment creation transaction. This is sha256 hash of `proof` string. It is replicated here so that the relatively expensive hashing operation can be delegated to a server without ledger history and the server with ledger history only has to do a quick comparison of the old digest with the new digest.
+owner | [address](#address) | The address of the owner of the escrow to execute.
+escrowSequence | [sequence](#account-sequence-number) | The [account sequence number](#account-sequence-number) of the [Escrow Creation](#escrow-creation) transaction for the escrow to execute.
+condition | string | *Optional* A hex value representing a [PREIMAGE-SHA-256 crypto-condition](https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1). This must match the original `condition` from the escrow creation transaction.
+fulfillment | string | *Optional* A hex value representing the [PREIMAGE-SHA-256 crypto-condition](https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1) fulfillment for `condition`.
 memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the transaction.
-method | integer | *Optional* The method for verifying the proof; only method `1` is supported.
-proof | string | *Optional* A value that produces the digest when hashed. It must be 32 charaters long and contain only 8-bit characters.
 
 ### Example
 
@@ -592,10 +584,81 @@ proof | string | *Optional* A value that produces the digest when hashed. It mus
 ```json
 {
   "owner": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-  "suspensionSequence": 1234,
-  "method": 1,
-  "digest": "712C36933822AD3A3D136C5DF97AA863B69F9CE88B2D6CE6BDD11BFDE290C19D",
-  "proof": "this must have 32 characters...."
+  "escrowSequence": 1234,
+  "condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+  "fulfillment": "A0028000"
+}
+```
+
+
+## Payment Channel Create
+
+See [Transaction Types](#transaction-types) for a description.
+
+Name | Type | Description
+---- | ---- | -----------
+amount | [value](#value) | Amount of ZXC for sender to set aside in this channel.
+destination | [address](#address) | Address to receive ZXC claims against this channel.
+settleDelay | number | Amount of seconds the source address must wait before closing the channel if it has unclaimed ZXC.
+publicKey | string | Public key of the key pair the source will use to sign claims against this channel.
+cancelAfter | date-time string | *Optional* Time when this channel expires.
+destinationTag | integer | *Optional* Destination tag.
+sourceTag | integer | *Optional* Source tag.
+
+### Example
+
+
+```json
+{
+  "amount": "1",
+  "destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+  "settleDelay": 86400,
+  "publicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A"
+}
+```
+
+
+## Payment Channel Fund
+
+See [Transaction Types](#transaction-types) for a description.
+
+Name | Type | Description
+---- | ---- | -----------
+amount | [value](#value) | Amount of ZXC to fund the channel with.
+channel | string | 256-bit hexadecimal channel identifier.
+expiration | date-time string | *Optional* New expiration for this channel.
+
+### Example
+
+
+```json
+{
+  "channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
+  "amount": "1"
+}
+```
+
+
+## Payment Channel Claim
+
+See [Transaction Types](#transaction-types) for a description.
+
+Name | Type | Description
+---- | ---- | -----------
+channel | string | 256-bit hexadecimal channel identifier.
+amount | [value](#value) | *Optional* ZXC balance of this channel after claim is processed.
+balance | [value](#value) | *Optional* Amount of ZXC authorized by signature.
+close | boolean | *Optional* Request to close the channel.
+publicKey | string | *Optional* Public key of the channel's sender
+renew | boolean | *Optional* Clear the channel's expiration time.
+signature | string | *Optional* Signature of this claim.
+
+### Example
+
+
+```json
+{
+  "channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198"
 }
 ```
 
@@ -691,10 +754,10 @@ pubkeyNode | string | Public key used to verify this node for internal communica
 serverState | string | A string indicating to what extent the server is participating in the network. See [Possible Server States](https://ripple.com/build/rippled-apis/#possible-server-states) for more details.
 validatedLedger | object | Information about the fully-validated ledger with the highest sequence number (the most recent).
 *validatedLedger.* age | integer | The time since the ledger was closed, in seconds.
-*validatedLedger.* baseFeeXRP | [value](#value) | Base fee, in XRP. This may be represented in scientific notation such as 1e-05 for 0.00005.
+*validatedLedger.* baseFeeXRP | [value](#value) | Base fee, in ZXC. This may be represented in scientific notation such as 1e-05 for 0.00005.
 *validatedLedger.* hash | string | Unique hash for the ledger, as an uppercase hexadecimal string.
-*validatedLedger.* reserveBaseXRP | [value](#value) | Minimum amount of XRP necessary for every account to keep in reserve.
-*validatedLedger.* reserveIncrementXRP | [value](#value) | Amount of XRP added to the account reserve for each object an account is responsible for in the ledger.
+*validatedLedger.* reserveBaseXRP | [value](#value) | Minimum amount of ZXC necessary for every account to keep in reserve.
+*validatedLedger.* reserveIncrementXRP | [value](#value) | Amount of ZXC added to the account reserve for each object an account is responsible for in the ledger.
 *validatedLedger.* ledgerVersion | integer | Identifying sequence number of this ledger version.
 validationQuorum | number | Minimum number of trusted validations required in order to validate a ledger version. Some circumstances may cause the server to require more validations.
 load | object | *Optional* *(Admin only)* Detailed information about the current load state of the server.
@@ -725,10 +788,10 @@ return api.getServerInfo().then(info => {/* ... */});
   "serverState": "full",
   "validatedLedger": {
     "age": 5,
-    "baseFeeXRP": "0.00001",
+    "baseFeeZXC": "0.00001",
     "hash": "4482DEE5362332F54A4036ED57EE1767C9F33CF7CE5A6670355C16CECE381D46",
-    "reserveBaseXRP": "20",
-    "reserveIncrementXRP": "5",
+    "reserveBaseZXC": "20",
+    "reserveIncrementZXC": "5",
     "ledgerVersion": 6595042
   },
   "validationQuorum": 3
@@ -748,7 +811,7 @@ This method has no parameters.
 
 ### Return Value
 
-This method returns a promise that resolves with a string encoded floating point value representing the estimated fee to submit a transaction, expressed in XRP.
+This method returns a promise that resolves with a string encoded floating point value representing the estimated fee to submit a transaction, expressed in ZXC.
 
 ### Example
 
@@ -809,13 +872,13 @@ This method returns a promise that resolves with a transaction object containing
 Name | Type | Description
 ---- | ---- | -----------
 id | [id](#transaction-id) | A hash of the transaction that can be used to identify it.
-address | [address](#ripple-address) | The address of the account that initiated the transaction.
+address | [address](#address) | The address of the account that initiated the transaction.
 sequence | [sequence](#account-sequence-number) | The account sequence number of the transaction for the account that initiated it.
-type | [transactionType](#transaction-types) | The type of the tranasction.
+type | [transactionType](#transaction-types) | The type of the transaction.
 specification | object | A specification that would produce the same outcome as this transaction. The structure of the specification depends on the value of the `type` field (see [Transaction Types](#transaction-types) for details). *Note:* This is **not** necessarily the same as the original specification.
 outcome | object | The outcome of the transaction (what effects it had).
 *outcome.* result | string | Result code returned by rippled. See [Transaction Results](https://ripple.com/build/transactions/#full-transaction-response-list) for a complete list.
-*outcome.* fee | [value](#value) | The XRP fee that was charged for the transaction.
+*outcome.* fee | [value](#value) | The ZXC fee that was charged for the transaction.
 *outcome.balanceChanges.* \* | array\<[balance](#amount)\> | Key is the ripple address; value is an array of signed amounts representing changes of balances for that address.
 *outcome.orderbookChanges.* \* | array | Key is the maker's ripple address; value is an array of changes
 *outcome.orderbookChanges.* \*[] | object | A change to an order.
@@ -828,6 +891,7 @@ outcome | object | The outcome of the transaction (what effects it had).
 *outcome.orderbookChanges.\*[].* makerExchangeRate | [value](#value) | *Optional* The exchange rate between the `quantity` currency and the `totalPrice` currency from the point of view of the maker.
 *outcome.* ledgerVersion | integer | The ledger version that the transaction was validated in.
 *outcome.* indexInLedger | integer | The ordering index of the transaction in the ledger.
+*outcome.* deliveredAmount | [amount](#amount) | *Optional* For payment transactions, it is impossible to reliably compute the actual delivered amount from the balanceChanges due to fixed precision. If the payment is not a partial payment and the transaction succeeded, the deliveredAmount should always be considered to be the amount specified in the transaction.
 *outcome.* timestamp | date-time string | *Optional* The timestamp when the transaction was validated. (May be missing when requesting transactions in binary mode.)
 
 ### Example
@@ -850,7 +914,7 @@ return api.getTransaction(id).then(transaction => {
     "source": {
       "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
       "maxAmount": {
-        "currency": "XRP",
+        "currency": "ZXC",
         "value": "1.112209"
       }
     },
@@ -867,6 +931,11 @@ return api.getTransaction(id).then(transaction => {
     "result": "tesSUCCESS",
     "timestamp": "2013-03-12T23:56:50.000Z",
     "fee": "0.00001",
+    "deliveredAmount": {
+      "currency": "USD",
+      "value": "0.001",
+      "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
+    },
     "balanceChanges": {
       "rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo": [
         {
@@ -889,13 +958,13 @@ return api.getTransaction(id).then(transaction => {
       ],
       "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59": [
         {
-          "currency": "XRP",
+          "currency": "ZXC",
           "value": "-1.101208"
         }
       ],
       "r9tGqzZgKxVFvzKFdUqXAqTzazWBUia8Qr": [
         {
-          "currency": "XRP",
+          "currency": "ZXC",
           "value": "1.101198"
         },
         {
@@ -910,7 +979,7 @@ return api.getTransaction(id).then(transaction => {
         {
           "direction": "buy",
           "quantity": {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "1.101198"
           },
           "totalPrice": {
@@ -941,10 +1010,10 @@ Retrieves historical transactions of an account.
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account to get transactions for.
+address | [address](#address) | The address of the account to get transactions for.
 options | object | *Optional* Options to filter the resulting transactions.
 *options.* binary | boolean | *Optional* If true, the transactions will be sent from the server in a condensed binary format rather than JSON.
-*options.* counterparty | [address](#ripple-address) | *Optional* If provided, only return transactions with this account as a counterparty to the transaction.
+*options.* counterparty | [address](#address) | *Optional* If provided, only return transactions with this account as a counterparty to the transaction.
 *options.* earliestFirst | boolean | *Optional* If true, sort transactions so that the earliest ones come first. By default, the newest transactions will come first.
 *options.* excludeFailures | boolean | *Optional* If true, the result will omit transactions that did not succeed.
 *options.* initiated | boolean | *Optional* If true, return only transactions initiated by the account specified by `address`. If false, return only transactions not initiated by the account specified by `address`.
@@ -985,7 +1054,7 @@ return api.getTransactions(address).then(transaction => {
       "source": {
         "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
         "maxAmount": {
-          "currency": "XRP",
+          "currency": "ZXC",
           "value": "1.112209"
         }
       },
@@ -1001,6 +1070,11 @@ return api.getTransactions(address).then(transaction => {
     "outcome": {
       "result": "tesSUCCESS",
       "fee": "0.00001",
+      "deliveredAmount": {
+        "currency": "USD",
+        "value": "0.001",
+        "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
+      },
       "balanceChanges": {
         "rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo": [
           {
@@ -1023,13 +1097,13 @@ return api.getTransactions(address).then(transaction => {
         ],
         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59": [
           {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "-1.101208"
           }
         ],
         "r9tGqzZgKxVFvzKFdUqXAqTzazWBUia8Qr": [
           {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "1.101198"
           },
           {
@@ -1044,7 +1118,7 @@ return api.getTransactions(address).then(transaction => {
           {
             "direction": "buy",
             "quantity": {
-              "currency": "XRP",
+              "currency": "ZXC",
               "value": "1.101198"
             },
             "totalPrice": {
@@ -1077,7 +1151,7 @@ return api.getTransactions(address).then(transaction => {
       "source": {
         "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
         "maxAmount": {
-          "currency": "XRP",
+          "currency": "ZXC",
           "value": "1.112209"
         }
       },
@@ -1093,6 +1167,11 @@ return api.getTransactions(address).then(transaction => {
     "outcome": {
       "result": "tesSUCCESS",
       "fee": "0.00001",
+      "deliveredAmount": {
+        "currency": "USD",
+        "value": "0.001",
+        "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
+      },
       "balanceChanges": {
         "rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo": [
           {
@@ -1115,13 +1194,13 @@ return api.getTransactions(address).then(transaction => {
         ],
         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59": [
           {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "-1.101208"
           }
         ],
         "r9tGqzZgKxVFvzKFdUqXAqTzazWBUia8Qr": [
           {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "1.101198"
           },
           {
@@ -1136,7 +1215,7 @@ return api.getTransactions(address).then(transaction => {
           {
             "direction": "buy",
             "quantity": {
-              "currency": "XRP",
+              "currency": "ZXC",
               "value": "1.101198"
             },
             "totalPrice": {
@@ -1168,9 +1247,9 @@ Returns trustlines for a specified account.
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account to get trustlines for.
+address | [address](#address) | The address of the account to get trustlines for.
 options | object | *Optional* Options to filter and determine which trustlines to return.
-*options.* counterparty | [address](#ripple-address) | *Optional* Only return trustlines with this counterparty.
+*options.* counterparty | [address](#address) | *Optional* Only return trustlines with this counterparty.
 *options.* currency | [currency](#currency) | *Optional* Only return trustlines for this currency.
 *options.* ledgerVersion | integer | *Optional* Return trustlines as they were in this historical ledger version.
 *options.* limit | integer | *Optional* Return at most this many trustlines.
@@ -1312,9 +1391,9 @@ Returns balances for a specified account.
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account to get balances for.
+address | [address](#address) | The address of the account to get balances for.
 options | object | *Optional* Options to filter and determine which balances to return.
-*options.* counterparty | [address](#ripple-address) | *Optional* Only return balances with this counterparty.
+*options.* counterparty | [address](#address) | *Optional* Only return balances with this counterparty.
 *options.* currency | [currency](#currency) | *Optional* Only return balances for this currency.
 *options.* ledgerVersion | integer | *Optional* Return balances as they were in this historical ledger version.
 *options.* limit | integer | *Optional* Return at most this many balances.
@@ -1327,7 +1406,7 @@ Name | Type | Description
 ---- | ---- | -----------
 currency | [currency](#currency) | The three-character code or hexadecimal string used to denote currencies
 value | [signedValue](#value) | The balance on the trustline
-counterparty | [address](#ripple-address) | *Optional* The Ripple address of the account that owes or is owed the funds.
+counterparty | [address](#address) | *Optional* The Ripple address of the account that owes or is owed the funds.
 
 ### Example
 
@@ -1342,7 +1421,7 @@ return api.getBalances(address).then(balances =>
 [
   {
     "value": "922.913243",
-    "currency": "XRP"
+    "currency": "ZXC"
   },
   {
     "value": "0",
@@ -1478,14 +1557,14 @@ Returns aggregate balances by currency plus a breakdown of assets and obligation
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The Ripple address of the account to get the balance sheet of.
+address | [address](#address) | The Ripple address of the account to get the balance sheet of.
 options | object | *Optional* Options to determine how the balances will be calculated.
-*options.* excludeAddresses | array\<[address](#ripple-address)\> | *Optional* Addresses to exclude from the balance totals.
+*options.* excludeAddresses | array\<[address](#address)\> | *Optional* Addresses to exclude from the balance totals.
 *options.* ledgerVersion | integer | *Optional* Get the balance sheet as of this historical ledger version.
 
 ### Return Value
 
-This method returns a promise that resolves with an array of objects with the following structure:
+This method returns a promise that resolves with an object with the following structure:
 
 Name | Type | Description
 ---- | ---- | -----------
@@ -1575,14 +1654,14 @@ Name | Type | Description
 ---- | ---- | -----------
 pathfind | object | Specification of a pathfind request.
 *pathfind.* source | object | Properties of the source of funds.
-*pathfind.source.* address | [address](#ripple-address) | The Ripple address of the account where funds will come from.
+*pathfind.source.* address | [address](#address) | The Ripple address of the account where funds will come from.
 *pathfind.source.* amount | [laxAmount](#amount) | *Optional* The amount of funds to send.
 *pathfind.source.* currencies | array | *Optional* An array of currencies (with optional counterparty) that may be used in the payment paths.
 *pathfind.source.* currencies[] | object | A currency with optional counterparty.
 *pathfind.source.currencies[].* currency | [currency](#currency) | The three-character code or hexadecimal string used to denote currencies
-*pathfind.source.currencies[].* counterparty | [address](#ripple-address) | *Optional* The counterparty for the currency; if omitted any counterparty may be used.
+*pathfind.source.currencies[].* counterparty | [address](#address) | *Optional* The counterparty for the currency; if omitted any counterparty may be used.
 *pathfind.* destination | object | Properties of the destination of funds.
-*pathfind.destination.* address | [address](#ripple-address) | The address to send to.
+*pathfind.destination.* address | [address](#address) | The address to send to.
 *pathfind.destination.* amount | [laxLaxAmount](#amount) | The amount to be received by the receiver (`value` may be ommitted if a source amount is specified).
 
 ### Return Value
@@ -1592,15 +1671,15 @@ This method returns a promise that resolves with an array of objects with the fo
 Name | Type | Description
 ---- | ---- | -----------
 source | object | Properties of the source of the payment.
-*source.* address | [address](#ripple-address) | The address to send from.
+*source.* address | [address](#address) | The address to send from.
 *source.* amount | [laxAmount](#amount) | An exact amount to send. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with source.maxAmount)
 *source.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Ripple account.
 *source.* maxAmount | [laxAmount](#amount) | The maximum amount to send. (This field is exclusive with source.amount)
 destination | object | Properties of the destination of the payment.
-*destination.* address | [address](#ripple-address) | The address to receive at.
+*destination.* address | [address](#address) | The address to receive at.
 *destination.* amount | [laxAmount](#amount) | An exact amount to deliver to the recipient. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with destination.minAmount).
 *destination.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Ripple account.
-*destination.* address | [address](#ripple-address) | The address to send to.
+*destination.* address | [address](#address) | The address to send to.
 *destination.* minAmount | [laxAmount](#amount) | The minimum amount to be delivered. (This field is exclusive with destination.amount)
 paths | string | The paths of trustlines and orders to use in executing the payment.
 
@@ -1643,7 +1722,7 @@ return api.getPaths(pathfind)
         "value": "100"
       }
     },
-    "paths": "[[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"XRP\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"XRP\"},{\"currency\":\"USD\",\"issuer\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"XRP\"},{\"currency\":\"USD\",\"issuer\":\"rHHa9t2kLQyXRbdLkSzEgkzwf9unmFgZs9\"},{\"account\":\"rHHa9t2kLQyXRbdLkSzEgkzwf9unmFgZs9\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}]]"
+    "paths": "[[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"ZXC\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"ZXC\"},{\"currency\":\"USD\",\"issuer\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"ZXC\"},{\"currency\":\"USD\",\"issuer\":\"rHHa9t2kLQyXRbdLkSzEgkzwf9unmFgZs9\"},{\"account\":\"rHHa9t2kLQyXRbdLkSzEgkzwf9unmFgZs9\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}]]"
   },
   {
     "source": {
@@ -1661,13 +1740,13 @@ return api.getPaths(pathfind)
         "value": "100"
       }
     },
-    "paths": "[[{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"XRP\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"XRP\"},{\"currency\":\"USD\",\"issuer\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}]]"
+    "paths": "[[{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"ZXC\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"ZXC\"},{\"currency\":\"USD\",\"issuer\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}]]"
   },
   {
     "source": {
       "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
       "maxAmount": {
-        "currency": "XRP",
+        "currency": "ZXC",
         "value": "0.207669"
       }
     },
@@ -1695,7 +1774,7 @@ Returns open orders for the specified account. Open orders are orders that have 
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The Ripple address of the account to get open orders for.
+address | [address](#address) | The Ripple address of the account to get open orders for.
 options | object | *Optional* Options that determine what orders will be returned.
 *options.* ledgerVersion | integer | *Optional* Return orders as of this historical ledger version.
 *options.* limit | integer | *Optional* At most this many orders will be returned.
@@ -1708,7 +1787,7 @@ Name | Type | Description
 ---- | ---- | -----------
 specification | [order](#order) | An order specification that would create an order equivalent to the current state of this order.
 properties | object | Properties of the order not in the specification.
-*properties.* maker | [address](#ripple-address) | The address of the account that submitted the order.
+*properties.* maker | [address](#address) | The address of the account that submitted the order.
 *properties.* sequence | [sequence](#account-sequence-number) | The account sequence number of the transaction that created this order.
 *properties.* makerExchangeRate | [value](#value) | The exchange rate from the point of view of the account that submitted the order (also known as "quality").
 
@@ -1927,7 +2006,7 @@ return api.getOrders(address).then(orders =>
     "specification": {
       "direction": "buy",
       "quantity": {
-        "currency": "XRP",
+        "currency": "ZXC",
         "value": "115760.19"
       },
       "totalPrice": {
@@ -2031,7 +2110,7 @@ return api.getOrders(address).then(orders =>
         "counterparty": "r9Dr5xwkeLegBeXq6ujinjSBLQzQ1zQGjH"
       },
       "totalPrice": {
-        "currency": "XRP",
+        "currency": "ZXC",
         "value": "2229.229447"
       }
     },
@@ -2075,10 +2154,10 @@ Returns open orders for the specified account. Open orders are orders that have 
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | Address of an account to use as point-of-view. (This affects which unfunded offers are returned.)
+address | [address](#address) | Address of an account to use as point-of-view. (This affects which unfunded offers are returned.)
 orderbook | object | The order book to get.
-*orderbook.* base | object | A currency-counterparty pair, or just currency if it's XRP
-*orderbook.* counter | object | A currency-counterparty pair, or just currency if it's XRP
+*orderbook.* base | object | A currency-counterparty pair, or just currency if it's ZXC
+*orderbook.* counter | object | A currency-counterparty pair, or just currency if it's ZXC
 options | object | *Optional* Options to determine what to return.
 *options.* ledgerVersion | integer | *Optional* Return the order book as of this historical ledger version.
 *options.* limit | integer | *Optional* Return at most this many orders from the order book.
@@ -2093,7 +2172,7 @@ bids | array | The buy orders in the order book.
 bids[] | object | An order in the order book.
 *bids[].* specification | [order](#order) | An order specification that would create an order equivalent to the current state of this order.
 *bids[].* properties | object | Properties of the order not in the specification.
-*bids[].properties.* maker | [address](#ripple-address) | The address of the account that submitted the order.
+*bids[].properties.* maker | [address](#address) | The address of the account that submitted the order.
 *bids[].properties.* sequence | [sequence](#account-sequence-number) | The account sequence number of the transaction that created this order.
 *bids[].properties.* makerExchangeRate | [value](#value) | The exchange rate from the point of view of the account that submitted the order (also known as "quality").
 *bids[].* state | object | *Optional* The state of the order.
@@ -2103,7 +2182,7 @@ asks | array | The sell orders in the order book.
 asks[] | object | An order in the order book.
 *asks[].* specification | [order](#order) | An order specification that would create an order equivalent to the current state of this order.
 *asks[].* properties | object | Properties of the order not in the specification.
-*asks[].properties.* maker | [address](#ripple-address) | The address of the account that submitted the order.
+*asks[].properties.* maker | [address](#address) | The address of the account that submitted the order.
 *asks[].properties.* sequence | [sequence](#account-sequence-number) | The account sequence number of the transaction that created this order.
 *asks[].properties.* makerExchangeRate | [value](#value) | The exchange rate from the point of view of the account that submitted the order (also known as "quality").
 *asks[].* state | object | *Optional* The state of the order.
@@ -2628,7 +2707,7 @@ Returns settings for the specified account. Note: For account data that is not m
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account to get the settings of.
+address | [address](#address) | The address of the account to get the settings of.
 options | object | *Optional* Options that affect what to return.
 *options.* ledgerVersion | integer | *Optional* Get the settings as of this historical ledger version.
 
@@ -2640,7 +2719,7 @@ Name | Type | Description
 ---- | ---- | -----------
 defaultRipple | boolean | *Optional* Enable [rippling](https://ripple.com/knowledge_center/understanding-the-noripple-flag/) on this account’s trust lines by default. (New in [rippled 0.27.3](https://github.com/ripple/rippled/releases/tag/0.27.3))
 disableMasterKey | boolean | *Optional* Disallows use of the master key to sign transactions for this account.
-disallowIncomingXRP | boolean | *Optional* Indicates that client applications should not send XRP to this account. Not enforced by rippled.
+disallowIncomingXRP | boolean | *Optional* Indicates that client applications should not send ZXC to this account. Not enforced by rippled.
 domain | string | *Optional*  The domain that owns this account, as a hexadecimal string representing the ASCII for the domain in lowercase.
 emailHash | string,null | *Optional* Hash of an email address to be used for generating an avatar image. Conventionally, clients use Gravatar to display this image. Use `null` to clear.
 enableTransactionIDTracking | boolean | *Optional* Track the ID of this account’s most recent transaction.
@@ -2649,16 +2728,16 @@ memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the
 messageKey | string | *Optional* Public key for sending encrypted messages to this account. Conventionally, it should be a secp256k1 key, the same encryption that is used by the rest of Ripple.
 noFreeze | boolean | *Optional* Permanently give up the ability to freeze individual trust lines. This flag can never be disabled after being enabled.
 passwordSpent | boolean | *Optional* Indicates that the account has used its free SetRegularKey transaction.
-regularKey | [address](#ripple-address),null | *Optional* The public key of a new keypair, to use as the regular key to this account, as a base-58-encoded string in the same format as an account address. Use `null` to remove the regular key.
+regularKey | [address](#address),null | *Optional* The public key of a new keypair, to use as the regular key to this account, as a base-58-encoded string in the same format as an account address. Use `null` to remove the regular key.
 requireAuthorization | boolean | *Optional* If set, this account must individually approve other users in order for those users to hold this account’s issuances.
 requireDestinationTag | boolean | *Optional* Requires incoming payments to specify a destination tag.
 signers | object | *Optional* Settings that determine what sets of accounts can be used to sign a transaction on behalf of this account using multisigning.
 *signers.* threshold | integer | *Optional* A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is equal or greater than this value. To delete the signers setting, use the value `0`.
 *signers.* weights | array | *Optional* Weights of signatures for each signer.
 *signers.* weights[] | object | An association of an address and a weight.
-*signers.weights[].* address | [address](#ripple-address) | A Ripple account address
+*signers.weights[].* address | [address](#address) | A Ripple account address
 *signers.weights[].* weight | integer | The weight that the signature of this account counts as towards the threshold.
-transferRate | number,null | *Optional*  The fee to charge when users transfer this account’s issuances, represented as billionths of a unit. Use `null` to set no fee.
+transferRate | number,null | *Optional*  The fee to charge when users transfer this account’s issuances, as the decimal amount that must be sent to deliver 1 unit. Has precision up to 9 digits beyond the decimal point. Use `null` to set no fee.
 
 ### Example
 
@@ -2690,7 +2769,7 @@ Returns information for the specified account. Note: For account data that is mo
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account to get the account info of.
+address | [address](#address) | The address of the account to get the account info of.
 options | object | *Optional* Options that affect what to return.
 *options.* ledgerVersion | integer | *Optional* Get the account info as of this historical ledger version.
 
@@ -2701,7 +2780,7 @@ This method returns a promise that resolves with an object with the following st
 Name | Type | Description
 ---- | ---- | -----------
 sequence | [sequence](#account-sequence-number) | The next (smallest unused) sequence number for this account.
-xrpBalance | [value](#value) | The XRP balance owned by the account.
+xrpBalance | [value](#value) | The ZXC balance owned by the account.
 ownerCount | integer | Number of other ledger entries (specifically, trust lines and offers) attributed to this account. This is used to calculate the total reserve required to use the account.
 previousAffectingTransactionID | string | Hash value representing the most recent transaction that affected this account node directly. **Note:** This does not include changes to the account’s trust lines and offers.
 previousAffectingTransactionLedgerVersion | integer | The ledger version that the transaction identified by the `previousAffectingTransactionID` was validated in.
@@ -2723,6 +2802,61 @@ return api.getAccountInfo(address).then(info =>
   "ownerCount": 1,
   "previousAffectingTransactionID": "19899273706A9E040FDB5885EE991A1DC2BAD878A0D6E7DBCFB714E63BF737F7",
   "previousAffectingTransactionLedgerVersion": 6614625
+}
+```
+
+
+## getPaymentChannel
+
+`getPaymentChannel(id: string): Promise<Object>`
+
+Returns specified payment channel.
+
+### Parameters
+
+Name | Type | Description
+---- | ---- | -----------
+id | string | 256-bit hexadecimal channel identifier.
+
+### Return Value
+
+This method returns a promise that resolves with an object with the following structure:
+
+Name | Type | Description
+---- | ---- | -----------
+account | [address](#address) | Address that created the payment channel.
+destination | [address](#address) | Address to receive ZXC claims against this channel.
+amount | [value](#value) | The total amount of ZXC funded in this channel.
+balance | [value](#value) | The total amount of ZXC delivered by this channel.
+settleDelay | number | Amount of seconds the source address must wait before closing the channel if it has unclaimed ZXC.
+previousAffectingTransactionID | string | Hash value representing the most recent transaction that affected this payment channel.
+previousAffectingTransactionLedgerVersion | integer | The ledger version that the transaction identified by the `previousAffectingTransactionID` was validated in.
+cancelAfter | date-time string | *Optional* Time when this channel expires as specified at creation.
+destinationTag | integer | *Optional* Destination tag.
+expiration | date-time string | *Optional* Time when this channel expires.
+publicKey | string | *Optional* Public key of the key pair the source will use to sign claims against this channel.
+sourceTag | integer | *Optional* Source tag.
+
+### Example
+
+```javascript
+const channelId =
+  'E30E709CF009A1F26E0E5C48F7AA1BFB79393764F15FB108BDC6E06D3CBD8415';
+return api.getPaymentChannel(channelId).then(channel =>
+  {/* ... */});
+```
+
+
+```json
+{
+  "account": "r6ZtfQFWbCkp4XqaUygzHaXsQXBT67xLj",
+  "amount": "10",
+  "balance": "0",
+  "destination": "rQf9vCwQtzQQwtnGvr6zc1fqzqg7QBuj7G",
+  "publicKey": "02A05282CB6197E34490BACCD9405E81D9DFBE123B0969F9F40EC3F9987AD9A97D",
+  "settleDelay": 10000,
+  "previousAffectingTransactionID": "F939A0BEF139465403C56CCDC49F59A77C868C78C5AEC184E29D15E9CD1FF675",
+  "previousAffectingTransactionLedgerVersion": 151322
 }
 ```
 
@@ -2757,7 +2891,7 @@ ledgerHash | string | Unique identifying hash of the entire ledger.
 ledgerVersion | integer | The ledger version of this ledger.
 parentLedgerHash | string | Unique identifying hash of the ledger that came immediately before this one.
 parentCloseTime | date-time string | The time at which the previous ledger was closed.
-totalDrops | [value](#value) | Total number of drops (1/1,000,000th of an XRP) in the network, as a quoted integer. (This decreases as transaction fees cause XRP to be destroyed.)
+totalDrops | [value](#value) | Total number of drops (1/1,000,000th of an ZXC) in the network, as a quoted integer. (This decreases as transaction fees cause ZXC to be destroyed.)
 transactionHash | string | Hash of the transaction information included in this ledger.
 rawState | string | *Optional* A JSON string containing all state data for this ledger in rippled JSON format.
 rawTransactions | string | *Optional* A JSON string containing rippled format transaction JSON for all transactions that were validated in this ledger.
@@ -2799,7 +2933,7 @@ Prepare a payment transaction. The prepared transaction must subsequently be [si
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 payment | [payment](#payment) | The specification of the payment to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -2868,7 +3002,7 @@ Prepare a trustline transaction. The prepared transaction must subsequently be [
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 trustline | [trustline](#trustline) | The specification of the trustline to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -2908,7 +3042,7 @@ const trustline = {
     }
   ]
 };
-return api.preparePayment(address, trustline).then(prepared =>
+return api.prepareTrustline(address, trustline).then(prepared =>
   {/* ... */});
 ```
 
@@ -2935,7 +3069,7 @@ Prepare an order transaction. The prepared transaction must subsequently be [sig
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 order | [order](#order) | The specification of the order to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -2967,7 +3101,7 @@ const order = {
     "value": "10.1"
   },
   "totalPrice": {
-    "currency": "XRP",
+    "currency": "ZXC",
     "value": "2"
   },
   "passive": true,
@@ -3000,7 +3134,7 @@ Prepare an order cancellation transaction. The prepared transaction must subsequ
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 orderCancellation | [orderCancellation](#order-cancellation) | The specification of the order cancellation to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3025,7 +3159,7 @@ instructions | object | The instructions for how to execute the transaction afte
 ```javascript
 const address = 'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59';
 const orderCancellation = {orderSequence: 123};
-return api.prepareOrderCancellation(address, sequence)
+return api.prepareOrderCancellation(address, orderCancellation)
   .then(prepared => {/* ... */});
 ```
 
@@ -3052,7 +3186,7 @@ Prepare a settings transaction. The prepared transaction must subsequently be [s
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
+address | [address](#address) | The address of the account that is creating the transaction.
 settings | [settings](#settings) | The specification of the settings to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
@@ -3105,20 +3239,18 @@ return api.prepareSettings(address, settings)
 ```
 
 
-## prepareSuspendedPaymentCreation
+## prepareEscrowCreation
 
-`prepareSuspendedPaymentCreation(address: string, suspendedPaymentCreation: Object, instructions: Object): Promise<Object>`
+`prepareEscrowCreation(address: string, escrowCreation: Object, instructions: Object): Promise<Object>`
 
-Prepare a suspended payment creation transaction. The prepared transaction must subsequently be [signed](#sign) and [submitted](#submit).
-
-**Caution:** Suspended Payments are currently available on the [Ripple Test Net](https://ripple.com/build/ripple-test-net/) only.
+Prepare an escrow creation transaction. The prepared transaction must subsequently be [signed](#sign) and [submitted](#submit).
 
 ### Parameters
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
-suspendedPaymentCreation | [suspendedPaymentCreation](#suspended-payment-creation) | The specification of the suspended payment creation to prepare.
+address | [address](#address) | The address of the account that is creating the transaction.
+escrowCreation | [escrowCreation](#escrow-creation) | The specification of the escrow creation to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
 ### Return Value
@@ -3141,33 +3273,19 @@ instructions | object | The instructions for how to execute the transaction afte
 
 ```javascript
 const address = 'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59';
-const suspendedPaymentCreation = {
-  "source": {
-    "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-    "maxAmount": {
-      "value": "0.01",
-      "currency": "USD",
-      "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
-    }
-  },
-  "destination": {
-    "address": "rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo",
-    "amount": {
-      "value": "0.01",
-      "currency": "USD",
-      "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
-    }
-  },
+const escrowCreation = {
+  "destination": "rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo",
+  "amount": "0.01",
   "allowCancelAfter": "2014-09-24T21:21:50.000Z"
 };
-return api.prepareSuspendedPaymentCreation(address, suspendedPaymentCreation).then(prepared =>
+return api.prepareEscrowCreation(address, escrowCreation).then(prepared =>
   {/* ... */});
 ```
 
 
 ```json
 {
-  "txJSON": "{\"Flags\":2147483648,\"TransactionType\":\"SuspendedPaymentCreate\",\"Account\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"Destination\":\"rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo\",\"Amount\":{\"value\":\"0.01\",\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},\"CancelAfter\":464908910,\"LastLedgerSequence\":8820051,\"Fee\":\"12\",\"Sequence\":23}",
+  "txJSON": "{\"Flags\":2147483648,\"TransactionType\":\"EscrowCreate\",\"Account\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"Destination\":\"rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo\",\"Amount\":\"10000\",\"CancelAfter\":464908910,\"LastLedgerSequence\":8820051,\"Fee\":\"12\",\"Sequence\":23}",
   "instructions": {
     "fee": "0.000012",
     "sequence": 23,
@@ -3177,20 +3295,18 @@ return api.prepareSuspendedPaymentCreation(address, suspendedPaymentCreation).th
 ```
 
 
-## prepareSuspendedPaymentCancellation
+## prepareEscrowCancellation
 
-`prepareSuspendedPaymentCancellation(address: string, suspendedPaymentCancellation: Object, instructions: Object): Promise<Object>`
+`prepareEscrowCancellation(address: string, escrowCancellation: Object, instructions: Object): Promise<Object>`
 
-Prepare a suspended payment cancellation transaction. The prepared transaction must subsequently be [signed](#sign) and [submitted](#submit).
-
-**Caution:** Suspended Payments are currently available on the [Ripple Test Net](https://ripple.com/build/ripple-test-net/) only.
+Prepare an escrow cancellation transaction. The prepared transaction must subsequently be [signed](#sign) and [submitted](#submit).
 
 ### Parameters
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
-suspendedPaymentCancellation | [suspendedPaymentCancellation](#suspended-payment-cancellation) | The specification of the suspended payment cancellation to prepare.
+address | [address](#address) | The address of the account that is creating the transaction.
+escrowCancellation | [escrowCancellation](#escrow-cancellation) | The specification of the escrow cancellation to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
 ### Return Value
@@ -3213,18 +3329,18 @@ instructions | object | The instructions for how to execute the transaction afte
 
 ```javascript
 const address = 'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59';
-const suspendedPaymentCancellation = {
+const escrowCancellation = {
   "owner": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-  "suspensionSequence": 1234
+  "escrowSequence": 1234
 };
-return api.prepareSuspendedPaymentCancellation(address, suspendedPaymentCancellation).then(prepared =>
+return api.prepareEscrowCancellation(address, escrowCancellation).then(prepared =>
   {/* ... */});
 ```
 
 
 ```json
 {
-  "txJSON": "{\"Flags\":2147483648,\"TransactionType\":\"SuspendedPaymentCancel\",\"Account\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"Owner\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"OfferSequence\":1234,\"LastLedgerSequence\":8820051,\"Fee\":\"12\",\"Sequence\":23}",
+  "txJSON": "{\"Flags\":2147483648,\"TransactionType\":\"EscrowCancel\",\"Account\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"Owner\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"OfferSequence\":1234,\"LastLedgerSequence\":8820051,\"Fee\":\"12\",\"Sequence\":23}",
   "instructions": {
     "fee": "0.000012",
     "sequence": 23,
@@ -3234,20 +3350,18 @@ return api.prepareSuspendedPaymentCancellation(address, suspendedPaymentCancella
 ```
 
 
-## prepareSuspendedPaymentExecution
+## prepareEscrowExecution
 
-`prepareSuspendedPaymentExecution(address: string, suspendedPaymentExecution: Object, instructions: Object): Promise<Object>`
+`prepareEscrowExecution(address: string, escrowExecution: Object, instructions: Object): Promise<Object>`
 
-Prepare a suspended payment execution transaction. The prepared transaction must subsequently be [signed](#sign) and [submitted](#submit).
-
-**Caution:** Suspended Payments are currently available on the [Ripple Test Net](https://ripple.com/build/ripple-test-net/) only.
+Prepare an escrow execution transaction. The prepared transaction must subsequently be [signed](#sign) and [submitted](#submit).
 
 ### Parameters
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | The address of the account that is creating the transaction.
-suspendedPaymentExecution | [suspendedPaymentExecution](#suspended-payment-execution) | The specification of the suspended payment execution to prepare.
+address | [address](#address) | The address of the account that is creating the transaction.
+escrowExecution | [escrowExecution](#escrow-execution) | The specification of the escrow execution to prepare.
 instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
 
 ### Return Value
@@ -3270,21 +3384,186 @@ instructions | object | The instructions for how to execute the transaction afte
 
 ```javascript
 const address = 'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59';
-const suspendedPaymentExecution = {
+const escrowExecution = {
   "owner": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
-  "suspensionSequence": 1234,
-  "method": 1,
-  "digest": "712C36933822AD3A3D136C5DF97AA863B69F9CE88B2D6CE6BDD11BFDE290C19D",
-  "proof": "this must have 32 characters...."
+  "escrowSequence": 1234,
+  "condition": "A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100",
+  "fulfillment": "A0028000"
 };
-return api.prepareSuspendedPaymentExecution(address, suspendedPaymentExecution).then(prepared =>
+return api.prepareEscrowExecution(address, escrowExecution).then(prepared =>
   {/* ... */});
 ```
 
 
 ```json
 {
-  "txJSON": "{\"Flags\":2147483648,\"TransactionType\":\"SuspendedPaymentFinish\",\"Account\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"Owner\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"OfferSequence\":1234,\"Method\":1,\"Digest\":\"712C36933822AD3A3D136C5DF97AA863B69F9CE88B2D6CE6BDD11BFDE290C19D\",\"Proof\":\"74686973206D757374206861766520333220636861726163746572732E2E2E2E\",\"LastLedgerSequence\":8820051,\"Fee\":\"12\",\"Sequence\":23}",
+  "txJSON": "{\"Flags\":2147483648,\"TransactionType\":\"EscrowFinish\",\"Account\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"Owner\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"OfferSequence\":1234,\"Condition\":\"A0258020E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855810100\",\"Fulfillment\":\"A0028000\",\"LastLedgerSequence\":8820051,\"Fee\":\"396\",\"Sequence\":23}",
+  "instructions": {
+    "fee": "0.000396",
+    "sequence": 23,
+    "maxLedgerVersion": 8820051
+  }
+}
+```
+
+
+## preparePaymentChannelCreate
+
+`preparePaymentChannelCreate(address: string, paymentChannelCreate: Object, instructions: Object): Promise<Object>`
+
+Prepare a payment channel creation transaction. The prepared transaction must subsequently be [signed](#sign) and [submitted](#submit).
+
+### Parameters
+
+Name | Type | Description
+---- | ---- | -----------
+address | [address](#address) | The address of the account that is creating the transaction.
+paymentChannelCreate | [paymentChannelCreate](#payment-channel-create) | The specification of the payment channel to create.
+instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
+
+### Return Value
+
+This method returns a promise that resolves with an object with the following structure:
+
+<aside class="notice">
+All "prepare*" methods have the same return type.
+</aside>
+
+Name | Type | Description
+---- | ---- | -----------
+txJSON | string | The prepared transaction in rippled JSON format.
+instructions | object | The instructions for how to execute the transaction after adding automatic defaults.
+*instructions.* fee | [value](#value) | An exact fee to pay for the transaction. See [Transaction Fees](#transaction-fees) for more information.
+*instructions.* sequence | [sequence](#account-sequence-number) | The initiating account's sequence number for this transaction.
+*instructions.* maxLedgerVersion | integer,null | The highest ledger version that the transaction can be included in. Set to `null` if there is no maximum.
+
+### Example
+
+```javascript
+const address = 'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59';
+const paymentChannelCreate = {
+  "amount": "1",
+  "destination": "rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW",
+  "settleDelay": 86400,
+  "publicKey": "32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A"
+};
+return api.preparePaymentChannelCreate(address, paymentChannelCreate).then(prepared =>
+  {/* ... */});
+```
+
+
+```json
+{
+  "txJSON":"{\"Account\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"TransactionType\":\"PaymentChannelCreate\",\"Amount\":\"1000000\",\"Destination\":\"rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW\",\"SettleDelay\":86400,\"PublicKey\":\"32D2471DB72B27E3310F355BB33E339BF26F8392D5A93D3BC0FC3B566612DA0F0A\",\"Flags\":2147483648,\"LastLedgerSequence\":8820051,\"Fee\":\"12\",\"Sequence\":23}",
+  "instructions": {
+    "fee": "0.000012",
+    "sequence": 23,
+    "maxLedgerVersion": 8820051
+  }
+}
+```
+
+
+## preparePaymentChannelClaim
+
+`preparePaymentChannelClaim(address: string, paymentChannelClaim: Object, instructions: Object): Promise<Object>`
+
+Prepare a payment channel claim transaction. The prepared transaction must subsequently be [signed](#sign) and [submitted](#submit).
+
+### Parameters
+
+Name | Type | Description
+---- | ---- | -----------
+address | [address](#address) | The address of the account that is creating the transaction.
+paymentChannelClaim | [paymentChannelClaim](#payment-channel-claim) | Details of the channel and claim.
+instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
+
+### Return Value
+
+This method returns a promise that resolves with an object with the following structure:
+
+<aside class="notice">
+All "prepare*" methods have the same return type.
+</aside>
+
+Name | Type | Description
+---- | ---- | -----------
+txJSON | string | The prepared transaction in rippled JSON format.
+instructions | object | The instructions for how to execute the transaction after adding automatic defaults.
+*instructions.* fee | [value](#value) | An exact fee to pay for the transaction. See [Transaction Fees](#transaction-fees) for more information.
+*instructions.* sequence | [sequence](#account-sequence-number) | The initiating account's sequence number for this transaction.
+*instructions.* maxLedgerVersion | integer,null | The highest ledger version that the transaction can be included in. Set to `null` if there is no maximum.
+
+### Example
+
+```javascript
+const address = 'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59';
+const paymentChannelClaim = {
+  "channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198"
+};
+return api.preparePaymentChannelClaim(address, paymentChannelClaim).then(prepared =>
+  {/* ... */});
+```
+
+
+```json
+{
+  "txJSON": "{\"Account\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"TransactionType\":\"PaymentChannelClaim\",\"Channel\":\"C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198\",\"Flags\":2147483648,\"LastLedgerSequence\":8820051,\"Fee\":\"12\",\"Sequence\":23}",
+  "instructions": {
+    "fee": "0.000012",
+    "sequence": 23,
+    "maxLedgerVersion": 8820051
+  }
+}
+```
+
+
+## preparePaymentChannelFund
+
+`preparePaymentChannelFund(address: string, paymentChannelFund: Object, instructions: Object): Promise<Object>`
+
+Prepare a payment channel fund transaction. The prepared transaction must subsequently be [signed](#sign) and [submitted](#submit).
+
+### Parameters
+
+Name | Type | Description
+---- | ---- | -----------
+address | [address](#address) | The address of the account that is creating the transaction.
+paymentChannelFund | [paymentChannelFund](#payment-channel-fund) | The channel to fund, and the details of how to fund it.
+instructions | [instructions](#transaction-instructions) | *Optional* Instructions for executing the transaction
+
+### Return Value
+
+This method returns a promise that resolves with an object with the following structure:
+
+<aside class="notice">
+All "prepare*" methods have the same return type.
+</aside>
+
+Name | Type | Description
+---- | ---- | -----------
+txJSON | string | The prepared transaction in rippled JSON format.
+instructions | object | The instructions for how to execute the transaction after adding automatic defaults.
+*instructions.* fee | [value](#value) | An exact fee to pay for the transaction. See [Transaction Fees](#transaction-fees) for more information.
+*instructions.* sequence | [sequence](#account-sequence-number) | The initiating account's sequence number for this transaction.
+*instructions.* maxLedgerVersion | integer,null | The highest ledger version that the transaction can be included in. Set to `null` if there is no maximum.
+
+### Example
+
+```javascript
+const address = 'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59';
+const paymentChannelFund = {
+  "channel": "C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198",
+  "amount": "1"
+};
+return api.preparePaymentChannelFund(address, paymentChannelFund).then(prepared =>
+  {/* ... */});
+```
+
+
+```json
+{
+  "txJSON":"{\"Account\":\"r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59\",\"TransactionType\":\"PaymentChannelFund\",\"Channel\":\"C1AE6DDDEEC05CF2978C0BAD6FE302948E9533691DC749DCDD3B9E5992CA6198\",\"Amount\":\"1000000\",\"Flags\":2147483648,\"LastLedgerSequence\":8820051,\"Fee\":\"12\",\"Sequence\":23}",
   "instructions": {
     "fee": "0.000012",
     "sequence": 23,
@@ -3307,7 +3586,7 @@ Name | Type | Description
 txJSON | string | Transaction represented as a JSON string in rippled format.
 secret | secret string | The secret of the account that is initiating the transaction.
 options | object | *Optional* Options that control the type of signature that will be generated.
-*options.* signAs | [address](#ripple-address) | *Optional* The account that the signature should count for in multisigning.
+*options.* signAs | [address](#address) | *Optional* The account that the signature should count for in multisigning.
 
 ### Return Value
 
@@ -3391,7 +3670,7 @@ This method returns an object with the following structure:
 
 Name | Type | Description
 ---- | ---- | -----------
-resultCode | string | The result code returned by rippled. [List of tranasction responses](http://pages.lightthenight.org/gba/SanFran15/ripple)
+resultCode | string | The result code returned by rippled. [List of transaction responses](https://ripple.com/build/transactions/#full-transaction-response-list)
 resultMessage | string | Human-readable explanation of the status of the transaction.
 
 ### Example
@@ -3415,7 +3694,7 @@ return api.submit(signedTransaction)
 
 `generateAddress(): {address: string, secret: string}`
 
-Generate a new Ripple address and corresponding secret.
+Generate a new ZXC Ledger address and corresponding secret.
 
 ### Parameters
 
@@ -3431,7 +3710,7 @@ This method returns an object with the following structure:
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#ripple-address) | A randomly generated Ripple account address.
+address | [address](#address) | A randomly generated Ripple account address.
 secret | secret string | The secret corresponding to the `address`.
 
 ### Example
@@ -3448,6 +3727,84 @@ return api.generateAddress();
 }
 ```
 
+
+## signPaymentChannelClaim
+
+`signPaymentChannelClaim(channel: string, amount: string, privateKey: string): string`
+
+Sign a payment channel claim. The signature can be submitted in a subsequent [PaymentChannelClaim](#preparepaymentchannelclaim) transaction.
+
+### Parameters
+
+Name | Type | Description
+---- | ---- | -----------
+channel | string | 256-bit hexadecimal channel identifier.
+amount | [value](#value) | Amount of ZXC authorized by the claim.
+privateKey | string | The private key to sign the payment channel claim.
+
+### Return Value
+
+This method returns a signature string:
+
+Name | Type | Description
+---- | ---- | -----------
+ | string | The hexadecimal representation of a signature.
+
+### Example
+
+```javascript
+const channel =
+  '3E18C05AD40319B809520F1A136370C4075321B285217323396D6FD9EE1E9037';
+const amount = '.00001';
+const privateKey =
+  'ACCD3309DB14D1A4FC9B1DAE608031F4408C85C73EE05E035B7DC8B25840107A';
+return api.signPaymentChannelClaim(channel, amount, privateKey);
+```
+
+
+```json
+"3045022100B5C54654221F154347679B97AE7791CBEF5E6772A3F894F9C781B8F1B400F89F022021E466D29DC5AEB5DFAFC76E8A88D2E388EBD25A84143B6AC3B647F479CB89B7"
+```
+
+
+## verifyPaymentChannelClaim
+
+`verifyPaymentChannelClaim(channel: string, amount: string, signature: string, publicKey: string): boolean`
+
+Verify a payment channel claim signature.
+
+### Parameters
+
+Name | Type | Description
+---- | ---- | -----------
+channel | string | 256-bit hexadecimal channel identifier.
+amount | [value](#value) | Amount of ZXC authorized by the claim.
+signature | string | Signature of this claim.
+publicKey | string | Public key of the channel's sender
+
+### Return Value
+
+This method returns `true` if the claim signature is valid.
+
+Name | Type | Description
+---- | ---- | -----------
+ | boolean | 
+
+### Example
+
+```javascript
+const channel =
+  '3E18C05AD40319B809520F1A136370C4075321B285217323396D6FD9EE1E9037';
+const amount = '.00001';
+const signature = "3045022100B5C54654221F154347679B97AE7791CBEF5E6772A3F894F9C781B8F1B400F89F022021E466D29DC5AEB5DFAFC76E8A88D2E388EBD25A84143B6AC3B647F479CB89B7";
+const publicKey =
+  '02F89EAEC7667B30F33D0687BBA86C3FE2A08CCA40A9186C5BDE2DAA6FA97A37D8';
+return api.verifyPaymentChannelClaim(channel, amount, signature, publicKey);
+```
+
+```json
+true
+```
 
 ## computeLedgerHash
 
@@ -3472,7 +3829,7 @@ ledger | object | The ledger header to hash.
 *ledger.* ledgerVersion | integer | The ledger version of this ledger.
 *ledger.* parentLedgerHash | string | Unique identifying hash of the ledger that came immediately before this one.
 *ledger.* parentCloseTime | date-time string | The time at which the previous ledger was closed.
-*ledger.* totalDrops | [value](#value) | Total number of drops (1/1,000,000th of an XRP) in the network, as a quoted integer. (This decreases as transaction fees cause XRP to be destroyed.)
+*ledger.* totalDrops | [value](#value) | Total number of drops (1/1,000,000th of an ZXC) in the network, as a quoted integer. (This decreases as transaction fees cause ZXC to be destroyed.)
 *ledger.* transactionHash | string | Hash of the transaction information included in this ledger.
 *ledger.* rawState | string | *Optional* A JSON string containing all state data for this ledger in rippled JSON format.
 *ledger.* rawTransactions | string | *Optional* A JSON string containing rippled format transaction JSON for all transactions that were validated in this ledger.
@@ -3515,10 +3872,10 @@ This event is emitted whenever a new ledger version is validated on the connecte
 
 Name | Type | Description
 ---- | ---- | -----------
-baseFeeXRP | [value](#value) | Base fee, in XRP.
+baseFeeXRP | [value](#value) | Base fee, in ZXC.
 ledgerHash | string | Unique hash of the ledger that was closed, as hex.
 ledgerTimestamp | date-time string | The time at which this ledger closed.
-reserveBaseXRP | [value](#value) | The minimum reserve, in XRP, that is required for an account.
+reserveBaseXRP | [value](#value) | The minimum reserve, in ZXC, that is required for an account.
 reserveIncrementXRP | [value](#value) | The increase in account reserve that is added for each item the account owns, such as offers or trust lines.
 transactionCount | integer | Number of new transactions included in this ledger.
 ledgerVersion | integer | Ledger version of the ledger that closed.
@@ -3535,12 +3892,12 @@ api.on('ledger', ledger => {
 
 ```json
 {
-  "baseFeeXRP": "0.00001",
+  "baseFeeZXC": "0.00001",
   "ledgerVersion": 14804627,
   "ledgerHash": "9141FA171F2C0CE63E609466AF728FF66C12F7ACD4B4B50B0947A7F3409D593A",
   "ledgerTimestamp": "2015-07-23T05:50:40.000Z",
-  "reserveBaseXRP": "20",
-  "reserveIncrementXRP": "5",
+  "reserveBaseZXC": "20",
+  "reserveIncrementZXC": "5",
   "transactionCount": 19,
   "validatedLedgerVersions": "13983423-14804627"
 }
@@ -3575,5 +3932,37 @@ api.on('error', (errorCode, errorMessage, data) => {
 
 ```
 tooBusy: The server is too busy to help you now.
+```
+
+## connected
+
+This event is emitted after connection successfully opened.
+
+### Example
+
+```javascript
+api.on('connected', () => {
+  console.log('Connection is open now.');
+});
+```
+
+## disconnected
+
+This event is emitted when connection is closed.
+
+### Return Value
+
+The only parameter is a number containing the [close code](https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent) send by the server.
+
+### Example
+
+```javascript
+api.on('disconnected', (code) => {
+  if (code !== 1000) {
+    console.log('Connection is closed due to error.');
+  } else {
+    console.log('Connection is closed normally.');
+  }
+});
 ```
 

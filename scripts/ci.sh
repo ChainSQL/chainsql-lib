@@ -15,7 +15,7 @@ typecheck() {
 
 lint() {
   echo "eslint $(node_modules/.bin/eslint --version)"
-  npm list babel-eslint | grep babel-eslint
+  npm list babel-eslint
   REPO_URL="https://raw.githubusercontent.com/ripple/javascript-style-guide"
   curl "$REPO_URL/es6/eslintrc" > ./eslintrc
   echo "parser: babel-eslint" >> ./eslintrc
@@ -24,21 +24,43 @@ lint() {
 
 unittest() {
   # test "src"
+  mocha test --reporter mocha-junit-reporter --reporter-options mochaFile=$CIRCLE_TEST_REPORTS/test-results.xml
   npm test --coverage
   npm run coveralls
 
   # test compiled version in "dist/npm"
-  babel -D --optional runtime --ignore "**/node_modules/**" -d test-compiled/ test/
+  $(npm bin)/babel -D --optional runtime --ignore "**/node_modules/**" -d test-compiled/ test/
   echo "--reporter spec --timeout 5000 --slow 500" > test-compiled/mocha.opts
   mkdir -p test-compiled/node_modules
   ln -nfs ../../dist/npm test-compiled/node_modules/ripple-api
   mocha --opts test-compiled/mocha.opts test-compiled
+
+  #compile tests for browser testing
+  #gulp build-min build-tests
+  #node --harmony test-compiled/mocked-server.js > /dev/null &
+
+  #echo "Running tests in PhantomJS"
+  #mocha-phantomjs test/localrunner.html
+  #echo "Running tests using minified version in PhantomJS"
+  #mocha-phantomjs test/localrunnermin.html
+
+  #echo "Running tests in SauceLabs"
+  #http-server &
+  #npm run sauce
+
+  #pkill -f mocked-server.js
+  #pkill -f http-server
   rm -rf test-compiled
 }
 
 integrationtest() {
   mocha test/integration/integration-test.js
   mocha test/integration/http-integration-test.js
+
+  # run integration tests in PhantomJS
+  #gulp build-tests build-min
+  #echo "Running integragtion tests in PhantomJS"
+  #mocha-phantomjs test/localintegrationrunner.html
 }
 
 doctest() {
@@ -54,7 +76,6 @@ oneNode() {
   checkEOL
   doctest
   lint
-  typecheck
   unittest
   integrationtest
 }
@@ -62,7 +83,7 @@ oneNode() {
 twoNodes() {
   case "$NODE_INDEX" in
     0) doctest; lint; integrationtest;;
-    1) checkEOL; typecheck; unittest;;
+    1) checkEOL; unittest;;
     *) echo "ERROR: invalid usage"; exit 2;;
   esac
 }
@@ -70,7 +91,7 @@ twoNodes() {
 threeNodes() {
   case "$NODE_INDEX" in
     0) doctest; lint; integrationtest;;
-    1) checkEOL; typecheck;;
+    1) checkEOL;;
     2) unittest;;
     *) echo "ERROR: invalid usage"; exit 2;;
   esac

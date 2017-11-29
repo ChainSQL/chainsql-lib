@@ -1,5 +1,5 @@
+'use strict'; // eslint-disable-line 
 /* eslint-disable max-nested-callbacks */
-'use strict';
 
 const _ = require('lodash');
 const net = require('net');
@@ -9,6 +9,8 @@ const RippleAPI = require('ripple-api').RippleAPI;
 const utils = RippleAPI._PRIVATE.ledgerUtils;
 const ledgerClose = require('./fixtures/rippled/ledger-close.json');
 
+
+const TIMEOUT = 200000;   // how long before each test case times out
 
 function unused() {
 }
@@ -27,6 +29,7 @@ function createServer() {
 }
 
 describe('Connection', function() {
+  this.timeout(TIMEOUT);
   beforeEach(setupAPI.setup);
   afterEach(setupAPI.teardown);
 
@@ -47,6 +50,9 @@ describe('Connection', function() {
         messages.push(message);
       }
     };
+    connection._ws = {
+      send: function() {}
+    };
     connection._onMessage(message1);
     connection._send(message2);
 
@@ -54,11 +60,15 @@ describe('Connection', function() {
   });
 
   it('with proxy', function(done) {
-    createServer().then((server) => {
+    if (process.browser) {
+      done();
+      return;
+    }
+    createServer().then(server => {
       const port = server.address().port;
       const expect = 'CONNECT localhost';
-      server.on('connection', (socket) => {
-        socket.on('data', (data) => {
+      server.on('connection', socket => {
+        socket.on('data', data => {
           const got = data.toString('ascii', 0, expect.length);
           assert.strictEqual(got, expect);
           server.close();
@@ -96,10 +106,33 @@ describe('Connection', function() {
     });
   });
 
+  it('should throw NotConnectedError if server not responding ', function(
+    done
+  ) {
+    if (process.browser) {
+      const phantomTest = /PhantomJS/;
+      if (phantomTest.test(navigator.userAgent)) {
+        // inside PhantomJS this one just hangs, so skip as not very relevant
+        done();
+        return;
+      }
+    }
+
+    // Address where no one listens
+    const connection =
+      new utils.common.Connection('ws://testripple.circleci.com:129');
+    connection.on('error', done);
+    connection.connect().catch(error => {
+      assert(error instanceof this.api.errors.NotConnectedError);
+      done();
+    });
+  });
+
   it('DisconnectedError', function() {
-    this.api.connection._send = function() {
-      this._ws.close();
-    };
+    this.api.connection._send(JSON.stringify({
+      command: 'config',
+      data: {disconnectOnServerInfo: true}
+    }));
     return this.api.getServerInfo().then(() => {
       assert(false, 'Should throw DisconnectedError');
     }).catch(error => {
@@ -161,6 +194,114 @@ describe('Connection', function() {
     }, 1);
   });
 
+  describe('reconnection test', function() {
+    beforeEach(function() {
+      this.api.connection.__workingUrl = this.api.connection._url;
+      this.api.connection.__doReturnBad = function() {
+        this._url = this.__badUrl;
+        const self = this;
+        function onReconnect(num) {
+          if (num >= 2) {
+            self._url = self.__workingUrl;
+            self.removeListener('reconnecting', onReconnect);
+          }
+        }
+        this.on('reconnecting', onReconnect);
+      };
+    });
+
+    afterEach(function() {
+
+    });
+
+    it('reconnect on several unexpected close', function(done) {
+      if (process.browser) {
+        const phantomTest = /PhantomJS/;
+        if (phantomTest.test(navigator.userAgent)) {
+          // inside PhantomJS this one just hangs, so skip as not very relevant
+          done();
+          return;
+        }
+      }
+      this.timeout(70001);
+      const self = this;
+      self.api.connection.__badUrl = 'ws://testripple.circleci.com:129';
+      function breakConnection() {
+        self.api.connection.__doReturnBad();
+        self.api.connection._send(JSON.stringify({
+          command: 'test_command',
+          data: {disconnectIn: 10}
+        }));
+      }
+
+      let connectsCount = 0;
+      let disconnectsCount = 0;
+      let reconnectsCount = 0;
+      let code = 0;
+      this.api.connection.on('reconnecting', () => {
+        reconnectsCount += 1;
+      });
+      this.api.connection.on('disconnected', _code => {
+        code = _code;
+        disconnectsCount += 1;
+      });
+      const num = 3;
+      this.api.connection.on('connected', () => {
+        connectsCount += 1;
+        if (connectsCount < num) {
+          breakConnection();
+        }
+        if (connectsCount === num) {
+          if (disconnectsCount !== num) {
+            done(new Error('disconnectsCount must be equal to ' + num +
+              '(got ' + disconnectsCount + ' instead)'));
+          } else if (reconnectsCount !== num * 2) {
+            done(new Error('reconnectsCount must be equal to ' + num * 2 +
+              ' (got ' + reconnectsCount + ' instead)'));
+          } else if (code !== 1006) {
+            done(new Error('disconnect must send code 1006 (got ' + code +
+              ' instead)'));
+          } else {
+            done();
+          }
+        }
+      });
+
+      breakConnection();
+    });
+  });
+
+  it('should emit disconnected event with code 1000 (CLOSE_NORMAL)',
+  function(done
+  ) {
+    this.api.once('disconnected', code => {
+      assert.strictEqual(code, 1000);
+      done();
+    });
+    this.api.disconnect();
+  });
+
+  it('should emit disconnected event with code 1006 (CLOSE_ABNORMAL)',
+  function(done
+  ) {
+    this.api.once('error', error => {
+      done(new Error('should not throw error, got ' + String(error)));
+    });
+    this.api.once('disconnected', code => {
+      assert.strictEqual(code, 1006);
+      done();
+    });
+    this.api.connection._send(JSON.stringify({
+      command: 'test_command',
+      data: {disconnectIn: 10}
+    }));
+  });
+
+  it('should emit connected event on after reconnect', function(done) {
+    this.api.once('connected', done);
+    this.api.connection._ws.close();
+  });
+
   it('Multiply connect calls', function() {
     return this.api.connect().then(() => {
       return this.api.connect();
@@ -168,7 +309,7 @@ describe('Connection', function() {
   });
 
   it('hasLedgerVersion', function() {
-    return this.api.connection.hasLedgerVersion(8819951).then((result) => {
+    return this.api.connection.hasLedgerVersion(8819951).then(result => {
       assert(result);
     });
   });
@@ -270,5 +411,51 @@ describe('Connection', function() {
       done();
     });
     this.api.connection._ws.emit('message', JSON.stringify(message));
+  });
+
+  it('should throw RippledNotInitializedError if server does not have ' +
+  'validated ledgers',
+  function() {
+    this.timeout(3000);
+
+    this.api.connection._send(JSON.stringify({
+      command: 'global_config',
+      data: {returnEmptySubscribeRequest: 1}
+    }));
+
+    const api = new RippleAPI({server: this.api.connection._url});
+    return api.connect().then(() => {
+      assert(false, 'Must have thrown!');
+    }, error => {
+      assert(error instanceof this.api.errors.RippledNotInitializedError,
+        'Must throw RippledNotInitializedError, got instead ' + String(error));
+    });
+  });
+
+  it('should try to reconnect on empty subscribe response on reconnect',
+  function(done) {
+    this.timeout(23000);
+
+    this.api.on('error', error => {
+      done(error || new Error('Should not emit error.'));
+    });
+    let disconncedCount = 0;
+    this.api.on('connected', () => {
+      done(disconncedCount !== 1 ?
+        new Error('Wrong number of disconnects') : undefined);
+    });
+    this.api.on('disconnected', () => {
+      disconncedCount++;
+    });
+
+    this.api.connection._send(JSON.stringify({
+      command: 'global_config',
+      data: {returnEmptySubscribeRequest: 3}
+    }));
+
+    this.api.connection._send(JSON.stringify({
+      command: 'test_command',
+      data: {disconnectIn: 10}
+    }));
   });
 });

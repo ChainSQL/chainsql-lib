@@ -13,7 +13,7 @@
     "balanceChanges": {
       "rBSZe33F5oxHTbxSF1nZJooVDpcrrqNFp3": [
         {
-          "currency": "XRP",
+          "currency": "ZXC",
           "value": "-0.011"
         }
       ]
@@ -28,7 +28,7 @@
             "value": "3200"
           },
           "totalPrice": {
-            "currency": "XRP",
+            "currency": "ZXC",
             "value": "34700.537395"
           },
           "sequence": 1122978,
