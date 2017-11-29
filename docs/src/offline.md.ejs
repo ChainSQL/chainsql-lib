@@ -1,0 +1,26 @@
+## Offline functionality
+
+RippleAPI can also function without internet connectivity. This can be useful in order to generate secrets and sign transactions from a secure, isolated machine.
+
+To instantiate RippleAPI in offline mode, use the following boilerplate code:
+
+```javascript
+const RippleAPI = require('chainsql-lib').RippleAPI;
+
+const api = new RippleAPI();
+/* insert code here */
+```
+
+Methods that depend on the state of the ZXC Ledger are unavailable in offline mode. To prepare transactions offline, you **must** specify  the `fee`, `sequence`, and `maxLedgerVersion` parameters in the [transaction instructions](#transaction-instructions). You can use the following methods while offline:
+
+* [preparePayment](#preparepayment)
+* [prepareTrustline](#preparetrustline)
+* [prepareOrder](#prepareorder)
+* [prepareOrderCancellation](#prepareordercancellation)
+* [prepareSettings](#preparesettings)
+* [prepareEscrowCreation](#prepareescrowcreation)
+* [prepareEscrowCancellation](#prepareescrowcancellation)
+* [prepareEscrowExecution](#prepareescrowexecution)
+* [sign](#sign)
+* [generateAddress](#generateaddress)
+* [computeLedgerHash](#computeledgerhash)

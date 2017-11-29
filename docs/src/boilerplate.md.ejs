@@ -1,0 +1,62 @@
+## Boilerplate
+
+Use the following [boilerplate code](https://en.wikipedia.org/wiki/Boilerplate_code) to wrap your custom code using RippleAPI.
+
+```javascript
+const RippleAPI = require('ripple-lib').RippleAPI;
+
+const api = new RippleAPI({
+  server: 'wss://s1.ripple.com' // Public rippled server hosted by Ripple, Inc.
+});
+api.on('error', (errorCode, errorMessage) => {
+  console.log(errorCode + ': ' + errorMessage);
+});
+api.on('connected', () => {
+  console.log('connected');
+});
+api.on('disconnected', (code) => {
+  // code - [close code](https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent) sent by the server
+  // will be 1000 if this was normal closure
+  console.log('disconnected, code:', code);
+});
+api.connect().then(() => {
+  /* insert code here */
+}).then(() => {
+  return api.disconnect();
+}).catch(console.error);
+```
+
+RippleAPI is designed to work in [Node.js](https://nodejs.org) version **6.11.3**. RippleAPI may work on older Node.js versions if you use [Babel](https://babeljs.io/) for [ECMAScript 6](https://babeljs.io/docs/learn-es2015/) support.
+
+The code samples in this documentation are written with ECMAScript 6 (ES6) features, but `RippleAPI` also works with ECMAScript 5 (ES5). Regardless of whether you use ES5 or ES6, the methods that return Promises return [ES6-style promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+
+<aside class="notice">
+All the code snippets in this documentation assume that you have surrounded them with this boilerplate.
+</aside>
+
+<aside class="notice">
+If you omit the "catch" section, errors may not be visible.
+</aside>
+
+<aside class="notice">
+The "error" event is emitted whenever an error occurs that cannot be associated with a specific request. If the listener is not registered, an exception will be thrown whenever the event is emitted.
+</aside>
+
+### Parameters
+
+The RippleAPI constructor optionally takes one argument, an object with the following options:
+
+<%- renderSchema('input/api-options.json') %>
+
+If you omit the `server` parameter, RippleAPI operates [offline](#offline-functionality).
+
+
+### Installation ###
+
+1. Install [Node.js](https://nodejs.org) and the Node Package Manager (npm). Most Linux distros have a package for Node.js; check that it's the version you want.
+2. Use npm to install RippleAPI:
+      `npm install ripple-lib`
+
+After you have installed ripple-lib, you can create scripts using the [boilerplate](#boilerplate) and run them using the Node.js executable, typically named `node`:
+
+      `node script.js`

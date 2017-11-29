@@ -1,0 +1,23 @@
+## generateAddress
+
+`generateAddress(): {address: string, secret: string}`
+
+Generate a new ZXC Ledger address and corresponding secret.
+
+### Parameters
+
+<%- renderSchema('input/generate-address.json') %>
+
+### Return Value
+
+This method returns an object with the following structure:
+
+<%- renderSchema('output/generate-address.json') %>
+
+### Example
+
+```javascript
+return api.generateAddress();
+```
+
+<%- renderFixture('responses/generate-address.json') %>
