@@ -481,7 +481,7 @@ Name | Type | Description
 ---- | ---- | -----------
 defaultRipple | boolean | *Optional* Enable [rippling](https://ripple.com/knowledge_center/understanding-the-noripple-flag/) on this account’s trust lines by default. (New in [rippled 0.27.3](https://github.com/ripple/rippled/releases/tag/0.27.3))
 disableMasterKey | boolean | *Optional* Disallows use of the master key to sign transactions for this account.
-disallowIncomingXRP | boolean | *Optional* Indicates that client applications should not send ZXC to this account. Not enforced by rippled.
+disallowIncomingZXC | boolean | *Optional* Indicates that client applications should not send ZXC to this account. Not enforced by rippled.
 domain | string | *Optional*  The domain that owns this account, as a hexadecimal string representing the ASCII for the domain in lowercase.
 emailHash | string,null | *Optional* Hash of an email address to be used for generating an avatar image. Conventionally, clients use Gravatar to display this image. Use `null` to clear.
 enableTransactionIDTracking | boolean | *Optional* Track the ID of this account’s most recent transaction.
@@ -754,10 +754,10 @@ pubkeyNode | string | Public key used to verify this node for internal communica
 serverState | string | A string indicating to what extent the server is participating in the network. See [Possible Server States](https://ripple.com/build/rippled-apis/#possible-server-states) for more details.
 validatedLedger | object | Information about the fully-validated ledger with the highest sequence number (the most recent).
 *validatedLedger.* age | integer | The time since the ledger was closed, in seconds.
-*validatedLedger.* baseFeeXRP | [value](#value) | Base fee, in ZXC. This may be represented in scientific notation such as 1e-05 for 0.00005.
+*validatedLedger.* baseFeeZXC | [value](#value) | Base fee, in ZXC. This may be represented in scientific notation such as 1e-05 for 0.00005.
 *validatedLedger.* hash | string | Unique hash for the ledger, as an uppercase hexadecimal string.
-*validatedLedger.* reserveBaseXRP | [value](#value) | Minimum amount of ZXC necessary for every account to keep in reserve.
-*validatedLedger.* reserveIncrementXRP | [value](#value) | Amount of ZXC added to the account reserve for each object an account is responsible for in the ledger.
+*validatedLedger.* reserveBaseZXC | [value](#value) | Minimum amount of ZXC necessary for every account to keep in reserve.
+*validatedLedger.* reserveIncrementZXC | [value](#value) | Amount of ZXC added to the account reserve for each object an account is responsible for in the ledger.
 *validatedLedger.* ledgerVersion | integer | Identifying sequence number of this ledger version.
 validationQuorum | number | Minimum number of trusted validations required in order to validate a ledger version. Some circumstances may cause the server to require more validations.
 load | object | *Optional* *(Admin only)* Detailed information about the current load state of the server.
@@ -2719,7 +2719,7 @@ Name | Type | Description
 ---- | ---- | -----------
 defaultRipple | boolean | *Optional* Enable [rippling](https://ripple.com/knowledge_center/understanding-the-noripple-flag/) on this account’s trust lines by default. (New in [rippled 0.27.3](https://github.com/ripple/rippled/releases/tag/0.27.3))
 disableMasterKey | boolean | *Optional* Disallows use of the master key to sign transactions for this account.
-disallowIncomingXRP | boolean | *Optional* Indicates that client applications should not send ZXC to this account. Not enforced by rippled.
+disallowIncomingZXC | boolean | *Optional* Indicates that client applications should not send ZXC to this account. Not enforced by rippled.
 domain | string | *Optional*  The domain that owns this account, as a hexadecimal string representing the ASCII for the domain in lowercase.
 emailHash | string,null | *Optional* Hash of an email address to be used for generating an avatar image. Conventionally, clients use Gravatar to display this image. Use `null` to clear.
 enableTransactionIDTracking | boolean | *Optional* Track the ID of this account’s most recent transaction.
@@ -2751,7 +2751,7 @@ return api.getSettings(address).then(settings =>
 ```json
 {
   "requireDestinationTag": true,
-  "disallowIncomingXRP": true,
+  "disallowIncomingZXC": true,
   "emailHash": "23463B99B62A72F26ED677CC556C44E8",
   "domain": "example.com",
   "transferRate": 1.002
@@ -2780,7 +2780,7 @@ This method returns a promise that resolves with an object with the following st
 Name | Type | Description
 ---- | ---- | -----------
 sequence | [sequence](#account-sequence-number) | The next (smallest unused) sequence number for this account.
-xrpBalance | [value](#value) | The ZXC balance owned by the account.
+zxcBalance | [value](#value) | The ZXC balance owned by the account.
 ownerCount | integer | Number of other ledger entries (specifically, trust lines and offers) attributed to this account. This is used to calculate the total reserve required to use the account.
 previousAffectingTransactionID | string | Hash value representing the most recent transaction that affected this account node directly. **Note:** This does not include changes to the account’s trust lines and offers.
 previousAffectingTransactionLedgerVersion | integer | The ledger version that the transaction identified by the `previousAffectingTransactionID` was validated in.
@@ -2798,7 +2798,7 @@ return api.getAccountInfo(address).then(info =>
 ```json
 {
   "sequence": 23,
-  "xrpBalance": "922.913243",
+  "zxcBalance": "922.913243",
   "ownerCount": 1,
   "previousAffectingTransactionID": "19899273706A9E040FDB5885EE991A1DC2BAD878A0D6E7DBCFB714E63BF737F7",
   "previousAffectingTransactionLedgerVersion": 6614625
@@ -3872,11 +3872,11 @@ This event is emitted whenever a new ledger version is validated on the connecte
 
 Name | Type | Description
 ---- | ---- | -----------
-baseFeeXRP | [value](#value) | Base fee, in ZXC.
+baseFeeZXC | [value](#value) | Base fee, in ZXC.
 ledgerHash | string | Unique hash of the ledger that was closed, as hex.
 ledgerTimestamp | date-time string | The time at which this ledger closed.
-reserveBaseXRP | [value](#value) | The minimum reserve, in ZXC, that is required for an account.
-reserveIncrementXRP | [value](#value) | The increase in account reserve that is added for each item the account owns, such as offers or trust lines.
+reserveBaseZXC | [value](#value) | The minimum reserve, in ZXC, that is required for an account.
+reserveIncrementZXC | [value](#value) | The increase in account reserve that is added for each item the account owns, such as offers or trust lines.
 transactionCount | integer | Number of new transactions included in this ledger.
 ledgerVersion | integer | Ledger version of the ledger that closed.
 validatedLedgerVersions | string | Range of ledgers that the server has available. This may be discontiguous.

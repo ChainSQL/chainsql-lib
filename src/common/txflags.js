@@ -11,8 +11,8 @@ const txFlags = {
     OptionalDestTag: 0x00020000,
     RequireAuth: 0x00040000,
     OptionalAuth: 0x00080000,
-    DisallowXRP: 0x00100000,
-    AllowXRP: 0x00200000
+    DisallowZXC: 0x00100000,
+    AllowZXC: 0x00200000
   },
 
   TrustSet: {
@@ -50,7 +50,7 @@ const txFlagIndices = {
   AccountSet: {
     asfRequireDest: 1,
     asfRequireAuth: 2,
-    asfDisallowXRP: 3,
+    asfDisallowZXC: 3,
     asfDisableMaster: 4,
     asfAccountTxnID: 5,
     asfNoFreeze: 6,

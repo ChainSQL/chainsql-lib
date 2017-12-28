@@ -55,11 +55,11 @@ function requestPathFind(connection: Connection, pathfind: PathFind): Promise {
   return connection.request(request).then(paths => addParams(request, paths))
 }
 
-function addDirectXrpPath(paths: RippledPathsResponse, xrpBalance: string
+function addDirectZxcPath(paths: RippledPathsResponse, zxcBalance: string
 ): RippledPathsResponse {
   // Add ZXC "path" only if the source acct has enough ZXC to make the payment
   const destinationAmount = paths.destination_amount
-  if ((new BigNumber(xrpBalance)).greaterThanOrEqualTo(destinationAmount)) {
+  if ((new BigNumber(zxcBalance)).greaterThanOrEqualTo(destinationAmount)) {
     paths.alternatives.unshift({
       paths_computed: [],
       source_amount: paths.destination_amount
@@ -74,15 +74,15 @@ function isRippledIOUAmount(amount: RippledAmount) {
     amount.currency && (amount.currency !== 'ZXC')
 }
 
-function conditionallyAddDirectXRPPath(connection: Connection, address: string,
+function conditionallyAddDirectZXCPath(connection: Connection, address: string,
   paths: RippledPathsResponse
 ): Promise {
   if (isRippledIOUAmount(paths.destination_amount)
       || !_.includes(paths.destination_currencies, 'ZXC')) {
     return Promise.resolve(paths)
   }
-  return utils.getXRPBalance(connection, address, undefined).then(
-    xrpBalance => addDirectXrpPath(paths, xrpBalance))
+  return utils.getZXCBalance(connection, address, undefined).then(
+    zxcBalance => addDirectZxcPath(paths, zxcBalance))
 }
 
 function filterSourceFundsLowPaths(pathfind: PathFind,
@@ -129,7 +129,7 @@ function getPaths(pathfind: PathFind): Promise<GetPaths> {
 
   const address = pathfind.source.address
   return requestPathFind(this.connection, pathfind).then(paths =>
-    conditionallyAddDirectXRPPath(this.connection, address, paths)
+    conditionallyAddDirectZXCPath(this.connection, address, paths)
   )
   .then(paths => filterSourceFundsLowPaths(pathfind, paths))
   .then(paths => formatResponse(pathfind, paths))

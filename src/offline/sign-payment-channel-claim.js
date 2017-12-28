@@ -3,7 +3,7 @@
 const common = require('../common')
 const keypairs = require('chainsql-keypairs')
 const binary = require('chainsql-binary-codec')
-const {validate, xrpToDrops} = common
+const {validate, zxcToDrops} = common
 
 function signPaymentChannelClaim(channel: string, amount: string,
   privateKey: string
@@ -12,7 +12,7 @@ function signPaymentChannelClaim(channel: string, amount: string,
 
   const signingData = binary.encodeForSigningClaim({
     channel: channel,
-    amount: xrpToDrops(amount),
+    amount: zxcToDrops(amount),
   })
   return keypairs.sign(signingData, privateKey)
 }

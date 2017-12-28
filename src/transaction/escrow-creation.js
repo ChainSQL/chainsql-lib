@@ -2,7 +2,7 @@
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
 const utils = require('./utils')
-const {validate, iso8601ToRippleTime, xrpToDrops} = utils.common
+const {validate, iso8601ToRippleTime, zxcToDrops} = utils.common
 const ValidationError = utils.common.errors.ValidationError
 import type {Instructions, Prepare} from './types.js'
 import type {Adjustment, MaxAdjustment, Memo} from '../common/types.js'
@@ -25,7 +25,7 @@ function createEscrowCreationTransaction(account: string,
     TransactionType: 'EscrowCreate',
     Account: account,
     Destination: payment.destination,
-    Amount: xrpToDrops(payment.amount),
+    Amount: zxcToDrops(payment.amount),
   }
 
   if (payment.condition !== undefined) {

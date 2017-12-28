@@ -7,7 +7,7 @@
       "$ref": "sequence",
       "description": "The next (smallest unused) sequence number for this account."
     },
-    "xrpBalance": {
+    "zxcBalance": {
       "$ref": "value",
       "description": "The ZXC balance owned by the account."
     },

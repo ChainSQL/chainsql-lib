@@ -304,7 +304,7 @@ function(request_id, sendingAccount, destinationAccount, destinationAmount) {
   });
 };
 
-module.exports.generateXRPPaymentPaths =
+module.exports.generateZXCPaymentPaths =
 function(request_id, sendingAccount, destinationAccount) {
   return JSON.stringify({
     'id': request_id,

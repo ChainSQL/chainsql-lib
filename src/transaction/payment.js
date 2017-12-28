@@ -32,7 +32,7 @@ type Payment = {
   limitQuality?: boolean
 }
 
-function isXRPToXRPPayment(payment: Payment): boolean {
+function isZXCToZXCPayment(payment: Payment): boolean {
   const sourceCurrency = _.get(payment, 'source.maxAmount.currency',
     _.get(payment, 'source.amount.currency'))
   const destinationCurrency = _.get(payment, 'destination.amount.currency',
@@ -61,9 +61,9 @@ function applyAnyCounterpartyEncoding(payment: Payment): void {
 }
 
 function createMaximalAmount(amount: Amount): Amount {
-  const maxXRPValue = '100000000000'
+  const maxZXCValue = '100000000000'
   const maxIOUValue = '9999999999999999e80'
-  const maxValue = amount.currency === 'ZXC' ? maxXRPValue : maxIOUValue
+  const maxValue = amount.currency === 'ZXC' ? maxZXCValue : maxIOUValue
   return _.assign({}, amount, {value: maxValue})
 }
 
@@ -88,7 +88,7 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
   // send the whole source amount, so we set the destination amount to the
   // maximum possible amount. otherwise it's possible that the destination
   // cap could be hit before the source cap.
-  const amount = payment.destination.minAmount && !isXRPToXRPPayment(payment) ?
+  const amount = payment.destination.minAmount && !isZXCToZXCPayment(payment) ?
     createMaximalAmount(payment.destination.minAmount) :
     (payment.destination.amount || payment.destination.minAmount)
 
@@ -118,7 +118,7 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
   if (payment.limitQuality === true) {
     txJSON.Flags |= paymentFlags.LimitQuality
   }
-  if (!isXRPToXRPPayment(payment)) {
+  if (!isZXCToZXCPayment(payment)) {
     // Don't set SendMax for ZXC->ZXC payment
     // temREDUNDANT_SEND_MAX removed in:
     // https://github.com/ripple/rippled/commit/

@@ -3,7 +3,7 @@
 const utils = require('./utils')
 const ValidationError = utils.common.errors.ValidationError
 const claimFlags = utils.common.txFlags.PaymentChannelClaim
-const {validate, xrpToDrops} = utils.common
+const {validate, zxcToDrops} = utils.common
 import type {Instructions, Prepare} from './types.js'
 
 type PaymentChannelClaim = {
@@ -27,10 +27,10 @@ function createPaymentChannelClaimTransaction(account: string,
   }
 
   if (claim.balance !== undefined) {
-    txJSON.Balance = xrpToDrops(claim.balance)
+    txJSON.Balance = zxcToDrops(claim.balance)
   }
   if (claim.amount !== undefined) {
-    txJSON.Amount = xrpToDrops(claim.amount)
+    txJSON.Amount = zxcToDrops(claim.amount)
   }
 
   if (Boolean(claim.signature) !== Boolean(claim.publicKey)) {

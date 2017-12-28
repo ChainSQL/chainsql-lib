@@ -15,17 +15,17 @@ function isValidSecret(secret: string): boolean {
   }
 }
 
-function dropsToXrp(drops: string): string {
+function dropsToZxc(drops: string): string {
   return (new BigNumber(drops)).dividedBy(1000000.0).toString()
 }
 
-function xrpToDrops(zxc: string): string {
+function zxcToDrops(zxc: string): string {
   return (new BigNumber(zxc)).times(1000000.0).floor().toString()
 }
 
 function toRippledAmount(amount: Amount): RippledAmount {
   if (amount.currency === 'ZXC') {
-    return xrpToDrops(amount.value)
+    return zxcToDrops(amount.value)
   }
   return {
     currency: amount.currency,
@@ -82,8 +82,8 @@ function iso8601ToRippleTime(iso8601: string): number {
 }
 
 module.exports = {
-  dropsToXrp,
-  xrpToDrops,
+  dropsToZxc,
+  zxcToDrops,
   toRippledAmount,
   convertKeysFromSnakeCaseToCamelCase,
   removeUndefined,

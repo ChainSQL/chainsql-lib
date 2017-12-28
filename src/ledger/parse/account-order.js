@@ -32,7 +32,7 @@ function parseAccountOrder(address: string, order: Object): Object {
   })
 
   const makerExchangeRate = order.quality ?
-      utils.adjustQualityForXRP(order.quality.toString(),
+      utils.adjustQualityForZXC(order.quality.toString(),
         takerGetsAmount.currency, takerPaysAmount.currency) :
       computeQuality(takerGetsAmount, takerPaysAmount)
   const properties = {

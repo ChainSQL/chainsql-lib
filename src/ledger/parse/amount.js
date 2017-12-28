@@ -8,7 +8,7 @@ function parseAmount(amount: RippledAmount): Amount {
   if (typeof amount === 'string') {
     return {
       currency: 'ZXC',
-      value: utils.common.dropsToXrp(amount)
+      value: utils.common.dropsToZxc(amount)
     }
   }
   return {

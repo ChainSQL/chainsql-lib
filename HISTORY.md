@@ -342,7 +342,7 @@ __OTHER CHANGES__
 
 + **Deprecations**
 
-    1. Removed humanistic amount detection in `transaction.payment`. Passing `1XRP` as the payment amount no longer works.
+    1. Removed humanistic amount detection in `transaction.payment`. Passing `1ZXC` as the payment amount no longer works.
     2. `remote.setServer` uses full server URL rather than hostname. Example: `remote.setServer('wss://s`.ripple.com:443')`
     3. Removed constructors for deprecated transaction types from `transaction.js`.
     4. Removed `invoiceID` option from `transaction.payment`. Instead, use the `transaction.invoiceID` method.

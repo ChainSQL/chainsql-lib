@@ -8,7 +8,7 @@ const parseAmount = require('./amount')
 
 import type {Amount} from '../common/types.js'
 
-function adjustQualityForXRP(
+function adjustQualityForZXC(
   quality: string, takerGetsCurrency: string, takerPaysCurrency: string
 ) {
   // quality = takerPays.value/takerGets.value
@@ -108,7 +108,7 @@ function parseOutcome(tx: Object): ?Object {
   return utils.common.removeUndefined({
     result: tx.meta.TransactionResult,
     timestamp: parseTimestamp(tx.date),
-    fee: utils.common.dropsToXrp(tx.Fee),
+    fee: utils.common.dropsToZxc(tx.Fee),
     balanceChanges: balanceChanges,
     orderbookChanges: orderbookChanges,
     ledgerVersion: tx.ledger_index,
@@ -140,9 +140,9 @@ module.exports = {
   parseMemos,
   hexToString,
   parseTimestamp,
-  adjustQualityForXRP,
+  adjustQualityForZXC,
   isPartialPayment,
-  dropsToXrp: utils.common.dropsToXrp,
+  dropsToZxc: utils.common.dropsToZxc,
   constants: utils.common.constants,
   txFlags: utils.common.txFlags,
   removeUndefined: utils.common.removeUndefined,

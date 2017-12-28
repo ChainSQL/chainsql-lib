@@ -711,7 +711,7 @@ module.exports.requestBookOffersAsksResponse = function(request, options={}) {
  });
 };
 
-module.exports.requestBookOffersXRPBaseResponse = function(request) {
+module.exports.requestBookOffersZXCBaseResponse = function(request) {
   return JSON.stringify({
     id: request.id,
     status: 'success',
@@ -953,7 +953,7 @@ module.exports.requestBookOffersXRPBaseResponse = function(request) {
  });
 };
 
-module.exports.requestBookOffersXRPCounterResponse = function(request) {
+module.exports.requestBookOffersZXCCounterResponse = function(request) {
   return JSON.stringify({
     id: request.id,
     status: 'success',

@@ -10,8 +10,8 @@ type SettingRequireDestinationTag = {
 type SettingRequireAuthorization = {
   requireAuthorization?: boolean,
 }
-type SettingDisallowIncomingXRP = {
-  disallowIncomingXRP?: boolean,
+type SettingDisallowIncomingZXC = {
+  disallowIncomingZXC?: boolean,
 }
 type SettingDisableMasterKey = {
   disableMasterKey?: boolean,
@@ -48,6 +48,6 @@ export type Settings = SettingRegularKey |
   SettingTransferRate | SettingDomain | SettingMessageKey |
   SettingEmailHash | SettingDefaultRipple |
   SettingGlobalFreeze | SettingNoFreeze | SettingEnableTransactionIDTracking |
-  SettingDisableMasterKey | SettingDisallowIncomingXRP |
+  SettingDisableMasterKey | SettingDisallowIncomingZXC |
   SettingRequireAuthorization | SettingRequireDestinationTag |
   SettingPasswordSpent

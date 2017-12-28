@@ -1,7 +1,7 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const utils = require('./utils')
-const {validate, iso8601ToRippleTime, xrpToDrops} = utils.common
+const {validate, iso8601ToRippleTime, zxcToDrops} = utils.common
 import type {Instructions, Prepare} from './types.js'
 
 type PaymentChannelFund = {
@@ -17,7 +17,7 @@ function createPaymentChannelFundTransaction(account: string,
     Account: account,
     TransactionType: 'PaymentChannelFund',
     Channel: fund.channel,
-    Amount: xrpToDrops(fund.amount)
+    Amount: zxcToDrops(fund.amount)
   }
 
   if (fund.expiration !== undefined) {

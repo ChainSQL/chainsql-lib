@@ -8,7 +8,7 @@ import type {Instructions, Prepare} from './types.js'
 
 function formatPrepareResponse(txJSON: Object): Object {
   const instructions = {
-    fee: common.dropsToXrp(txJSON.Fee),
+    fee: common.dropsToZxc(txJSON.Fee),
     sequence: txJSON.Sequence,
     maxLedgerVersion: txJSON.LastLedgerSequence === undefined ?
       null : txJSON.LastLedgerSequence
@@ -58,7 +58,7 @@ function prepareTransaction(txJSON: Object, api: Object,
     const multiplier = instructions.signersCount === undefined ? 1 :
       instructions.signersCount + 1
     if (instructions.fee !== undefined) {
-      txJSON.Fee = scaleValue(common.xrpToDrops(instructions.fee), multiplier)
+      txJSON.Fee = scaleValue(common.zxcToDrops(instructions.fee), multiplier)
       return Promise.resolve(txJSON)
     }
     const cushion = api._feeCushion
@@ -69,9 +69,9 @@ function prepareTransaction(txJSON: Object, api: Object,
             txJSON.Fulfillment === undefined) ? 0 :
           (cushion * feeRef * (32 + Math.floor(
             new Buffer(txJSON.Fulfillment, 'hex').length / 16)))
-        const feeDrops = common.xrpToDrops(fee)
+        const feeDrops = common.zxcToDrops(fee)
         if (instructions.maxFee !== undefined) {
-          const maxFeeDrops = common.xrpToDrops(instructions.maxFee)
+          const maxFeeDrops = common.zxcToDrops(instructions.maxFee)
           const normalFee = scaleValue(feeDrops, multiplier, extraFee)
           txJSON.Fee = BigNumber.min(normalFee, maxFeeDrops).toString()
         } else {

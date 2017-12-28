@@ -67,16 +67,16 @@ describe('RippleAPI', function() {
         maxFee: '0.000012'
       }, instructions);
       return this.api.preparePayment(
-        address, requests.preparePayment.minAmountXRP, localInstructions).then(
+        address, requests.preparePayment.minAmountZXC, localInstructions).then(
         _.partial(checkResult,
-          responses.preparePayment.minAmountXRP, 'prepare'));
+          responses.preparePayment.minAmountZXC, 'prepare'));
     });
 
-    it('preparePayment - min amount xrp2xrp', function() {
+    it('preparePayment - min amount zxc2zxc', function() {
       return this.api.preparePayment(
         address, requests.preparePayment.minAmount, instructions).then(
         _.partial(checkResult,
-          responses.preparePayment.minAmountXRPXRP, 'prepare'));
+          responses.preparePayment.minAmountZXCZXC, 'prepare'));
     });
 
     it('preparePayment - ZXC to ZXC no partial', function() {
@@ -1068,8 +1068,8 @@ describe('RippleAPI', function() {
     });
 
     it('with ZXC', function() {
-      return this.api.getOrderbook(address, requests.getOrderbook.withXRP).then(
-        _.partial(checkResult, responses.getOrderbook.withXRP, 'getOrderbook'));
+      return this.api.getOrderbook(address, requests.getOrderbook.withZXC).then(
+        _.partial(checkResult, responses.getOrderbook.withZXC, 'getOrderbook'));
     });
 
     it('sorted so that best deals come first', function() {
@@ -1206,33 +1206,33 @@ describe('RippleAPI', function() {
 
   it('getPaths', function() {
     return this.api.getPaths(requests.getPaths.normal).then(
-      _.partial(checkResult, responses.getPaths.XrpToUsd, 'getPaths'));
+      _.partial(checkResult, responses.getPaths.ZxcToUsd, 'getPaths'));
   });
 
   it('getPaths - queuing', function() {
     return Promise.all([
       this.api.getPaths(requests.getPaths.normal),
       this.api.getPaths(requests.getPaths.UsdToUsd),
-      this.api.getPaths(requests.getPaths.XrpToXrp)
+      this.api.getPaths(requests.getPaths.ZxcToZxc)
     ]).then(results => {
-      checkResult(responses.getPaths.XrpToUsd, 'getPaths', results[0]);
+      checkResult(responses.getPaths.ZxcToUsd, 'getPaths', results[0]);
       checkResult(responses.getPaths.UsdToUsd, 'getPaths', results[1]);
-      checkResult(responses.getPaths.XrpToXrp, 'getPaths', results[2]);
+      checkResult(responses.getPaths.ZxcToZxc, 'getPaths', results[2]);
     });
   });
 
   // @TODO
   // need decide what to do with currencies/ZXC:
   // if add 'ZXC' in currencies, then there will be exception in
-  // xrpToDrops function (called from toRippledAmount)
+  // zxcToDrops function (called from toRippledAmount)
   it('getPaths USD 2 USD', function() {
     return this.api.getPaths(requests.getPaths.UsdToUsd).then(
       _.partial(checkResult, responses.getPaths.UsdToUsd, 'getPaths'));
   });
 
   it('getPaths ZXC 2 ZXC', function() {
-    return this.api.getPaths(requests.getPaths.XrpToXrp).then(
-      _.partial(checkResult, responses.getPaths.XrpToXrp, 'getPaths'));
+    return this.api.getPaths(requests.getPaths.ZxcToZxc).then(
+      _.partial(checkResult, responses.getPaths.ZxcToZxc, 'getPaths'));
   });
 
   it('getPaths - source with issuer', function() {
@@ -1244,7 +1244,7 @@ describe('RippleAPI', function() {
   });
 
   it('getPaths - ZXC 2 ZXC - not enough', function() {
-    return this.api.getPaths(requests.getPaths.XrpToXrpNotEnough).then(() => {
+    return this.api.getPaths(requests.getPaths.ZxcToZxcNotEnough).then(() => {
       assert(false, 'Should throw NotFoundError');
     }).catch(error => {
       assert(error instanceof this.api.errors.NotFoundError);

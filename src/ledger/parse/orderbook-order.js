@@ -25,7 +25,7 @@ function parseOrderbookOrder(order: Object): Object {
   const properties = {
     maker: order.Account,
     sequence: order.Sequence,
-    makerExchangeRate: utils.adjustQualityForXRP(order.quality,
+    makerExchangeRate: utils.adjustQualityForZXC(order.quality,
       takerGetsAmount.currency, takerPaysAmount.currency)
   }
 

@@ -375,10 +375,10 @@ module.exports = function createMockRippled(port) {
 
   mock.on('request_book_offers', function(request, conn) {
     if (request.taker_pays.issuer === 'rp8rJYTpodf8qbSCHVTNacf8nSW8mRakFw') {
-      conn.send(createResponse(request, fixtures.book_offers.xrp_usd));
+      conn.send(createResponse(request, fixtures.book_offers.zxc_usd));
     } else if (request.taker_gets.issuer
         === 'rp8rJYTpodf8qbSCHVTNacf8nSW8mRakFw') {
-      conn.send(createResponse(request, fixtures.book_offers.usd_xrp));
+      conn.send(createResponse(request, fixtures.book_offers.usd_zxc));
     } else if (isBTC(request.taker_gets.currency)
         && isUSD(request.taker_pays.currency)) {
       conn.send(
@@ -404,7 +404,7 @@ module.exports = function createMockRippled(port) {
     } else if (request.source_account === addresses.OTHER_ACCOUNT) {
       response = createResponse(request, fixtures.path_find.sendUSD);
     } else if (request.source_account === addresses.THIRD_ACCOUNT) {
-      response = createResponse(request, fixtures.path_find.XrpToXrp, {
+      response = createResponse(request, fixtures.path_find.ZxcToZxc, {
         destination_amount: request.destination_amount,
         destination_address: request.destination_address
       });
