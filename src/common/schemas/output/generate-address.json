@@ -5,7 +5,7 @@
   "properties": {
     "address": {
       "$ref": "address",
-      "description": "A randomly generated Ripple account address."
+      "description": "A randomly generated Chainsql account address."
     },
     "secret": {
       "type": "string",

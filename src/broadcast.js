@@ -1,13 +1,13 @@
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
-const RippleAPI = require('./api').RippleAPI
+const ChainsqlAPI = require('./api').ChainsqlAPI
 
-class RippleAPIBroadcast extends RippleAPI {
+class ChainsqlAPIBroadcast extends ChainsqlAPI {
   constructor(servers, options) {
     super(options)
     this.ledgerVersion = 0
 
-    const apis = servers.map(server => new RippleAPI(
+    const apis = servers.map(server => new ChainsqlAPI(
       _.assign({}, options, {server})
     ))
 
@@ -54,9 +54,9 @@ class RippleAPIBroadcast extends RippleAPI {
 
   getMethodNames() {
     const methodNames = []
-    for (const name in RippleAPI.prototype) {
-      if (RippleAPI.prototype.hasOwnProperty(name)) {
-        if (typeof RippleAPI.prototype[name] === 'function') {
+    for (const name in ChainsqlAPI.prototype) {
+      if (ChainsqlAPI.prototype.hasOwnProperty(name)) {
+        if (typeof ChainsqlAPI.prototype[name] === 'function') {
           methodNames.push(name)
         }
       }
@@ -66,5 +66,5 @@ class RippleAPIBroadcast extends RippleAPI {
 }
 
 module.exports = {
-  RippleAPIBroadcast
+  ChainsqlAPIBroadcast
 }

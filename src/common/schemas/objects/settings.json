@@ -35,7 +35,7 @@
       "type": "boolean",
       "description": "Freeze all assets issued by this account."
     },
-    "defaultRipple": {
+    "defaultChainsql": {
       "type": "boolean",
       "description": "Enable [rippling](https://ripple.com/knowledge_center/understanding-the-noripple-flag/) on this account’s trust lines by default. (New in [rippled 0.27.3](https://github.com/ripple/rippled/releases/tag/0.27.3))"
     },
@@ -48,7 +48,7 @@
     },
     "messageKey": {
       "type": "string",
-      "description": "Public key for sending encrypted messages to this account. Conventionally, it should be a secp256k1 key, the same encryption that is used by the rest of Ripple."
+      "description": "Public key for sending encrypted messages to this account. Conventionally, it should be a secp256k1 key, the same encryption that is used by the rest of Chainsql."
     },
     "domain": {
       "type": "string",

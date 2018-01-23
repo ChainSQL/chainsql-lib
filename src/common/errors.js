@@ -12,7 +12,7 @@ function extendableBuiltin(cls) {
   return ExtendableBuiltin
 }
 
-class RippleError extends extendableBuiltin(Error) {
+class ChainsqlError extends extendableBuiltin(Error) {
   constructor(message, data) {
     super(message)
 
@@ -41,39 +41,39 @@ class RippleError extends extendableBuiltin(Error) {
   }
 }
 
-class RippledError extends RippleError {}
+class ChainsqldError extends ChainsqlError {}
 
-class UnexpectedError extends RippleError {}
+class UnexpectedError extends ChainsqlError {}
 
-class LedgerVersionError extends RippleError {}
+class LedgerVersionError extends ChainsqlError {}
 
-class ConnectionError extends RippleError {}
+class ConnectionError extends ChainsqlError {}
 
 class NotConnectedError extends ConnectionError {}
 
 class DisconnectedError extends ConnectionError {}
 
-class RippledNotInitializedError extends ConnectionError {}
+class ChainsqldNotInitializedError extends ConnectionError {}
 
 class TimeoutError extends ConnectionError {}
 
 class ResponseFormatError extends ConnectionError {}
 
-class ValidationError extends RippleError {}
+class ValidationError extends ChainsqlError {}
 
-class NotFoundError extends RippleError {
+class NotFoundError extends ChainsqlError {
   constructor(message) {
     super(message || 'Not found')
   }
 }
 
-class MissingLedgerHistoryError extends RippleError {
+class MissingLedgerHistoryError extends ChainsqlError {
   constructor(message) {
     super(message || 'Server is missing ledger history in the specified range')
   }
 }
 
-class PendingLedgerVersionError extends RippleError {
+class PendingLedgerVersionError extends ChainsqlError {
   constructor(message) {
     super(message || 'maxLedgerVersion is greater than server\'s'
       + ' most recent validated ledger')
@@ -81,13 +81,13 @@ class PendingLedgerVersionError extends RippleError {
 }
 
 module.exports = {
-  RippleError,
+  ChainsqlError,
   UnexpectedError,
   ConnectionError,
-  RippledError,
+  ChainsqldError,
   NotConnectedError,
   DisconnectedError,
-  RippledNotInitializedError,
+  ChainsqldNotInitializedError,
   TimeoutError,
   ResponseFormatError,
   ValidationError,

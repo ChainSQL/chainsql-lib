@@ -24,7 +24,7 @@ function parseTrustline(tx: Object): Object {
     qualityIn: utils.parseQuality(tx.QualityIn),
     qualityOut: utils.parseQuality(tx.QualityOut),
     ripplingDisabled: parseFlag(
-      tx.Flags, flags.SetNoRipple, flags.ClearNoRipple),
+      tx.Flags, flags.SetNoChainsql, flags.ClearNoChainsql),
     frozen: parseFlag(tx.Flags, flags.SetFreeze, flags.ClearFreeze),
     authorized: parseFlag(tx.Flags, flags.SetAuth, 0)
   })

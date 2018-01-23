@@ -15,7 +15,7 @@ var pkg = require('./package.json');
 
 var uglifyOptions = {
   mangle: {
-    except: ['_', 'RippleError', 'RippledError', 'UnexpectedError',
+    except: ['_', 'ChainsqlError', 'ChainsqldError', 'UnexpectedError',
     'LedgerVersionError', 'ConnectionError', 'NotConnectedError',
     'DisconnectedError', 'TimeoutError', 'ResponseFormatError',
     'ValidationError', 'NotFoundError', 'MissingLedgerHistoryError',

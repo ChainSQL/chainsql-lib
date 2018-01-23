@@ -5,19 +5,19 @@ const assert = require('assert')
 const _ = require('lodash')
 const jayson = require('jayson')
 
-const RippleAPI = require('./api').RippleAPI
+const ChainsqlAPI = require('./api').ChainsqlAPI
 
 
 /* istanbul ignore next */
 function createHTTPServer(options, httpPort) {
-  const rippleAPI = new RippleAPI(options)
+  const rippleAPI = new ChainsqlAPI(options)
 
-  const methodNames = _.filter(_.keys(RippleAPI.prototype), k => {
-    return typeof RippleAPI.prototype[k] === 'function'
+  const methodNames = _.filter(_.keys(ChainsqlAPI.prototype), k => {
+    return typeof ChainsqlAPI.prototype[k] === 'function'
     && k !== 'connect'
     && k !== 'disconnect'
     && k !== 'constructor'
-    && k !== 'RippleAPI'
+    && k !== 'ChainsqlAPI'
   })
 
   function applyPromiseWithCallback(fnName, callback, args_) {

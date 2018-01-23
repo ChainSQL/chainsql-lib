@@ -13,7 +13,7 @@
       "$ref": "currency"
     },
     "counterparty": {
-      "description": "The Ripple address of the account that owes or is owed the funds (omitted if `currency` is \"ZXC\")",
+      "description": "The Chainsql address of the account that owes or is owed the funds (omitted if `currency` is \"ZXC\")",
       "$ref": "address"
     }
   },

@@ -1,10 +1,10 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const utils = require('../utils')
-import type {Amount, RippledAmount} from '../../common/types.js'
+import type {Amount, ChainsqldAmount} from '../../common/types.js'
 
 
-function parseAmount(amount: RippledAmount): Amount {
+function parseAmount(amount: ChainsqldAmount): Amount {
   if (typeof amount === 'string') {
     return {
       currency: 'ZXC',

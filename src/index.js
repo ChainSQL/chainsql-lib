@@ -1,7 +1,7 @@
 'use strict' // eslint-disable-line strict
 
 module.exports = {
-  RippleAPI: require('./api').RippleAPI,
+  ChainsqlLibAPI: require('./api').ChainsqlAPI,
   // Broadcast api is experimental
-  RippleAPIBroadcast: require('./broadcast').RippleAPIBroadcast
+  ChainsqlAPIBroadcast: require('./broadcast').ChainsqlAPIBroadcast
 }

@@ -5,8 +5,8 @@ const _ = require('lodash');
 const net = require('net');
 const assert = require('assert-diff');
 const setupAPI = require('./setup-api');
-const RippleAPI = require('ripple-api').RippleAPI;
-const utils = RippleAPI._PRIVATE.ledgerUtils;
+const ChainsqlAPI = require('ripple-api').ChainsqlAPI;
+const utils = ChainsqlAPI._PRIVATE.ledgerUtils;
 const ledgerClose = require('./fixtures/rippled/ledger-close.json');
 
 
@@ -328,9 +328,9 @@ describe('Connection', function() {
       servers: ['wss://server1.com', 'wss://server2.com']
     };
     assert.throws(function() {
-      const api = new RippleAPI(options);
+      const api = new ChainsqlAPI(options);
       unused(api);
-    }, this.api.errors.RippleError);
+    }, this.api.errors.ChainsqlError);
   });
 
   it('connect throws error', function(done) {
@@ -413,7 +413,7 @@ describe('Connection', function() {
     this.api.connection._ws.emit('message', JSON.stringify(message));
   });
 
-  it('should throw RippledNotInitializedError if server does not have ' +
+  it('should throw ChainsqldNotInitializedError if server does not have ' +
   'validated ledgers',
   function() {
     this.timeout(3000);
@@ -423,12 +423,12 @@ describe('Connection', function() {
       data: {returnEmptySubscribeRequest: 1}
     }));
 
-    const api = new RippleAPI({server: this.api.connection._url});
+    const api = new ChainsqlAPI({server: this.api.connection._url});
     return api.connect().then(() => {
       assert(false, 'Must have thrown!');
     }, error => {
-      assert(error instanceof this.api.errors.RippledNotInitializedError,
-        'Must throw RippledNotInitializedError, got instead ' + String(error));
+      assert(error instanceof this.api.errors.ChainsqldNotInitializedError,
+        'Must throw ChainsqldNotInitializedError, got instead ' + String(error));
     });
   });
 

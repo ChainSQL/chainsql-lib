@@ -47,7 +47,7 @@ function createLedgerResponse(request, response) {
   return JSON.stringify(newResponse);
 }
 
-module.exports = function createMockRippled(port) {
+module.exports = function createMockChainsqld(port) {
   const mock = new WebSocketServer({port: port});
   _.assign(mock, EventEmitter2.prototype);
 
@@ -115,7 +115,7 @@ module.exports = function createMockRippled(port) {
       setTimeout(conn.terminate.bind(conn), request.data.disconnectIn);
     } else if (request.data.openOnOtherPort) {
       getFreePort().then(newPort => {
-        createMockRippled(newPort);
+        createMockChainsqld(newPort);
         conn.send(createResponse(request, {status: 'success', type: 'response',
           result: {port: newPort}}
         ));
@@ -125,7 +125,7 @@ module.exports = function createMockRippled(port) {
         conn.terminate();
         close.call(mock, () => {
           setTimeout(() => {
-            createMockRippled(port);
+            createMockChainsqld(port);
           }, request.data.closeServerAndReopen);
         });
       }, 10);

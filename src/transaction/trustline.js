@@ -38,7 +38,7 @@ function createTrustlineTransaction(account: string,
   }
   if (trustline.ripplingDisabled !== undefined) {
     txJSON.Flags |= trustline.ripplingDisabled ?
-      trustlineFlags.NoRipple : trustlineFlags.ClearNoRipple
+      trustlineFlags.NoChainsql : trustlineFlags.ClearNoChainsql
   }
   if (trustline.frozen !== undefined) {
     txJSON.Flags |= trustline.frozen ?

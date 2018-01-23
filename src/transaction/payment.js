@@ -3,7 +3,7 @@
 const _ = require('lodash')
 const utils = require('./utils')
 const validate = utils.common.validate
-const toRippledAmount = utils.common.toRippledAmount
+const toChainsqldAmount = utils.common.toChainsqldAmount
 const paymentFlags = utils.common.txFlags.Payment
 const ValidationError = utils.common.errors.ValidationError
 import type {Instructions, Prepare} from './types.js'
@@ -23,12 +23,12 @@ type Payment = {
   // liquidity or funds in the source_account account
   allowPartialPayment?: boolean,
   // A boolean that can be set to true if paths are specified and the sender
-  // would like the Ripple Network to disregard any direct paths from
+  // would like the Chainsql Network to disregard any direct paths from
   // the source_account to the destination_account. This may be used to take
   // advantage of an arbitrage opportunity or by gateways wishing to issue
   // balances from a hot wallet to a user who has mistakenly set a trustline
   // directly to the hot wallet
-  noDirectRipple?: boolean,
+  noDirectChainsql?: boolean,
   limitQuality?: boolean
 }
 
@@ -47,7 +47,7 @@ function isIOUWithoutCounterparty(amount: Amount): boolean {
 
 function applyAnyCounterpartyEncoding(payment: Payment): void {
   // Convert blank counterparty to sender or receiver's address
-  //   (Ripple convention for 'any counterparty')
+  //   (Chainsql convention for 'any counterparty')
   // https://ripple.com/build/transactions/
   //    #special-issuer-values-for-sendmax-and-amount
   // https://ripple.com/build/ripple-rest/#counterparties-in-payments
@@ -96,7 +96,7 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
     TransactionType: 'Payment',
     Account: payment.source.address,
     Destination: payment.destination.address,
-    Amount: toRippledAmount(amount),
+    Amount: toChainsqldAmount(amount),
     Flags: 0
   }
 
@@ -112,8 +112,8 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
   if (payment.memos !== undefined) {
     txJSON.Memos = _.map(payment.memos, utils.convertMemo)
   }
-  if (payment.noDirectRipple === true) {
-    txJSON.Flags |= paymentFlags.NoRippleDirect
+  if (payment.noDirectChainsql === true) {
+    txJSON.Flags |= paymentFlags.NoChainsqlDirect
   }
   if (payment.limitQuality === true) {
     txJSON.Flags |= paymentFlags.LimitQuality
@@ -128,11 +128,11 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
       txJSON.Flags |= paymentFlags.PartialPayment
     }
 
-    txJSON.SendMax = toRippledAmount(
+    txJSON.SendMax = toChainsqldAmount(
       payment.source.maxAmount || payment.source.amount)
 
     if (payment.destination.minAmount !== undefined) {
-      txJSON.DeliverMin = toRippledAmount(payment.destination.minAmount)
+      txJSON.DeliverMin = toChainsqldAmount(payment.destination.minAmount)
     }
 
     if (payment.paths !== undefined) {

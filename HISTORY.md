@@ -48,7 +48,7 @@ __OTHER CHANGES__
 
 + [Fix `babel-polyfill` require](https://github.com/ripple/ripple-lib/commit/062148674c3b1293ab82c28e25615ddd530339fa)
 + [Fix samples](https://github.com/ripple/ripple-lib/commit/5d5cf868a2ddb1b1cd40e4a4f0a782d0066c2055)
-+ [Add unit tests for `RippleAPIBroadcast`](https://github.com/ripple/ripple-lib/commit/ddf8fe5b1a9c750490dca98fb9ffaaf8017f87e0)
++ [Add unit tests for `ChainsqlAPIBroadcast`](https://github.com/ripple/ripple-lib/commit/ddf8fe5b1a9c750490dca98fb9ffaaf8017f87e0)
 
 ## 0.15.0
 
@@ -70,7 +70,7 @@ __OTHER CHANGES__
 + [Fix proxy support and add support for proxy authorization](https://github.com/ripple/ripple-lib/commit/14b840f3feca758e0384b746c94e36d8bf59b8c2)
 + [Fix trace option](https://github.com/ripple/ripple-lib/commit/af620755c53556c55eed12de4b0013ef5a349ce2)
 + [Allow memos on all transaction types](https://github.com/ripple/ripple-lib/commit/b5081344da8e66fbd3a5113cc3313325ef72a494)
-+ [Add documentation for RippleAPI options](https://github.com/ripple/ripple-lib/commit/a76b554cadb9f9f918b06f8386bc29355682a1a4)
++ [Add documentation for ChainsqlAPI options](https://github.com/ripple/ripple-lib/commit/a76b554cadb9f9f918b06f8386bc29355682a1a4)
 + [Docs: more on basic types, tx types](https://github.com/ripple/ripple-lib/commit/fdbac63f466b4fd3be701d4878800d856692e26e)
 + [Docs: revised introductory material](https://github.com/ripple/ripple-lib/commit/ef2515507dbd3c6a426ab5b31332a1bdf72d5b2d)
 + [boost coverage to almost 100%](https://github.com/ripple/ripple-lib/commit/995606b1e6f3643af34d9fd442ccd31f320b03eb)
@@ -88,8 +88,8 @@ __OTHER CHANGES__
 ## 0.13.0
 
 __BREAKING CHANGES__
-+ Add new RippleAPI interface and delete old API
-    - [RippleAPI README and samples](https://github.com/ripple/ripple-lib/tree/develop/docs/samples)
++ Add new ChainsqlAPI interface and delete old API
+    - [ChainsqlAPI README and samples](https://github.com/ripple/ripple-lib/tree/develop/docs/samples)
     - [Method documentation](https://rawgit.com/ripple/ripple-lib/develop/docs/api.html)
 
 __OTHER CHANGES__
@@ -167,7 +167,7 @@ __OTHER CHANGES__
 + [Fix Amount.to_human for very small numbers](https://github.com/ripple/ripple-lib/commit/6abfa759aa09d68074ac558d96c4b126a7cd1719)
 + [Refactor base conversion](https://github.com/ripple/ripple-lib/commit/f2b63fa4a80663eb29472bc6bb1aea8159f1f205)
 + [Update binary transaction format](https://github.com/ripple/ripple-lib/commit/8e134918fb4c22983320a3102f955e4568bb1dfb)
-+ [Add DefaultRipple account flag](https://github.com/ripple/ripple-lib/commit/3e249902c4cf25b4da5e75048c84ae391be83b10)
++ [Add DefaultChainsql account flag](https://github.com/ripple/ripple-lib/commit/3e249902c4cf25b4da5e75048c84ae391be83b10)
 + [Remove `Features` field requirement in `SetFee` transaction format](https://github.com/ripple/ripple-lib/commit/a20a649013646710c078d4ce1e210f87c7fe74fe)
 + [Remove `RegularKey` field requirement in `SetRegularKey` transaction format](https://github.com/ripple/ripple-lib/commit/c275174f27877ba8f389eb4efe969feb514d6e46)
 
@@ -325,7 +325,7 @@ __OTHER CHANGES__
 + Request: `request.request()` now accepts an array of servers as first argument. Servers can be represented with URL, or the server object itself.
 + Request: `request.broadcast()` now returns the number of servers request was sent to
 + Server: Acquire host information from server without additional request
-+ Amount: Add a constant for the maximum canonical value that can be expressed as a Ripple value
++ Amount: Add a constant for the maximum canonical value that can be expressed as a Chainsql value
 + Amount: Make Constants static fields on the class, instead of a separate export
 
 ## 0.7.39
@@ -358,7 +358,7 @@ __OTHER CHANGES__
         parseBinary: false
       }
     ```
-+ Added full currency name support, e.g. `Currency.from_json('ZXC').to_human({full_name:'Ripples'})` will return `ZXC - Ripples`
++ Added full currency name support, e.g. `Currency.from_json('ZXC').to_human({full_name:'Chainsqls'})` will return `ZXC - Chainsqls`
 + Improved interest bearing currency support, e.g. `Currency.from_human('USD - US Dollar (2.5%pa)')`
 + Improve test coverage
 + Added blob vault client.  The vault client facilitates interaction with ripple's namespace and blob vault or 3rd party blob vaults using ripple's blob vault software (https://github.com/ripple/ripple-blobvault). A list of the available functions can be found at [docs/VAULTCLIENT.md](docs/VAULTCLIENT.md)

@@ -4,7 +4,7 @@ const _ = require('lodash')
 const BigNumber = require('bignumber.js')
 const {deriveKeypair} = require('chainsql-keypairs')
 
-import type {Amount, RippledAmount} from './types.js'
+import type {Amount, ChainsqldAmount} from './types.js'
 
 function isValidSecret(secret: string): boolean {
   try {
@@ -23,7 +23,7 @@ function zxcToDrops(zxc: string): string {
   return (new BigNumber(zxc)).times(1000000.0).floor().toString()
 }
 
-function toRippledAmount(amount: Amount): RippledAmount {
+function toChainsqldAmount(amount: Amount): ChainsqldAmount {
   if (amount.currency === 'ZXC') {
     return zxcToDrops(amount.value)
   }
@@ -69,7 +69,7 @@ function rippleToUnixTimestamp(rpepoch: number): number {
  * @param {Number|Date} timestamp (ms since unix epoch)
  * @return {Number} seconds since ripple epoch ( 1/1/2000 GMT)
  */
-function unixToRippleTimestamp(timestamp: number): number {
+function unixToChainsqlTimestamp(timestamp: number): number {
   return Math.round(timestamp / 1000) - 0x386D4380
 }
 
@@ -77,17 +77,17 @@ function rippleTimeToISO8601(rippleTime: number): string {
   return new Date(rippleToUnixTimestamp(rippleTime)).toISOString()
 }
 
-function iso8601ToRippleTime(iso8601: string): number {
-  return unixToRippleTimestamp(Date.parse(iso8601))
+function iso8601ToChainsqlTime(iso8601: string): number {
+  return unixToChainsqlTimestamp(Date.parse(iso8601))
 }
 
 module.exports = {
   dropsToZxc,
   zxcToDrops,
-  toRippledAmount,
+  toChainsqldAmount,
   convertKeysFromSnakeCaseToCamelCase,
   removeUndefined,
   rippleTimeToISO8601,
-  iso8601ToRippleTime,
+  iso8601ToChainsqlTime,
   isValidSecret
 }

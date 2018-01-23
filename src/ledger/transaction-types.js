@@ -49,7 +49,7 @@ type Settings = {
   enableTransactionIDTracking?: boolean,
   noFreeze?: boolean,
   globalFreeze?: boolean,
-  defaultRipple?: boolean,
+  defaultChainsql?: boolean,
   emailHash?: string,
   messageKey?: string,
   domain?: string,
@@ -68,7 +68,7 @@ type Payment = {
   memos?: Array<Memo>,
   invoiceID?: string,
   allowPartialPayment?: boolean,
-  noDirectRipple?: boolean,
+  noDirectChainsql?: boolean,
   limitQuality?: boolean
 }
 

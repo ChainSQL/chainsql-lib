@@ -4,7 +4,7 @@ const assert = require('assert-diff');
 const _ = require('lodash');
 const jayson = require('jayson');
 
-const RippleAPI = require('../../src').RippleAPI;
+const ChainsqlAPI = require('../../src').ChainsqlAPI;
 const createHTTPServer = require('../../src/http').createHTTPServer;
 const {payTo, ledgerAccept} = require('./utils');
 
@@ -65,7 +65,7 @@ describe('http server integration tests', function() {
   }
 
   before(() => {
-    this.api = new RippleAPI({server: serverUri});
+    this.api = new ChainsqlAPI({server: serverUri});
     console.log('CONNECTING...');
     return this.api.connect().then(() => {
       console.log('CONNECTED...');

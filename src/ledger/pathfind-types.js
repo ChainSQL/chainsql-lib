@@ -1,7 +1,7 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 
-import type {Amount, LaxLaxAmount, RippledAmount, Adjustment, MaxAdjustment,
+import type {Amount, LaxLaxAmount, ChainsqldAmount, Adjustment, MaxAdjustment,
   MinAdjustment} from '../common/types.js'
 
 
@@ -28,13 +28,13 @@ export type PathFind = {
 export type PathFindRequest = {
   command: string,
   source_account: string,
-  destination_amount: RippledAmount,
+  destination_amount: ChainsqldAmount,
   destination_account: string,
   source_currencies?: Array<string>,
-  send_max?: RippledAmount
+  send_max?: ChainsqldAmount
 }
 
-export type RippledPathsResponse = {
+export type ChainsqldPathsResponse = {
   alternatives: Array<{
     paths_computed: Array<Array<{
       type: number,
@@ -43,11 +43,11 @@ export type RippledPathsResponse = {
       issuer?: string,
       currency?: string
     }>>,
-    source_amount: RippledAmount
+    source_amount: ChainsqldAmount
   }>,
   type: string,
   destination_account: string,
-  destination_amount: RippledAmount,
+  destination_amount: ChainsqldAmount,
   destination_currencies?: Array<string>,
   source_account?: string,
   source_currencies?: Array<{currency: string}>,

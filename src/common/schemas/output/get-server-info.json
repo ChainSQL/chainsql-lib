@@ -31,7 +31,7 @@
         },
         "threads": {
           "type": "number",
-          "description": "*(Admin only)* The number of threads in the server’s main job pool, performing various Ripple Network operations."
+          "description": "*(Admin only)* The number of threads in the server’s main job pool, performing various Chainsql Network operations."
         }
       },
       "required": ["jobTypes", "threads"]

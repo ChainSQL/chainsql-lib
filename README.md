@@ -15,7 +15,7 @@ A JavaScript API for interacting with the ZXC Ledger
 
 ## Getting Started
 
-See also: [RippleAPI Beginners Guide](https://ripple.com/build/rippleapi-beginners-guide/)
+See also: [ChainsqlAPI Beginners Guide](https://ripple.com/build/rippleapi-beginners-guide/)
 
 Install `chainsql-lib` using npm:
 ```
@@ -36,4 +36,4 @@ The continuous integration tests require that the documentation stays up-to-date
 
 ## More Information
 
-+ [Ripple Developer Center](https://ripple.com/build/)
++ [Chainsql Developer Center](https://ripple.com/build/)

@@ -2,7 +2,7 @@
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
 const utils = require('./utils')
-const {validate, iso8601ToRippleTime, zxcToDrops} = utils.common
+const {validate, iso8601ToChainsqlTime, zxcToDrops} = utils.common
 const ValidationError = utils.common.errors.ValidationError
 import type {Instructions, Prepare} from './types.js'
 import type {Adjustment, MaxAdjustment, Memo} from '../common/types.js'
@@ -32,10 +32,10 @@ function createEscrowCreationTransaction(account: string,
     txJSON.Condition = payment.condition
   }
   if (payment.allowCancelAfter !== undefined) {
-    txJSON.CancelAfter = iso8601ToRippleTime(payment.allowCancelAfter)
+    txJSON.CancelAfter = iso8601ToChainsqlTime(payment.allowCancelAfter)
   }
   if (payment.allowExecuteAfter !== undefined) {
-    txJSON.FinishAfter = iso8601ToRippleTime(payment.allowExecuteAfter)
+    txJSON.FinishAfter = iso8601ToChainsqlTime(payment.allowExecuteAfter)
   }
   if (payment.sourceTag !== undefined) {
     txJSON.SourceTag = payment.sourceTag

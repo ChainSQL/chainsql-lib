@@ -25,8 +25,8 @@ type SettingNoFreeze = {
 type SettingGlobalFreeze = {
   globalFreeze?: boolean,
 }
-type SettingDefaultRipple = {
-  defaultRipple?: boolean,
+type SettingDefaultChainsql = {
+  defaultChainsql?: boolean,
 }
 type SettingEmailHash = {
   emailHash?: ?string,
@@ -46,7 +46,7 @@ type SettingRegularKey = {
 
 export type Settings = SettingRegularKey |
   SettingTransferRate | SettingDomain | SettingMessageKey |
-  SettingEmailHash | SettingDefaultRipple |
+  SettingEmailHash | SettingDefaultChainsql |
   SettingGlobalFreeze | SettingNoFreeze | SettingEnableTransactionIDTracking |
   SettingDisableMasterKey | SettingDisallowIncomingZXC |
   SettingRequireAuthorization | SettingRequireDestinationTag |

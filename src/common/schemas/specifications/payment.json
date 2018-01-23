@@ -25,8 +25,8 @@
       "description": "A boolean that, if set to true, indicates that this payment should go through even if the whole amount cannot be delivered because of a lack of liquidity or funds in the source account account",
       "type": "boolean"
     },
-    "noDirectRipple": {
-      "description": "A boolean that can be set to true if paths are specified and the sender would like the Ripple Network to disregard any direct paths from the source account to the destination account. This may be used to take advantage of an arbitrage opportunity or by gateways wishing to issue balances from a hot wallet to a user who has mistakenly set a trustline directly to the hot wallet",
+    "noDirectChainsql": {
+      "description": "A boolean that can be set to true if paths are specified and the sender would like the Chainsql Network to disregard any direct paths from the source account to the destination account. This may be used to take advantage of an arbitrage opportunity or by gateways wishing to issue balances from a hot wallet to a user who has mistakenly set a trustline directly to the hot wallet",
       "type": "boolean"
     },
     "limitQuality": {

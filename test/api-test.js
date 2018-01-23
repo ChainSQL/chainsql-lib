@@ -3,17 +3,17 @@
 const _ = require('lodash');
 const assert = require('assert-diff');
 const setupAPI = require('./setup-api');
-const RippleAPI = require('ripple-api').RippleAPI;
-const validate = RippleAPI._PRIVATE.validate;
+const ChainsqlAPI = require('ripple-api').ChainsqlAPI;
+const validate = ChainsqlAPI._PRIVATE.validate;
 const fixtures = require('./fixtures');
 const requests = fixtures.requests;
 const responses = fixtures.responses;
 const addresses = require('./fixtures/addresses');
 const hashes = require('./fixtures/hashes');
 const address = addresses.ACCOUNT;
-const utils = RippleAPI._PRIVATE.ledgerUtils;
+const utils = ChainsqlAPI._PRIVATE.ledgerUtils;
 const ledgerClosed = require('./fixtures/rippled/ledger-close-newer');
-const schemaValidator = RippleAPI._PRIVATE.schemaValidator;
+const schemaValidator = ChainsqlAPI._PRIVATE.schemaValidator;
 const binary = require('chainsql-binary-codec');
 assert.options.strict = true;
 
@@ -40,15 +40,15 @@ function checkResult(expected, schemaName, response) {
 }
 
 
-describe('RippleAPI', function() {
+describe('ChainsqlAPI', function() {
   this.timeout(TIMEOUT);
   const instructions = {maxLedgerVersionOffset: 100};
   beforeEach(setupAPI.setup);
   afterEach(setupAPI.teardown);
 
   it('error inspect', function() {
-    const error = new this.api.errors.RippleError('mess', {data: 1});
-    assert.strictEqual(error.inspect(), '[RippleError(mess, { data: 1 })]');
+    const error = new this.api.errors.ChainsqlError('mess', {data: 1});
+    assert.strictEqual(error.inspect(), '[ChainsqlError(mess, { data: 1 })]');
   });
 
   describe('preparePayment', function() {
@@ -445,9 +445,9 @@ describe('RippleAPI', function() {
 
   it('submit - failure', function() {
     return this.api.submit('BAD').then(() => {
-      assert(false, 'Should throw RippledError');
+      assert(false, 'Should throw ChainsqldError');
     }).catch(error => {
-      assert(error instanceof this.api.errors.RippledError);
+      assert(error instanceof this.api.errors.ChainsqldError);
       assert.strictEqual(error.data.resultCode, 'temBAD_FEE');
     });
   });
@@ -498,7 +498,7 @@ describe('RippleAPI', function() {
     }, /txJSON is not the same for all signedTransactions/);
   });
 
-  describe('RippleAPI', function() {
+  describe('ChainsqlAPI', function() {
 
     it('getBalances', function() {
       return this.api.getBalances(address).then(
@@ -936,14 +936,14 @@ describe('RippleAPI', function() {
     });
   });
 
-  // this is the case where core.RippleError just falls
+  // this is the case where core.ChainsqlError just falls
   // through the api to the user
   it('getTransactions - error', function() {
     const options = {types: ['payment', 'order'], initiated: true, limit: 13};
     return this.api.getTransactions(address, options).then(() => {
-      assert(false, 'Should throw RippleError');
+      assert(false, 'Should throw ChainsqlError');
     }).catch(error => {
-      assert(error instanceof this.api.errors.RippleError);
+      assert(error instanceof this.api.errors.ChainsqlError);
     });
   });
 
@@ -1135,7 +1135,7 @@ describe('RippleAPI', function() {
     return this.api.getPaymentChannel(channelId).then(() => {
       assert(false, 'Should throw entryNotFound');
     }).catch(error => {
-      assert(error instanceof this.api.errors.RippledError);
+      assert(error instanceof this.api.errors.ChainsqldError);
       assert(_.includes(error.message, 'entryNotFound'));
     });
   });
@@ -1166,7 +1166,7 @@ describe('RippleAPI', function() {
     return this.api.getServerInfo().then(() => {
       assert(false, 'Should throw NetworkError');
     }).catch(error => {
-      assert(error instanceof this.api.errors.RippledError);
+      assert(error instanceof this.api.errors.ChainsqldError);
       assert(_.includes(error.message, 'slowDown'));
     });
   });
@@ -1224,7 +1224,7 @@ describe('RippleAPI', function() {
   // @TODO
   // need decide what to do with currencies/ZXC:
   // if add 'ZXC' in currencies, then there will be exception in
-  // zxcToDrops function (called from toRippledAmount)
+  // zxcToDrops function (called from toChainsqldAmount)
   it('getPaths USD 2 USD', function() {
     return this.api.getPaths(requests.getPaths.UsdToUsd).then(
       _.partial(checkResult, responses.getPaths.UsdToUsd, 'getPaths'));
@@ -1295,7 +1295,7 @@ describe('RippleAPI', function() {
     const pathfind = _.assign({}, requests.getPaths.normal,
       {source: {address: addresses.NOTFOUND}});
     return this.api.getPaths(pathfind).catch(error => {
-      assert(error instanceof this.api.errors.RippleError);
+      assert(error instanceof this.api.errors.ChainsqlError);
     });
   });
 
@@ -1420,10 +1420,10 @@ describe('RippleAPI', function() {
       });
   });
 
-  it('RippleError with data', function() {
-    const error = new this.api.errors.RippleError('_message_', '_data_');
+  it('ChainsqlError with data', function() {
+    const error = new this.api.errors.ChainsqlError('_message_', '_data_');
     assert.strictEqual(error.toString(),
-      '[RippleError(_message_, \'_data_\')]');
+      '[ChainsqlError(_message_, \'_data_\')]');
   });
 
   it('NotFoundError default message', function() {
@@ -1432,10 +1432,10 @@ describe('RippleAPI', function() {
       '[NotFoundError(Not found)]');
   });
 
-  it('common utils - toRippledAmount', function() {
+  it('common utils - toChainsqldAmount', function() {
     const amount = {issuer: 'is', currency: 'c', value: 'v'};
 
-    assert.deepEqual(utils.common.toRippledAmount(amount), {
+    assert.deepEqual(utils.common.toChainsqldAmount(amount), {
       issuer: 'is', currency: 'c', value: 'v'
     });
   });
@@ -1557,9 +1557,9 @@ describe('RippleAPI', function() {
   });
 });
 
-describe('RippleAPI - offline', function() {
+describe('ChainsqlAPI - offline', function() {
   it('prepareSettings and sign', function() {
-    const api = new RippleAPI();
+    const api = new ChainsqlAPI();
     const secret = 'shsWGZcmZz6YsWWmcnpfr6fLTdtFV';
     const settings = requests.prepareSettings.domain;
     const instructions = {
@@ -1575,7 +1575,7 @@ describe('RippleAPI - offline', function() {
   });
 
   it('getServerInfo - offline', function() {
-    const api = new RippleAPI();
+    const api = new ChainsqlAPI();
     return api.getServerInfo().then(() => {
       assert(false, 'Should throw error');
     }).catch(error => {
@@ -1584,7 +1584,7 @@ describe('RippleAPI - offline', function() {
   });
 
   it('computeLedgerHash', function() {
-    const api = new RippleAPI();
+    const api = new ChainsqlAPI();
     const header = requests.computeLedgerHash.header;
     const ledgerHash = api.computeLedgerHash(header);
     assert.strictEqual(ledgerHash,
@@ -1592,7 +1592,7 @@ describe('RippleAPI - offline', function() {
   });
 
   it('computeLedgerHash - with transactions', function() {
-    const api = new RippleAPI();
+    const api = new ChainsqlAPI();
     const header = _.omit(requests.computeLedgerHash.header,
       'transactionHash');
     header.rawTransactions = JSON.stringify(
@@ -1603,7 +1603,7 @@ describe('RippleAPI - offline', function() {
   });
 
   it('computeLedgerHash - incorrent transaction_hash', function() {
-    const api = new RippleAPI();
+    const api = new ChainsqlAPI();
     const header = _.assign({}, requests.computeLedgerHash.header,
       {transactionHash:
         '325EACC5271322539EEEC2D6A5292471EF1B3E72AE7180533EFC3B8F0AD435C9'});
@@ -1613,21 +1613,21 @@ describe('RippleAPI - offline', function() {
   });
 
 /* eslint-disable no-unused-vars */
-  it('RippleAPI - implicit server port', function() {
-    const api = new RippleAPI({server: 'wss://s1.ripple.com'});
+  it('ChainsqlAPI - implicit server port', function() {
+    const api = new ChainsqlAPI({server: 'wss://s1.ripple.com'});
   });
 /* eslint-enable no-unused-vars */
-  it('RippleAPI invalid options', function() {
-    assert.throws(() => new RippleAPI({invalid: true}));
+  it('ChainsqlAPI invalid options', function() {
+    assert.throws(() => new ChainsqlAPI({invalid: true}));
   });
 
-  it('RippleAPI valid options', function() {
-    const api = new RippleAPI({server: 'wss://s:1'});
+  it('ChainsqlAPI valid options', function() {
+    const api = new ChainsqlAPI({server: 'wss://s:1'});
     assert.deepEqual(api.connection._url, 'wss://s:1');
   });
 
-  it('RippleAPI invalid server uri', function() {
-    assert.throws(() => new RippleAPI({server: 'wss//s:1'}));
+  it('ChainsqlAPI invalid server uri', function() {
+    assert.throws(() => new ChainsqlAPI({server: 'wss//s:1'}));
   });
 
 });

@@ -46,7 +46,7 @@
               "LowQualityIn": 910000000,
               "LowQualityOut": 870000000
             },
-            "LedgerEntryType": "RippleState",
+            "LedgerEntryType": "ChainsqlState",
             "LedgerIndex": "072DF69CEE470A944D39E9994C335154504CFCB8B706C4E49199E1F8FB70828E",
             "PreviousFields": {
               "Flags": 7405568

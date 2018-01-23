@@ -11,7 +11,7 @@ function main() {
 
   // configure
   const config = {
-    name: 'RippleAPI',
+    name: 'ChainsqlAPI',
     host: 'localhost',
     port: 4445,
     maxDuration: 180000,

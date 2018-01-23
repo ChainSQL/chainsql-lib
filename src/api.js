@@ -86,7 +86,7 @@ class RestrictedConnection extends common.Connection {
   }
 }
 
-class RippleAPI extends EventEmitter {
+class ChainsqlAPI extends EventEmitter {
   constructor(options: APIOptions = {}) {
     common.validate.apiOptions(options)
     super()
@@ -114,7 +114,7 @@ class RippleAPI extends EventEmitter {
   }
 }
 
-_.assign(RippleAPI.prototype, {
+_.assign(ChainsqlAPI.prototype, {
   connect,
   disconnect,
   isConnected,
@@ -158,7 +158,7 @@ _.assign(RippleAPI.prototype, {
 })
 
 // these are exposed only for use by unit tests; they are not part of the API
-RippleAPI._PRIVATE = {
+ChainsqlAPI._PRIVATE = {
   validate: common.validate,
   RangeSet: require('./common/rangeset').RangeSet,
   ledgerUtils: require('./ledger/utils'),
@@ -166,5 +166,5 @@ RippleAPI._PRIVATE = {
 }
 
 module.exports = {
-  RippleAPI
+  ChainsqlAPI
 }

@@ -1,13 +1,13 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 
-export type RippledAmountIOU = {
+export type ChainsqldAmountIOU = {
   currency: string,
   value: string,
   issuer?: string
 }
 
-export type RippledAmount = string | RippledAmountIOU
+export type ChainsqldAmount = string | ChainsqldAmountIOU
 
 
 export type Amount = {

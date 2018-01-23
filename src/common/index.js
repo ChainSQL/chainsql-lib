@@ -10,13 +10,13 @@ module.exports = {
   serverInfo: require('./serverinfo'),
   dropsToZxc: utils.dropsToZxc,
   zxcToDrops: utils.zxcToDrops,
-  toRippledAmount: utils.toRippledAmount,
+  toChainsqldAmount: utils.toChainsqldAmount,
   generateAddress: utils.generateAddress,
   generateAddressAPI: utils.generateAddressAPI,
   removeUndefined: utils.removeUndefined,
   convertKeysFromSnakeCaseToCamelCase:
     utils.convertKeysFromSnakeCaseToCamelCase,
-  iso8601ToRippleTime: utils.iso8601ToRippleTime,
+  iso8601ToChainsqlTime: utils.iso8601ToChainsqlTime,
   rippleTimeToISO8601: utils.rippleTimeToISO8601,
   isValidSecret: utils.isValidSecret
 }

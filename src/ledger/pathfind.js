@@ -4,16 +4,16 @@ const _ = require('lodash')
 const BigNumber = require('bignumber.js')
 const utils = require('./utils')
 const parsePathfind = require('./parse/pathfind')
-const {validate, toRippledAmount} = utils.common
+const {validate, toChainsqldAmount} = utils.common
 const NotFoundError = utils.common.errors.NotFoundError
 const ValidationError = utils.common.errors.ValidationError
 import type {Connection} from '../common/connection'
-import type {RippledAmount} from '../common/types.js'
-import type {GetPaths, PathFind, RippledPathsResponse, PathFindRequest}
+import type {ChainsqldAmount} from '../common/types.js'
+import type {GetPaths, PathFind, ChainsqldPathsResponse, PathFindRequest}
   from './pathfind-types.js'
 
 
-function addParams(request: PathFindRequest, result: RippledPathsResponse) {
+function addParams(request: PathFindRequest, result: ChainsqldPathsResponse) {
   return _.defaults(_.assign({}, result, {
     source_account: request.source_account,
     source_currencies: request.source_currencies
@@ -26,12 +26,12 @@ function requestPathFind(connection: Connection, pathfind: PathFind): Promise {
     command: 'ripple_path_find',
     source_account: pathfind.source.address,
     destination_account: pathfind.destination.address,
-    destination_amount: toRippledAmount(destinationAmount)
+    destination_amount: toChainsqldAmount(destinationAmount)
   }
   if (typeof request.destination_amount === 'object'
       && !request.destination_amount.issuer) {
     // Convert blank issuer to sender's address
-    // (Ripple convention for 'any issuer')
+    // (Chainsql convention for 'any issuer')
     // https://ripple.com/build/transactions/
     //     #special-issuer-values-for-sendmax-and-amount
     // https://ripple.com/build/ripple-rest/#counterparties-in-payments
@@ -39,14 +39,14 @@ function requestPathFind(connection: Connection, pathfind: PathFind): Promise {
   }
   if (pathfind.source.currencies && pathfind.source.currencies.length > 0) {
     request.source_currencies = pathfind.source.currencies.map(amount =>
-      _.omit(toRippledAmount(amount), 'value'))
+      _.omit(toChainsqldAmount(amount), 'value'))
   }
   if (pathfind.source.amount) {
     if (pathfind.destination.amount.value !== undefined) {
       throw new ValidationError('Cannot specify both source.amount'
         + ' and destination.amount.value in getPaths')
     }
-    request.send_max = toRippledAmount(pathfind.source.amount)
+    request.send_max = toChainsqldAmount(pathfind.source.amount)
     if (request.send_max.currency && !request.send_max.issuer) {
       request.send_max.issuer = pathfind.source.address
     }
@@ -55,8 +55,8 @@ function requestPathFind(connection: Connection, pathfind: PathFind): Promise {
   return connection.request(request).then(paths => addParams(request, paths))
 }
 
-function addDirectZxcPath(paths: RippledPathsResponse, zxcBalance: string
-): RippledPathsResponse {
+function addDirectZxcPath(paths: ChainsqldPathsResponse, zxcBalance: string
+): ChainsqldPathsResponse {
   // Add ZXC "path" only if the source acct has enough ZXC to make the payment
   const destinationAmount = paths.destination_amount
   if ((new BigNumber(zxcBalance)).greaterThanOrEqualTo(destinationAmount)) {
@@ -68,16 +68,16 @@ function addDirectZxcPath(paths: RippledPathsResponse, zxcBalance: string
   return paths
 }
 
-function isRippledIOUAmount(amount: RippledAmount) {
+function isChainsqldIOUAmount(amount: ChainsqldAmount) {
   // rippled ZXC amounts are specified as decimal strings
   return (typeof amount === 'object') &&
     amount.currency && (amount.currency !== 'ZXC')
 }
 
 function conditionallyAddDirectZXCPath(connection: Connection, address: string,
-  paths: RippledPathsResponse
+  paths: ChainsqldPathsResponse
 ): Promise {
-  if (isRippledIOUAmount(paths.destination_amount)
+  if (isChainsqldIOUAmount(paths.destination_amount)
       || !_.includes(paths.destination_currencies, 'ZXC')) {
     return Promise.resolve(paths)
   }
@@ -86,8 +86,8 @@ function conditionallyAddDirectZXCPath(connection: Connection, address: string,
 }
 
 function filterSourceFundsLowPaths(pathfind: PathFind,
-                                   paths: RippledPathsResponse
-): RippledPathsResponse {
+                                   paths: ChainsqldPathsResponse
+): ChainsqldPathsResponse {
   if (pathfind.source.amount &&
       pathfind.destination.amount.value === undefined && paths.alternatives) {
     paths.alternatives = _.filter(paths.alternatives, alt => {
@@ -99,7 +99,7 @@ function filterSourceFundsLowPaths(pathfind: PathFind,
   return paths
 }
 
-function formatResponse(pathfind: PathFind, paths: RippledPathsResponse) {
+function formatResponse(pathfind: PathFind, paths: ChainsqldPathsResponse) {
   if (paths.alternatives && paths.alternatives.length > 0) {
     return parsePathfind(paths)
   }

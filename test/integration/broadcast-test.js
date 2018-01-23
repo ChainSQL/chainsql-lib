@@ -1,9 +1,9 @@
 'use strict';
-const {RippleAPIBroadcast} = require('../../src');
+const {ChainsqlAPIBroadcast} = require('../../src');
 
 function main() {
   const servers = ['wss://s1.ripple.com', 'wss://s2.ripple.com'];
-  const api = new RippleAPIBroadcast(servers);
+  const api = new ChainsqlAPIBroadcast(servers);
   api.connect().then(() => {
     api.getServerInfo().then(info => {
       console.log(JSON.stringify(info, null, 2));
