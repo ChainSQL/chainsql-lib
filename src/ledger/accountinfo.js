@@ -2,6 +2,7 @@
 
 'use strict' // eslint-disable-line strict
 const utils = require('./utils')
+var BigNumber = require('bignumber.js');
 const {validate, removeUndefined} = utils.common
 
 type AccountData = {
@@ -44,6 +45,9 @@ function formatAccountInfo(response: AccountDataResponse) {
     sequence: data.Sequence,
     zxcBalance: utils.common.dropsToZxc(data.Balance),
     ownerCount: data.OwnerCount,
+    transferFeeMin: data.TransferFeeMin,
+    transferFeeMax: data.TransferFeeMax,
+    transferRate: data.TransferRate ? new BigNumber(data.TransferRate).shift(-9).toNumber() : undefined,
     previousInitiatedTransactionID: data.AccountTxnID,
     previousAffectingTransactionID: data.PreviousTxnID,
     previousAffectingTransactionLedgerVersion: data.PreviousTxnLgrSeq

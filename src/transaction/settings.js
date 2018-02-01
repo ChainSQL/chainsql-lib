@@ -16,7 +16,7 @@ const CLEAR_SETTING = null
 
 function setTransactionFlags(txJSON: Object, values: Settings) {
   const keys = Object.keys(values)
-  assert(keys.length === 1, 'ERROR: can only set one setting per transaction')
+  // assert(keys.length === 1, 'ERROR: can only set one setting per transaction')
   const flagName = keys[0]
   const value = values[flagName]
   const index = AccountFlagIndices[flagName]

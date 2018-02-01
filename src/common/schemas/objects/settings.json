@@ -61,6 +61,14 @@
         {"type": "number", "minimum": 1, "maximum": 4.294967295}
       ]
     },
+    "transferFeeMin": {
+      "type": "string",
+      "description": " The mininum fee to charge."
+    },
+    "transferFeeMax": {
+      "type": "string",
+      "description": " The maximum fee to charge."
+    },
     "regularKey": {
       "oneOf": [
         {"$ref": "address"},

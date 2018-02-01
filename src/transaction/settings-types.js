@@ -44,6 +44,14 @@ type SettingRegularKey = {
   regularKey?: string
 }
 
+type SettingTransferfeeMin = {
+  transferFeeMin?: string
+}
+
+type SettingTransferfeeMax = {
+  transferFeeMax?: string
+}
+
 export type Settings = SettingRegularKey |
   SettingTransferRate | SettingDomain | SettingMessageKey |
   SettingEmailHash | SettingDefaultChainsql |

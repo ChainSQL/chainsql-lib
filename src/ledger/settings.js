@@ -24,6 +24,8 @@ type GetSettings = {
   messageKey?: string,
   domain?: string,
   transferRate?: ?number,
+  transferFeeMin?: string,
+  transferFeeMax?: string,
   regularKey?: string
 }
 
