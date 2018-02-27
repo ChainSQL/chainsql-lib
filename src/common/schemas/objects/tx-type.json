@@ -7,5 +7,6 @@
   "enum": ["payment", "order", "orderCancellation", "trustline", "settings",
            "escrowCreation", "escrowCancellation",
            "escrowExecution", "paymentChannelCreate",
-           "paymentChannelFund", "paymentChannelClaim"]
+           "paymentChannelFund", "paymentChannelClaim",
+           "sqlStatement","tableListSet","sqlTransaction"]
 }
