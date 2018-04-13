@@ -1,6 +1,6 @@
 {
   "name": "chainsql-lib",
-  "version": "0.17.27",
+  "version": "0.17.29",
   "license": "ISC",
   "description": "A JavaScript API for interacting with Chainsql in Node.js and the browser",
   "files": [
@@ -19,7 +19,7 @@
     "babel-runtime": "^6.3.19",
     "bignumber.js": "^2.0.3",
     "https-proxy-agent": "^1.0.0",
-    "jsonschema": "^1.1.1",
+    "jsonschema": "1.2.2",
     "lodash": "^4.17.4",
     "chainsql-address-codec": "^2.0.3",
     "chainsql-binary-codec": "^0.1.31",

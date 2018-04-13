@@ -15,6 +15,10 @@ const parsePaymentChannelFund = require('./payment-channel-fund')
 const parsePaymentChannelClaim = require('./payment-channel-claim')
 const parseFeeUpdate = require('./fee-update')
 const parseAmendment = require('./amendment')
+const parseTableListSet = require('./tablelistset');
+const parseSqlStatement = require('./sqlstatement')
+const parseSqlTransaction = require('./sql-transaction')
+
 
 function parseTransactionType(type) {
   const mapping = {
@@ -55,7 +59,10 @@ function parseTransaction(tx: Object): Object {
     'paymentChannelFund': parsePaymentChannelFund,
     'paymentChannelClaim': parsePaymentChannelClaim,
     'feeUpdate': parseFeeUpdate,
-    'amendment': parseAmendment
+    'amendment': parseAmendment,
+    'tableListSet':parseTableListSet,
+    'sqlStatement':parseSqlStatement,
+    'sqlTransaction':parseSqlTransaction
   }
   const parser = mapping[type]
   assert(parser !== undefined, 'Unrecognized transaction type')
