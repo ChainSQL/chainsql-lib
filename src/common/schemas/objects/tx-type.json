@@ -8,5 +8,6 @@
            "escrowCreation", "escrowCancellation",
            "escrowExecution", "paymentChannelCreate",
            "paymentChannelFund", "paymentChannelClaim",
-           "sqlStatement","tableListSet","sqlTransaction"]
+           "sqlStatement","tableListSet","sqlTransaction",
+           "contract"]
 }
