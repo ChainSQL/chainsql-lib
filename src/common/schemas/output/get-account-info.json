@@ -7,9 +7,9 @@
       "$ref": "sequence",
       "description": "The next (smallest unused) sequence number for this account."
     },
-    "zxcBalance": {
+    "DACBalance": {
       "$ref": "value",
-      "description": "The ZXC balance owned by the account."
+      "description": "The DAC balance owned by the account."
     },
     "ownerCount": {
       "type": "integer",
@@ -31,7 +31,7 @@
   },
   "required": [
     "sequence",
-    "zxcBalance",
+    "DACBalance",
     "ownerCount",
     "previousAffectingTransactionID",
     "previousAffectingTransactionLedgerVersion"

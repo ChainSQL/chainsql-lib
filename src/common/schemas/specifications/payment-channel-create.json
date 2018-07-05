@@ -6,15 +6,15 @@
   "properties": {
     "amount": {
       "$ref": "value",
-      "description": "Amount of ZXC for sender to set aside in this channel."
+      "description": "Amount of DAC for sender to set aside in this channel."
     },
     "destination": {
       "$ref": "address",
-      "description": "Address to receive ZXC claims against this channel."
+      "description": "Address to receive DAC claims against this channel."
     },
     "settleDelay": {
       "type": "number",
-      "description": "Amount of seconds the source address must wait before closing the channel if it has unclaimed ZXC."
+      "description": "Amount of seconds the source address must wait before closing the channel if it has unclaimed DAC."
     },
     "publicKey": {
       "$ref": "publicKey",

@@ -1,7 +1,7 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const utils = require('./utils')
-const {validate, iso8601ToChainsqlTime, zxcToDrops} = utils.common
+const {validate, iso8601ToDacTime, DACToDrops} = utils.common
 import type {Instructions, Prepare} from './types.js'
 
 type PaymentChannelCreate = {
@@ -20,14 +20,14 @@ function createPaymentChannelCreateTransaction(account: string,
   const txJSON: Object = {
     Account: account,
     TransactionType: 'PaymentChannelCreate',
-    Amount: zxcToDrops(paymentChannel.amount),
+    Amount: DACToDrops(paymentChannel.amount),
     Destination: paymentChannel.destination,
     SettleDelay: paymentChannel.settleDelay,
     PublicKey: paymentChannel.publicKey.toUpperCase()
   }
 
   if (paymentChannel.cancelAfter !== undefined) {
-    txJSON.CancelAfter = iso8601ToChainsqlTime(paymentChannel.cancelAfter)
+    txJSON.CancelAfter = iso8601ToDacTime(paymentChannel.cancelAfter)
   }
   if (paymentChannel.sourceTag !== undefined) {
     txJSON.SourceTag = paymentChannel.sourceTag

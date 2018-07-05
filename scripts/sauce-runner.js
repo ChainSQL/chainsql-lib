@@ -11,7 +11,7 @@ function main() {
 
   // configure
   const config = {
-    name: 'ChainsqlAPI',
+    name: 'DacAPI',
     host: 'localhost',
     port: 4445,
     maxDuration: 180000,

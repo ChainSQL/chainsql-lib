@@ -10,11 +10,11 @@
     },
     "amount": {
       "$ref": "value",
-      "description": "ZXC balance of this channel after claim is processed."
+      "description": "DAC balance of this channel after claim is processed."
     },
     "balance": {
       "$ref": "value",
-      "description": "Amount of ZXC authorized by signature."
+      "description": "Amount of DAC authorized by signature."
     },
     "signature": {
       "$ref": "signature",

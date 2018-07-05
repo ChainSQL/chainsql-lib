@@ -14,7 +14,7 @@
       "source": {
         "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
         "maxAmount": {
-          "currency": "ZXC",
+          "currency": "DAC",
           "value": "1.112209"
         }
       },
@@ -57,13 +57,13 @@
         ],
         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59": [
           {
-            "currency": "ZXC",
+            "currency": "DAC",
             "value": "-1.101208"
           }
         ],
         "r9tGqzZgKxVFvzKFdUqXAqTzazWBUia8Qr": [
           {
-            "currency": "ZXC",
+            "currency": "DAC",
             "value": "1.101198"
           },
           {
@@ -78,7 +78,7 @@
           {
             "direction": "buy",
             "quantity": {
-              "currency": "ZXC",
+              "currency": "DAC",
               "value": "1.101198"
             },
             "totalPrice": {
@@ -111,7 +111,7 @@
       "source": {
         "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
         "maxAmount": {
-          "currency": "ZXC",
+          "currency": "DAC",
           "value": "1.112209"
         }
       },
@@ -154,13 +154,13 @@
         ],
         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59": [
           {
-            "currency": "ZXC",
+            "currency": "DAC",
             "value": "-1.101208"
           }
         ],
         "r9tGqzZgKxVFvzKFdUqXAqTzazWBUia8Qr": [
           {
-            "currency": "ZXC",
+            "currency": "DAC",
             "value": "1.101198"
           },
           {
@@ -175,7 +175,7 @@
           {
             "direction": "buy",
             "quantity": {
-              "currency": "ZXC",
+              "currency": "DAC",
               "value": "1.101198"
             },
             "totalPrice": {

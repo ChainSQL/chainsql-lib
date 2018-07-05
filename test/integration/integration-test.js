@@ -6,8 +6,8 @@ const assert = require('assert');
 const errors = require('../../src/common/errors');
 const wallet = require('./wallet');
 const requests = require('../fixtures/requests');
-const ChainsqlAPI = require('ripple-api').ChainsqlAPI;
-const {isValidAddress} = require('chainsql-address-codec');
+const DacAPI = require('ripple-api').DacAPI;
+const {isValidAddress} = require('dac-address-codec');
 const {isValidSecret} = require('../../src/common');
 const {payTo, ledgerAccept} = require('./utils');
 
@@ -72,7 +72,7 @@ function testTransaction(testcase, type, lastClosedLedgerVersion, prepared,
 }
 
 function setup(server = 'wss://s1.ripple.com') {
-  this.api = new ChainsqlAPI({server});
+  this.api = new DacAPI({server});
   console.log('CONNECTING...');
   return this.api.connect().then(() => {
     console.log('CONNECTED...');
@@ -121,7 +121,7 @@ function setupAccounts(testcase) {
     .then(() => payTo(api, 'rKmBGxocj9Abgy25J51Mk1iqFzW9aVF9Tc'))
     .then(() => payTo(api, 'rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q'))
     .then(() => {
-      return api.prepareSettings(masterAccount, {defaultChainsql: true})
+      return api.prepareSettings(masterAccount, {defaultDac: true})
       .then(data => api.sign(data.txJSON, masterSecret))
       .then(signed => api.submit(signed.signedTransaction))
       .then(() => ledgerAccept(api));
@@ -141,7 +141,7 @@ function setupAccounts(testcase) {
           counterparty: masterAccount
         },
         totalPrice: {
-          currency: 'ZXC',
+          currency: 'DAC',
           value: '432'
         }
       };
@@ -152,7 +152,7 @@ function setupAccounts(testcase) {
       const orderSpecification = {
         direction: 'buy',
         quantity: {
-          currency: 'ZXC',
+          currency: 'DAC',
           value: '1741'
         },
         totalPrice: {
@@ -217,7 +217,7 @@ describe('integration tests', function() {
 
 
   it('payment', function() {
-    const amount = {currency: 'ZXC', value: '0.000001'};
+    const amount = {currency: 'DAC', value: '0.000001'};
     const paymentSpecification = {
       source: {
         address: address,
@@ -245,7 +245,7 @@ describe('integration tests', function() {
         counterparty: 'rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q'
       },
       totalPrice: {
-        currency: 'ZXC',
+        currency: 'DAC',
         value: '0.0002'
       }
     };
@@ -351,7 +351,7 @@ describe('integration tests', function() {
   it('getOrderbook', function() {
     const orderbook = {
       base: {
-        currency: 'ZXC'
+        currency: 'DAC'
       },
       counter: {
         currency: 'USD',
@@ -365,13 +365,13 @@ describe('integration tests', function() {
       assert(bid && bid.specification && bid.specification.quantity);
       assert(bid.specification.totalPrice);
       assert.strictEqual(bid.specification.direction, 'buy');
-      assert.strictEqual(bid.specification.quantity.currency, 'ZXC');
+      assert.strictEqual(bid.specification.quantity.currency, 'DAC');
       assert.strictEqual(bid.specification.totalPrice.currency, 'USD');
       const ask = book.asks[0];
       assert(ask && ask.specification && ask.specification.quantity);
       assert(ask.specification.totalPrice);
       assert.strictEqual(ask.specification.direction, 'sell');
-      assert.strictEqual(ask.specification.quantity.currency, 'ZXC');
+      assert.strictEqual(ask.specification.quantity.currency, 'DAC');
       assert.strictEqual(ask.specification.totalPrice.currency, 'USD');
     });
   });

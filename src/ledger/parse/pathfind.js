@@ -2,8 +2,8 @@
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
 const parseAmount = require('./amount')
-import type {Amount, ChainsqldAmount} from '../../common/types.js'
-import type {GetPaths, ChainsqldPathsResponse} from '../pathfind-types.js'
+import type {Amount, DacdAmount} from '../../common/types.js'
+import type {GetPaths, DacdPathsResponse} from '../pathfind-types.js'
 
 function parsePaths(paths) {
   return paths.map(steps => steps.map(step =>
@@ -23,7 +23,7 @@ function createAdjustment(address: string, adjustmentWithoutAddress: Object) {
 }
 
 function parseAlternative(sourceAddress: string, destinationAddress: string,
-  destinationAmount: ChainsqldAmount, alternative: Object
+  destinationAmount: DacdAmount, alternative: Object
 ) {
   // we use "maxAmount"/"minAmount" here so that the result can be passed
   // directly to preparePayment
@@ -40,7 +40,7 @@ function parseAlternative(sourceAddress: string, destinationAddress: string,
   }
 }
 
-function parsePathfind(pathfindResult: ChainsqldPathsResponse): GetPaths {
+function parsePathfind(pathfindResult: DacdPathsResponse): GetPaths {
   const sourceAddress = pathfindResult.source_account
   const destinationAddress = pathfindResult.destination_account
   const destinationAmount = pathfindResult.destination_amount

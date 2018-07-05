@@ -86,7 +86,7 @@ class RestrictedConnection extends common.Connection {
   }
 }
 
-class ChainsqlAPI extends EventEmitter {
+class DacAPI extends EventEmitter {
   constructor(options: APIOptions = {}) {
     common.validate.apiOptions(options)
     super()
@@ -114,7 +114,7 @@ class ChainsqlAPI extends EventEmitter {
   }
 }
 
-_.assign(ChainsqlAPI.prototype, {
+_.assign(DacAPI.prototype, {
   connect,
   disconnect,
   isConnected,
@@ -158,7 +158,7 @@ _.assign(ChainsqlAPI.prototype, {
 })
 
 // these are exposed only for use by unit tests; they are not part of the API
-ChainsqlAPI._PRIVATE = {
+DacAPI._PRIVATE = {
   validate: common.validate,
   RangeSet: require('./common/rangeset').RangeSet,
   ledgerUtils: require('./ledger/utils'),
@@ -166,5 +166,5 @@ ChainsqlAPI._PRIVATE = {
 }
 
 module.exports = {
-  ChainsqlAPI
+  DacAPI
 }

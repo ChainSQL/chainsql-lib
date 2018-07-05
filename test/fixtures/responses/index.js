@@ -7,13 +7,13 @@ module.exports = {
   getBalanceSheet: require('./get-balance-sheet.json'),
   getOrderbook: {
     normal: require('./get-orderbook.json'),
-    withZXC: require('./get-orderbook-with-zxc.json')
+    withDAC: require('./get-orderbook-with-DAC.json')
   },
   getOrders: require('./get-orders.json'),
   getPaths: {
-    ZxcToUsd: require('./get-paths.json'),
+    DACToUsd: require('./get-paths.json'),
     UsdToUsd: require('./get-paths-send-usd.json'),
-    ZxcToZxc: require('./get-paths-zxc-to-zxc.json'),
+    DACToDAC: require('./get-paths-DAC-to-DAC.json'),
     sendAll: require('./get-paths-send-all.json')
   },
   getPaymentChannel: {
@@ -83,8 +83,8 @@ module.exports = {
   },
   preparePayment: {
     normal: require('./prepare-payment.json'),
-    minAmountZXC: require('./prepare-payment-min-amount-zxc.json'),
-    minAmountZXCZXC: require('./prepare-payment-min-amount-zxc-zxc.json'),
+    minAmountDAC: require('./prepare-payment-min-amount-DAC.json'),
+    minAmountDACDAC: require('./prepare-payment-min-amount-DAC-DAC.json'),
     allOptions: require('./prepare-payment-all-options.json'),
     noCounterparty: require('./prepare-payment-no-counterparty.json'),
     minAmount: require('./prepare-payment-min-amount.json')

@@ -5,7 +5,7 @@ const hashes = require('../hashes');
 const addresses = require('../addresses');
 const AccountSet = require('./tx/account-set.json');
 const NotFound = require('./tx/not-found.json');
-const binary = require('chainsql-binary-codec');
+const binary = require('dac-binary-codec');
 
 module.exports = function(request, options = {}) {
   _.defaults(options, {
@@ -108,7 +108,7 @@ module.exports = function(request, options = {}) {
             },
             LowNode: '0000000000000002'
           },
-          LedgerEntryType: 'ChainsqlState',
+          LedgerEntryType: 'DacState',
           LedgerIndex: '4BD1874F8F3A60EDB0C23F5BD43E07953C2B8741B226648310D113DE2B486F01',
           PreviousFields: {
             Balance: {
@@ -180,7 +180,7 @@ module.exports = function(request, options = {}) {
             },
             LowNode: '000000000000000C'
           },
-          LedgerEntryType: 'ChainsqlState',
+          LedgerEntryType: 'DacState',
           LedgerIndex: 'FA1255C2E0407F1945BCF9351257C7C5C28B0F5F09BB81C08D35A03E9F0136BC',
           PreviousFields: {
             Balance: {

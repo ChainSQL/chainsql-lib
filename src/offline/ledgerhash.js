@@ -2,12 +2,12 @@
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
 const common = require('../common')
-const hashes = require('chainsql-hashes')
+const hashes = require('dac-hashes')
 
 function convertLedgerHeader(header) {
   return {
     account_hash: header.stateHash,
-    close_time: common.iso8601ToChainsqlTime(header.closeTime),
+    close_time: common.iso8601ToDacTime(header.closeTime),
     close_time_resolution: header.closeTimeResolution,
     close_flags: header.closeFlags,
     hash: header.ledgerHash,
@@ -15,7 +15,7 @@ function convertLedgerHeader(header) {
     ledger_index: header.ledgerVersion.toString(),
     seqNum: header.ledgerVersion.toString(),
     parent_hash: header.parentLedgerHash,
-    parent_close_time: common.iso8601ToChainsqlTime(header.parentCloseTime),
+    parent_close_time: common.iso8601ToDacTime(header.parentCloseTime),
     total_coins: header.totalDrops,
     totalCoins: header.totalDrops,
     transaction_hash: header.transactionHash

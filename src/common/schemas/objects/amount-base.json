@@ -13,7 +13,7 @@
       "$ref": "currency"
     },
     "counterparty": {
-      "description": "The Chainsql address of the account that owes or is owed the funds (omitted if `currency` is \"ZXC\")",
+      "description": "The Dac address of the account that owes or is owed the funds (omitted if `currency` is \"DAC\")",
       "$ref": "address"
     }
   },
@@ -24,7 +24,7 @@
       "properties": {
         "currency": {
           "not": {
-            "enum": ["ZXC"]
+            "enum": ["DAC"]
           }
         }
       },
@@ -33,7 +33,7 @@
     {
       "properties": {
         "currency": {
-          "enum": ["ZXC"]
+          "enum": ["DAC"]
         }
       },
       "not": {

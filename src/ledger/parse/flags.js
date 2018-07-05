@@ -10,8 +10,8 @@ const trustlineFlags = {
   HighReserve: 0x00020000,
   LowAuth: 0x00040000,
   HighAuth: 0x00080000,
-  LowNoChainsql: 0x00100000,
-  HighNoChainsql: 0x00200000,
+  LowNoDac: 0x00100000,
+  HighNoDac: 0x00200000,
   LowFreeze: 0x00400000,
   HighFreeze: 0x00800000
 }

@@ -4,7 +4,7 @@ const assert = require('assert-diff');
 const _ = require('lodash');
 const jayson = require('jayson');
 
-const ChainsqlAPI = require('../../src').ChainsqlAPI;
+const DacAPI = require('../../src').DacAPI;
 const createHTTPServer = require('../../src/http').createHTTPServer;
 const {payTo, ledgerAccept} = require('./utils');
 
@@ -65,7 +65,7 @@ describe('http server integration tests', function() {
   }
 
   before(() => {
-    this.api = new ChainsqlAPI({server: serverUri});
+    this.api = new DacAPI({server: serverUri});
     console.log('CONNECTING...');
     return this.api.connect().then(() => {
       console.log('CONNECTED...');

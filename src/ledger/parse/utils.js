@@ -1,20 +1,20 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
-const transactionParser = require('chainsql-lib-transactionparser')
+const transactionParser = require('dac-lib-transactionparser')
 const utils = require('../utils')
 const BigNumber = require('bignumber.js')
 const parseAmount = require('./amount')
 
 import type {Amount} from '../common/types.js'
 
-function adjustQualityForZXC(
+function adjustQualityForDAC(
   quality: string, takerGetsCurrency: string, takerPaysCurrency: string
 ) {
   // quality = takerPays.value/takerGets.value
-  // using drops (1e-6 ZXC) for ZXC values
-  const numeratorShift = (takerPaysCurrency === 'ZXC' ? -6 : 0)
-  const denominatorShift = (takerGetsCurrency === 'ZXC' ? -6 : 0)
+  // using drops (1e-6 DAC) for DAC values
+  const numeratorShift = (takerPaysCurrency === 'DAC' ? -6 : 0)
+  const denominatorShift = (takerGetsCurrency === 'DAC' ? -6 : 0)
   const shift = numeratorShift - denominatorShift
   return shift === 0 ? quality :
     (new BigNumber(quality)).shift(shift).toString()
@@ -108,7 +108,7 @@ function parseOutcome(tx: Object): ?Object {
   return utils.common.removeUndefined({
     result: tx.meta.TransactionResult,
     timestamp: parseTimestamp(tx.date),
-    fee: utils.common.dropsToZxc(tx.Fee),
+    fee: utils.common.dropsToDAC(tx.Fee),
     balanceChanges: balanceChanges,
     orderbookChanges: orderbookChanges,
     ledgerVersion: tx.ledger_index,
@@ -140,9 +140,9 @@ module.exports = {
   parseMemos,
   hexToString,
   parseTimestamp,
-  adjustQualityForZXC,
+  adjustQualityForDAC,
   isPartialPayment,
-  dropsToZxc: utils.common.dropsToZxc,
+  dropsToDAC: utils.common.dropsToDAC,
   constants: utils.common.constants,
   txFlags: utils.common.txFlags,
   removeUndefined: utils.common.removeUndefined,

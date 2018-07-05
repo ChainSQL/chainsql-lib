@@ -1,6 +1,6 @@
-# chainsql-lib
+# dac-lib
 
-A JavaScript API for interacting with the ZXC Ledger
+A JavaScript API for interacting with the DAC Ledger
 
 [![Circle CI](https://circleci.com/gh/ripple/ripple-lib/tree/develop.svg?style=svg)](https://circleci.com/gh/ripple/ripple-lib/tree/develop) [![Coverage Status](https://coveralls.io/repos/ripple/ripple-lib/badge.png?branch=develop)](https://coveralls.io/r/ripple/ripple-lib?branch=develop)
 
@@ -10,16 +10,16 @@ A JavaScript API for interacting with the ZXC Ledger
 
 + Connect to a `rippled` server from Node.js or a web browser
 + Issue [rippled API](https://ripple.com/build/rippled-apis/) requests
-+ Listen to events on the ZXC Ledger (transaction, ledger, etc.)
-+ Sign and submit transactions to the ZXC Ledger
++ Listen to events on the DAC Ledger (transaction, ledger, etc.)
++ Sign and submit transactions to the DAC Ledger
 
 ## Getting Started
 
-See also: [ChainsqlAPI Beginners Guide](https://ripple.com/build/rippleapi-beginners-guide/)
+See also: [DacAPI Beginners Guide](https://ripple.com/build/rippleapi-beginners-guide/)
 
-Install `chainsql-lib` using npm:
+Install `dac-lib` using npm:
 ```
-$ npm install chainsql-lib
+$ npm install dac-lib
 ```
 
 Then see the [documentation](https://github.com/ripple/ripple-lib/blob/develop/docs/index.md) and [code samples](https://github.com/ripple/ripple-lib/tree/develop/docs/samples)
@@ -36,4 +36,4 @@ The continuous integration tests require that the documentation stays up-to-date
 
 ## More Information
 
-+ [Chainsql Developer Center](https://ripple.com/build/)
++ [Dac Developer Center](https://ripple.com/build/)

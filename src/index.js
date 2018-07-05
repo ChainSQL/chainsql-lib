@@ -1,7 +1,7 @@
 'use strict' // eslint-disable-line strict
 
 module.exports = {
-  ChainsqlLibAPI: require('./api').ChainsqlAPI,
+  DacLibAPI: require('./api').DacAPI,
   // Broadcast api is experimental
-  ChainsqlAPIBroadcast: require('./broadcast').ChainsqlAPIBroadcast
+  DacAPIBroadcast: require('./broadcast').DacAPIBroadcast
 }

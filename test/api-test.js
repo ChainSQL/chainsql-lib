@@ -3,18 +3,18 @@
 const _ = require('lodash');
 const assert = require('assert-diff');
 const setupAPI = require('./setup-api');
-const ChainsqlAPI = require('ripple-api').ChainsqlAPI;
-const validate = ChainsqlAPI._PRIVATE.validate;
+const DacAPI = require('ripple-api').DacAPI;
+const validate = DacAPI._PRIVATE.validate;
 const fixtures = require('./fixtures');
 const requests = fixtures.requests;
 const responses = fixtures.responses;
 const addresses = require('./fixtures/addresses');
 const hashes = require('./fixtures/hashes');
 const address = addresses.ACCOUNT;
-const utils = ChainsqlAPI._PRIVATE.ledgerUtils;
+const utils = DacAPI._PRIVATE.ledgerUtils;
 const ledgerClosed = require('./fixtures/rippled/ledger-close-newer');
-const schemaValidator = ChainsqlAPI._PRIVATE.schemaValidator;
-const binary = require('chainsql-binary-codec');
+const schemaValidator = DacAPI._PRIVATE.schemaValidator;
+const binary = require('dac-binary-codec');
 assert.options.strict = true;
 
 // how long before each test case times out
@@ -40,15 +40,15 @@ function checkResult(expected, schemaName, response) {
 }
 
 
-describe('ChainsqlAPI', function() {
+describe('DacAPI', function() {
   this.timeout(TIMEOUT);
   const instructions = {maxLedgerVersionOffset: 100};
   beforeEach(setupAPI.setup);
   afterEach(setupAPI.teardown);
 
   it('error inspect', function() {
-    const error = new this.api.errors.ChainsqlError('mess', {data: 1});
-    assert.strictEqual(error.inspect(), '[ChainsqlError(mess, { data: 1 })]');
+    const error = new this.api.errors.DacError('mess', {data: 1});
+    assert.strictEqual(error.inspect(), '[DacError(mess, { data: 1 })]');
   });
 
   describe('preparePayment', function() {
@@ -62,27 +62,27 @@ describe('ChainsqlAPI', function() {
         _.partial(checkResult, responses.preparePayment.normal, 'prepare'));
     });
 
-    it('preparePayment - min amount zxc', function() {
+    it('preparePayment - min amount DAC', function() {
       const localInstructions = _.defaults({
         maxFee: '0.000012'
       }, instructions);
       return this.api.preparePayment(
-        address, requests.preparePayment.minAmountZXC, localInstructions).then(
+        address, requests.preparePayment.minAmountDAC, localInstructions).then(
         _.partial(checkResult,
-          responses.preparePayment.minAmountZXC, 'prepare'));
+          responses.preparePayment.minAmountDAC, 'prepare'));
     });
 
-    it('preparePayment - min amount zxc2zxc', function() {
+    it('preparePayment - min amount DAC2DAC', function() {
       return this.api.preparePayment(
         address, requests.preparePayment.minAmount, instructions).then(
         _.partial(checkResult,
-          responses.preparePayment.minAmountZXCZXC, 'prepare'));
+          responses.preparePayment.minAmountDACDAC, 'prepare'));
     });
 
-    it('preparePayment - ZXC to ZXC no partial', function() {
+    it('preparePayment - DAC to DAC no partial', function() {
       assert.throws(() => {
         this.api.preparePayment(address, requests.preparePayment.wrongPartial);
-      }, /ZXC to ZXC payments cannot be partial payments/);
+      }, /DAC to DAC payments cannot be partial payments/);
     });
 
     it('preparePayment - address must match payment.source.address', function(
@@ -445,9 +445,9 @@ describe('ChainsqlAPI', function() {
 
   it('submit - failure', function() {
     return this.api.submit('BAD').then(() => {
-      assert(false, 'Should throw ChainsqldError');
+      assert(false, 'Should throw DacdError');
     }).catch(error => {
-      assert(error instanceof this.api.errors.ChainsqldError);
+      assert(error instanceof this.api.errors.DacdError);
       assert.strictEqual(error.data.resultCode, 'temBAD_FEE');
     });
   });
@@ -498,7 +498,7 @@ describe('ChainsqlAPI', function() {
     }, /txJSON is not the same for all signedTransactions/);
   });
 
-  describe('ChainsqlAPI', function() {
+  describe('DacAPI', function() {
 
     it('getBalances', function() {
       return this.api.getBalances(address).then(
@@ -936,14 +936,14 @@ describe('ChainsqlAPI', function() {
     });
   });
 
-  // this is the case where core.ChainsqlError just falls
+  // this is the case where core.DacError just falls
   // through the api to the user
   it('getTransactions - error', function() {
     const options = {types: ['payment', 'order'], initiated: true, limit: 13};
     return this.api.getTransactions(address, options).then(() => {
-      assert(false, 'Should throw ChainsqlError');
+      assert(false, 'Should throw DacError');
     }).catch(error => {
-      assert(error instanceof this.api.errors.ChainsqlError);
+      assert(error instanceof this.api.errors.DacError);
     });
   });
 
@@ -1067,9 +1067,9 @@ describe('ChainsqlAPI', function() {
       }, this.api.errors.ValidationError);
     });
 
-    it('with ZXC', function() {
-      return this.api.getOrderbook(address, requests.getOrderbook.withZXC).then(
-        _.partial(checkResult, responses.getOrderbook.withZXC, 'getOrderbook'));
+    it('with DAC', function() {
+      return this.api.getOrderbook(address, requests.getOrderbook.withDAC).then(
+        _.partial(checkResult, responses.getOrderbook.withDAC, 'getOrderbook'));
     });
 
     it('sorted so that best deals come first', function() {
@@ -1135,7 +1135,7 @@ describe('ChainsqlAPI', function() {
     return this.api.getPaymentChannel(channelId).then(() => {
       assert(false, 'Should throw entryNotFound');
     }).catch(error => {
-      assert(error instanceof this.api.errors.ChainsqldError);
+      assert(error instanceof this.api.errors.DacdError);
       assert(_.includes(error.message, 'entryNotFound'));
     });
   });
@@ -1166,7 +1166,7 @@ describe('ChainsqlAPI', function() {
     return this.api.getServerInfo().then(() => {
       assert(false, 'Should throw NetworkError');
     }).catch(error => {
-      assert(error instanceof this.api.errors.ChainsqldError);
+      assert(error instanceof this.api.errors.DacdError);
       assert(_.includes(error.message, 'slowDown'));
     });
   });
@@ -1206,33 +1206,33 @@ describe('ChainsqlAPI', function() {
 
   it('getPaths', function() {
     return this.api.getPaths(requests.getPaths.normal).then(
-      _.partial(checkResult, responses.getPaths.ZxcToUsd, 'getPaths'));
+      _.partial(checkResult, responses.getPaths.DACToUsd, 'getPaths'));
   });
 
   it('getPaths - queuing', function() {
     return Promise.all([
       this.api.getPaths(requests.getPaths.normal),
       this.api.getPaths(requests.getPaths.UsdToUsd),
-      this.api.getPaths(requests.getPaths.ZxcToZxc)
+      this.api.getPaths(requests.getPaths.DACToDAC)
     ]).then(results => {
-      checkResult(responses.getPaths.ZxcToUsd, 'getPaths', results[0]);
+      checkResult(responses.getPaths.DACToUsd, 'getPaths', results[0]);
       checkResult(responses.getPaths.UsdToUsd, 'getPaths', results[1]);
-      checkResult(responses.getPaths.ZxcToZxc, 'getPaths', results[2]);
+      checkResult(responses.getPaths.DACToDAC, 'getPaths', results[2]);
     });
   });
 
   // @TODO
-  // need decide what to do with currencies/ZXC:
-  // if add 'ZXC' in currencies, then there will be exception in
-  // zxcToDrops function (called from toChainsqldAmount)
+  // need decide what to do with currencies/DAC:
+  // if add 'DAC' in currencies, then there will be exception in
+  // DACToDrops function (called from toDacdAmount)
   it('getPaths USD 2 USD', function() {
     return this.api.getPaths(requests.getPaths.UsdToUsd).then(
       _.partial(checkResult, responses.getPaths.UsdToUsd, 'getPaths'));
   });
 
-  it('getPaths ZXC 2 ZXC', function() {
-    return this.api.getPaths(requests.getPaths.ZxcToZxc).then(
-      _.partial(checkResult, responses.getPaths.ZxcToZxc, 'getPaths'));
+  it('getPaths DAC 2 DAC', function() {
+    return this.api.getPaths(requests.getPaths.DACToDAC).then(
+      _.partial(checkResult, responses.getPaths.DACToDAC, 'getPaths'));
   });
 
   it('getPaths - source with issuer', function() {
@@ -1243,8 +1243,8 @@ describe('ChainsqlAPI', function() {
     });
   });
 
-  it('getPaths - ZXC 2 ZXC - not enough', function() {
-    return this.api.getPaths(requests.getPaths.ZxcToZxcNotEnough).then(() => {
+  it('getPaths - DAC 2 DAC - not enough', function() {
+    return this.api.getPaths(requests.getPaths.DACToDACNotEnough).then(() => {
       assert(false, 'Should throw NotFoundError');
     }).catch(error => {
       assert(error instanceof this.api.errors.NotFoundError);
@@ -1295,7 +1295,7 @@ describe('ChainsqlAPI', function() {
     const pathfind = _.assign({}, requests.getPaths.normal,
       {source: {address: addresses.NOTFOUND}});
     return this.api.getPaths(pathfind).catch(error => {
-      assert(error instanceof this.api.errors.ChainsqlError);
+      assert(error instanceof this.api.errors.DacError);
     });
   });
 
@@ -1420,10 +1420,10 @@ describe('ChainsqlAPI', function() {
       });
   });
 
-  it('ChainsqlError with data', function() {
-    const error = new this.api.errors.ChainsqlError('_message_', '_data_');
+  it('DacError with data', function() {
+    const error = new this.api.errors.DacError('_message_', '_data_');
     assert.strictEqual(error.toString(),
-      '[ChainsqlError(_message_, \'_data_\')]');
+      '[DacError(_message_, \'_data_\')]');
   });
 
   it('NotFoundError default message', function() {
@@ -1432,10 +1432,10 @@ describe('ChainsqlAPI', function() {
       '[NotFoundError(Not found)]');
   });
 
-  it('common utils - toChainsqldAmount', function() {
+  it('common utils - toDacdAmount', function() {
     const amount = {issuer: 'is', currency: 'c', value: 'v'};
 
-    assert.deepEqual(utils.common.toChainsqldAmount(amount), {
+    assert.deepEqual(utils.common.toDacdAmount(amount), {
       issuer: 'is', currency: 'c', value: 'v'
     });
   });
@@ -1557,9 +1557,9 @@ describe('ChainsqlAPI', function() {
   });
 });
 
-describe('ChainsqlAPI - offline', function() {
+describe('DacAPI - offline', function() {
   it('prepareSettings and sign', function() {
-    const api = new ChainsqlAPI();
+    const api = new DacAPI();
     const secret = 'shsWGZcmZz6YsWWmcnpfr6fLTdtFV';
     const settings = requests.prepareSettings.domain;
     const instructions = {
@@ -1575,7 +1575,7 @@ describe('ChainsqlAPI - offline', function() {
   });
 
   it('getServerInfo - offline', function() {
-    const api = new ChainsqlAPI();
+    const api = new DacAPI();
     return api.getServerInfo().then(() => {
       assert(false, 'Should throw error');
     }).catch(error => {
@@ -1584,7 +1584,7 @@ describe('ChainsqlAPI - offline', function() {
   });
 
   it('computeLedgerHash', function() {
-    const api = new ChainsqlAPI();
+    const api = new DacAPI();
     const header = requests.computeLedgerHash.header;
     const ledgerHash = api.computeLedgerHash(header);
     assert.strictEqual(ledgerHash,
@@ -1592,7 +1592,7 @@ describe('ChainsqlAPI - offline', function() {
   });
 
   it('computeLedgerHash - with transactions', function() {
-    const api = new ChainsqlAPI();
+    const api = new DacAPI();
     const header = _.omit(requests.computeLedgerHash.header,
       'transactionHash');
     header.rawTransactions = JSON.stringify(
@@ -1603,7 +1603,7 @@ describe('ChainsqlAPI - offline', function() {
   });
 
   it('computeLedgerHash - incorrent transaction_hash', function() {
-    const api = new ChainsqlAPI();
+    const api = new DacAPI();
     const header = _.assign({}, requests.computeLedgerHash.header,
       {transactionHash:
         '325EACC5271322539EEEC2D6A5292471EF1B3E72AE7180533EFC3B8F0AD435C9'});
@@ -1613,21 +1613,21 @@ describe('ChainsqlAPI - offline', function() {
   });
 
 /* eslint-disable no-unused-vars */
-  it('ChainsqlAPI - implicit server port', function() {
-    const api = new ChainsqlAPI({server: 'wss://s1.ripple.com'});
+  it('DacAPI - implicit server port', function() {
+    const api = new DacAPI({server: 'wss://s1.ripple.com'});
   });
 /* eslint-enable no-unused-vars */
-  it('ChainsqlAPI invalid options', function() {
-    assert.throws(() => new ChainsqlAPI({invalid: true}));
+  it('DacAPI invalid options', function() {
+    assert.throws(() => new DacAPI({invalid: true}));
   });
 
-  it('ChainsqlAPI valid options', function() {
-    const api = new ChainsqlAPI({server: 'wss://s:1'});
+  it('DacAPI valid options', function() {
+    const api = new DacAPI({server: 'wss://s:1'});
     assert.deepEqual(api.connection._url, 'wss://s:1');
   });
 
-  it('ChainsqlAPI invalid server uri', function() {
-    assert.throws(() => new ChainsqlAPI({server: 'wss//s:1'}));
+  it('DacAPI invalid server uri', function() {
+    assert.throws(() => new DacAPI({server: 'wss//s:1'}));
   });
 
 });

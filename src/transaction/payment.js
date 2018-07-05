@@ -3,7 +3,7 @@
 const _ = require('lodash')
 const utils = require('./utils')
 const validate = utils.common.validate
-const toChainsqldAmount = utils.common.toChainsqldAmount
+const toDacdAmount = utils.common.toDacdAmount
 const paymentFlags = utils.common.txFlags.Payment
 const ValidationError = utils.common.errors.ValidationError
 import type {Instructions, Prepare} from './types.js'
@@ -23,31 +23,31 @@ type Payment = {
   // liquidity or funds in the source_account account
   allowPartialPayment?: boolean,
   // A boolean that can be set to true if paths are specified and the sender
-  // would like the Chainsql Network to disregard any direct paths from
+  // would like the Dac Network to disregard any direct paths from
   // the source_account to the destination_account. This may be used to take
   // advantage of an arbitrage opportunity or by gateways wishing to issue
   // balances from a hot wallet to a user who has mistakenly set a trustline
   // directly to the hot wallet
-  noDirectChainsql?: boolean,
+  noDirectDac?: boolean,
   limitQuality?: boolean
 }
 
-function isZXCToZXCPayment(payment: Payment): boolean {
+function isDACToDACPayment(payment: Payment): boolean {
   const sourceCurrency = _.get(payment, 'source.maxAmount.currency',
     _.get(payment, 'source.amount.currency'))
   const destinationCurrency = _.get(payment, 'destination.amount.currency',
     _.get(payment, 'destination.minAmount.currency'))
-  return sourceCurrency === 'ZXC' && destinationCurrency === 'ZXC'
+  return sourceCurrency === 'DAC' && destinationCurrency === 'DAC'
 }
 
 function isIOUWithoutCounterparty(amount: Amount): boolean {
-  return amount && amount.currency !== 'ZXC'
+  return amount && amount.currency !== 'DAC'
     && amount.counterparty === undefined
 }
 
 function applyAnyCounterpartyEncoding(payment: Payment): void {
   // Convert blank counterparty to sender or receiver's address
-  //   (Chainsql convention for 'any counterparty')
+  //   (Dac convention for 'any counterparty')
   // https://ripple.com/build/transactions/
   //    #special-issuer-values-for-sendmax-and-amount
   // https://ripple.com/build/ripple-rest/#counterparties-in-payments
@@ -61,9 +61,9 @@ function applyAnyCounterpartyEncoding(payment: Payment): void {
 }
 
 function createMaximalAmount(amount: Amount): Amount {
-  const maxZXCValue = '100000000000'
+  const maxDACValue = '100000000000'
   const maxIOUValue = '9999999999999999e80'
-  const maxValue = amount.currency === 'ZXC' ? maxZXCValue : maxIOUValue
+  const maxValue = amount.currency === 'DAC' ? maxDACValue : maxIOUValue
   return _.assign({}, amount, {value: maxValue})
 }
 
@@ -88,7 +88,7 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
   // send the whole source amount, so we set the destination amount to the
   // maximum possible amount. otherwise it's possible that the destination
   // cap could be hit before the source cap.
-  const amount = payment.destination.minAmount && !isZXCToZXCPayment(payment) ?
+  const amount = payment.destination.minAmount && !isDACToDACPayment(payment) ?
     createMaximalAmount(payment.destination.minAmount) :
     (payment.destination.amount || payment.destination.minAmount)
 
@@ -96,7 +96,7 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
     TransactionType: 'Payment',
     Account: payment.source.address,
     Destination: payment.destination.address,
-    Amount: toChainsqldAmount(amount),
+    Amount: toDacdAmount(amount),
     Flags: 0
   }
 
@@ -112,14 +112,14 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
   if (payment.memos !== undefined) {
     txJSON.Memos = _.map(payment.memos, utils.convertMemo)
   }
-  if (payment.noDirectChainsql === true) {
-    txJSON.Flags |= paymentFlags.NoChainsqlDirect
+  if (payment.noDirectDac === true) {
+    txJSON.Flags |= paymentFlags.NoDacDirect
   }
   if (payment.limitQuality === true) {
     txJSON.Flags |= paymentFlags.LimitQuality
   }
-  if (!isZXCToZXCPayment(payment)) {
-    // Don't set SendMax for ZXC->ZXC payment
+  if (!isDACToDACPayment(payment)) {
+    // Don't set SendMax for DAC->DAC payment
     // temREDUNDANT_SEND_MAX removed in:
     // https://github.com/ripple/rippled/commit/
     //  c522ffa6db2648f1d8a987843e7feabf1a0b7de8/
@@ -128,18 +128,18 @@ function createPaymentTransaction(address: string, paymentArgument: Payment
       txJSON.Flags |= paymentFlags.PartialPayment
     }
 
-    txJSON.SendMax = toChainsqldAmount(
+    txJSON.SendMax = toDacdAmount(
       payment.source.maxAmount || payment.source.amount)
 
     if (payment.destination.minAmount !== undefined) {
-      txJSON.DeliverMin = toChainsqldAmount(payment.destination.minAmount)
+      txJSON.DeliverMin = toDacdAmount(payment.destination.minAmount)
     }
 
     if (payment.paths !== undefined) {
       txJSON.Paths = JSON.parse(payment.paths)
     }
   } else if (payment.allowPartialPayment === true) {
-    throw new ValidationError('ZXC to ZXC payments cannot be partial payments')
+    throw new ValidationError('DAC to DAC payments cannot be partial payments')
   }
 
   return txJSON

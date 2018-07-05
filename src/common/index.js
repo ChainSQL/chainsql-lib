@@ -8,15 +8,15 @@ module.exports = {
   validate: require('./validate'),
   txFlags: require('./txflags').txFlags,
   serverInfo: require('./serverinfo'),
-  dropsToZxc: utils.dropsToZxc,
-  zxcToDrops: utils.zxcToDrops,
-  toChainsqldAmount: utils.toChainsqldAmount,
+  dropsToDAC: utils.dropsToDAC,
+  DACToDrops: utils.DACToDrops,
+  toDacdAmount: utils.toDacdAmount,
   generateAddress: utils.generateAddress,
   generateAddressAPI: utils.generateAddressAPI,
   removeUndefined: utils.removeUndefined,
   convertKeysFromSnakeCaseToCamelCase:
     utils.convertKeysFromSnakeCaseToCamelCase,
-  iso8601ToChainsqlTime: utils.iso8601ToChainsqlTime,
+  iso8601ToDacTime: utils.iso8601ToDacTime,
   rippleTimeToISO8601: utils.rippleTimeToISO8601,
   isValidSecret: utils.isValidSecret
 }

@@ -11,15 +11,15 @@ const txFlags = {
     OptionalDestTag: 0x00020000,
     RequireAuth: 0x00040000,
     OptionalAuth: 0x00080000,
-    DisallowZXC: 0x00100000,
-    AllowZXC: 0x00200000
+    DisallowDAC: 0x00100000,
+    AllowDAC: 0x00200000
   },
 
   TrustSet: {
     SetAuth: 0x00010000,
-    NoChainsql: 0x00020000,
-    SetNoChainsql: 0x00020000,
-    ClearNoChainsql: 0x00040000,
+    NoDac: 0x00020000,
+    SetNoDac: 0x00020000,
+    ClearNoDac: 0x00040000,
     SetFreeze: 0x00100000,
     ClearFreeze: 0x00200000
   },
@@ -32,7 +32,7 @@ const txFlags = {
   },
 
   Payment: {
-    NoChainsqlDirect: 0x00010000,
+    NoDacDirect: 0x00010000,
     PartialPayment: 0x00020000,
     LimitQuality: 0x00040000
   },
@@ -50,12 +50,12 @@ const txFlagIndices = {
   AccountSet: {
     asfRequireDest: 1,
     asfRequireAuth: 2,
-    asfDisallowZXC: 3,
+    asfDisallowDAC: 3,
     asfDisableMaster: 4,
     asfAccountTxnID: 5,
     asfNoFreeze: 6,
     asfGlobalFreeze: 7,
-    asfDefaultChainsql: 8
+    asfDefaultDac: 8
   }
 }
 

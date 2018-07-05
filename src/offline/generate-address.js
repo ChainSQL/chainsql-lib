@@ -1,5 +1,5 @@
 'use strict' // eslint-disable-line strict
-const keypairs = require('chainsql-keypairs')
+const keypairs = require('dac-keypairs')
 const common = require('../common')
 const {errors, validate} = common
 

@@ -9,7 +9,7 @@
     },
     "amount": {
       "$ref": "value",
-      "description": "Amount of ZXC authorized by the claim."
+      "description": "Amount of DAC authorized by the claim."
     },
     "signature": {
       "$ref": "signature",

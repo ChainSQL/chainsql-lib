@@ -30,12 +30,12 @@ function getFee(): Promise<number> {
 
 function formatLedgerClose(ledgerClose: Object): Object {
   return {
-    baseFeeZXC: common.dropsToZxc(ledgerClose.fee_base),
+    baseFeeDac: common.dropsToDAC(ledgerClose.fee_base),
     ledgerHash: ledgerClose.ledger_hash,
     ledgerVersion: ledgerClose.ledger_index,
     ledgerTimestamp: common.rippleTimeToISO8601(ledgerClose.ledger_time),
-    reserveBaseZXC: common.dropsToZxc(ledgerClose.reserve_base),
-    reserveIncrementZXC: common.dropsToZxc(ledgerClose.reserve_inc),
+    reserveBaseDac: common.dropsToDAC(ledgerClose.reserve_base),
+    reserveIncrementDac: common.dropsToDAC(ledgerClose.reserve_inc),
     transactionCount: ledgerClose.txn_count,
     validatedLedgerVersions: ledgerClose.validated_ledgers
   }

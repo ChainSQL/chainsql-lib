@@ -25,13 +25,13 @@ function getTrustlineBalanceAmount(trustline: Trustline) {
 function formatBalances(options, balances) {
   const result = balances.trustlines.map(getTrustlineBalanceAmount)
   if (!(options.counterparty ||
-       (options.currency && options.currency !== 'ZXC')
+       (options.currency && options.currency !== 'DAC')
   )) {
-    const zxcBalance = {
-      currency: 'ZXC',
-      value: balances.zxc
+    const DACBalance = {
+      currency: 'DAC',
+      value: balances.DAC
     }
-    result.unshift(zxcBalance)
+    result.unshift(DACBalance)
   }
   if (options.limit && result.length > options.limit) {
     const toRemove = result.length - options.limit
@@ -55,10 +55,10 @@ function getBalances(address: string, options: TrustlinesOptions = {}
   return Promise.all([
     getLedgerVersionHelper(this.connection, options.ledgerVersion).then(
       ledgerVersion =>
-        utils.getZXCBalance(this.connection, address, ledgerVersion)),
+        utils.getDACBalance(this.connection, address, ledgerVersion)),
     this.getTrustlines(address, options)
   ]).then(results =>
-    formatBalances(options, {zxc: results[0], trustlines: results[1]}))
+    formatBalances(options, {DAC: results[0], trustlines: results[1]}))
 }
 
 module.exports = getBalances

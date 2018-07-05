@@ -11,7 +11,7 @@
       "counterparty": "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q"
     },
     "totalPrice": {
-      "currency": "ZXC",
+      "currency": "DAC",
       "value": "0.0002"
     }
   },
@@ -22,7 +22,7 @@
     "balanceChanges": {
       "r9UHu5CWni1qRY7Q4CfFZLGvXo2pGQy96b": [
         {
-          "currency": "ZXC",
+          "currency": "DAC",
           "value": "-0.012"
         }
       ]
@@ -37,7 +37,7 @@
             "value": "237"
           },
           "totalPrice": {
-            "currency": "ZXC",
+            "currency": "DAC",
             "value": "0.0002"
           },
           "makerExchangeRate": "1185000",

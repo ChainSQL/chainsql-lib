@@ -1,14 +1,14 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const utils = require('../utils')
-import type {Amount, ChainsqldAmount} from '../../common/types.js'
+import type {Amount, DacdAmount} from '../../common/types.js'
 
 
-function parseAmount(amount: ChainsqldAmount): Amount {
+function parseAmount(amount: DacdAmount): Amount {
   if (typeof amount === 'string') {
     return {
-      currency: 'ZXC',
-      value: utils.common.dropsToZxc(amount)
+      currency: 'DAC',
+      value: utils.common.dropsToDAC(amount)
     }
   }
   return {

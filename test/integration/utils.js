@@ -8,7 +8,7 @@ function ledgerAccept(api) {
   return api.connection.request(request);
 }
 
-function pay(api, from, to, amount, secret, currency = 'ZXC', counterparty) {
+function pay(api, from, to, amount, secret, currency = 'DAC', counterparty) {
   const paymentSpecification = {
     source: {
       address: from,
@@ -43,7 +43,7 @@ function pay(api, from, to, amount, secret, currency = 'ZXC', counterparty) {
 }
 
 
-function payTo(api, to, amount = '4003218', currency = 'ZXC', counterparty) {
+function payTo(api, to, amount = '4003218', currency = 'DAC', counterparty) {
   return pay(api, masterAccount, to, amount, masterSecret, currency,
     counterparty);
 }

@@ -1,10 +1,10 @@
 'use strict';
-const ChainsqlAPI = require('../../dist/npm').ChainsqlAPI; // require('ripple-lib')
+const DacAPI = require('../../dist/npm').DacAPI; // require('ripple-lib')
 
 const address = 'rLDYrujdKUfVx28T9vRDAbyJ7G2WVXKo4K';
 const secret = '';
 
-const api = new ChainsqlAPI({server: 'wss://s1.ripple.com:443'});
+const api = new DacAPI({server: 'wss://s1.ripple.com:443'});
 const instructions = {maxLedgerVersionOffset: 5};
 
 function fail(message) {

@@ -10,8 +10,8 @@ type SettingRequireDestinationTag = {
 type SettingRequireAuthorization = {
   requireAuthorization?: boolean,
 }
-type SettingDisallowIncomingZXC = {
-  disallowIncomingZXC?: boolean,
+type SettingDisallowIncomingDAC = {
+  disallowIncomingDAC?: boolean,
 }
 type SettingDisableMasterKey = {
   disableMasterKey?: boolean,
@@ -25,8 +25,8 @@ type SettingNoFreeze = {
 type SettingGlobalFreeze = {
   globalFreeze?: boolean,
 }
-type SettingDefaultChainsql = {
-  defaultChainsql?: boolean,
+type SettingDefaultDac = {
+  defaultDac?: boolean,
 }
 type SettingEmailHash = {
   emailHash?: ?string,
@@ -54,8 +54,8 @@ type SettingTransferfeeMax = {
 
 export type Settings = SettingRegularKey |
   SettingTransferRate | SettingDomain | SettingMessageKey |
-  SettingEmailHash | SettingDefaultChainsql |
+  SettingEmailHash | SettingDefaultDac |
   SettingGlobalFreeze | SettingNoFreeze | SettingEnableTransactionIDTracking |
-  SettingDisableMasterKey | SettingDisallowIncomingZXC |
+  SettingDisableMasterKey | SettingDisallowIncomingDAC |
   SettingRequireAuthorization | SettingRequireDestinationTag |
   SettingPasswordSpent

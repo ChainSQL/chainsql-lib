@@ -1,14 +1,14 @@
 /* eslint-disable max-nested-callbacks */
 'use strict'; // eslint-disable-line 
 
-const {ChainsqlAPI, ChainsqlAPIBroadcast} = require('ripple-api');
+const {DacAPI, DacAPIBroadcast} = require('ripple-api');
 const ledgerClosed = require('./fixtures/rippled/ledger-close');
 
 const port = 34371;
 const baseUrl = 'ws://testripple.circleci.com:';
 
 function setup(port_ = port) {
-  const tapi = new ChainsqlAPI({server: baseUrl + port_});
+  const tapi = new DacAPI({server: baseUrl + port_});
   return tapi.connect().then(() => {
     return tapi.connection.request({
       command: 'test_command',
@@ -16,7 +16,7 @@ function setup(port_ = port) {
     });
   }).then(got => {
     return new Promise((resolve, reject) => {
-      this.api = new ChainsqlAPI({server: baseUrl + got.port});
+      this.api = new DacAPI({server: baseUrl + got.port});
       this.api.connect().then(() => {
         this.api.once('ledger', () => resolve());
         this.api.connection._ws.emit('message', JSON.stringify(ledgerClosed));
@@ -29,7 +29,7 @@ function setup(port_ = port) {
 
 function setupBroadcast() {
   const servers = [port, port + 1].map(port_ => baseUrl + port_);
-  this.api = new ChainsqlAPIBroadcast(servers);
+  this.api = new DacAPIBroadcast(servers);
   return new Promise((resolve, reject) => {
     this.api.connect().then(() => {
       this.api.once('ledger', () => resolve());

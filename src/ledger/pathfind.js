@@ -4,16 +4,16 @@ const _ = require('lodash')
 const BigNumber = require('bignumber.js')
 const utils = require('./utils')
 const parsePathfind = require('./parse/pathfind')
-const {validate, toChainsqldAmount} = utils.common
+const {validate, toDacdAmount} = utils.common
 const NotFoundError = utils.common.errors.NotFoundError
 const ValidationError = utils.common.errors.ValidationError
 import type {Connection} from '../common/connection'
-import type {ChainsqldAmount} from '../common/types.js'
-import type {GetPaths, PathFind, ChainsqldPathsResponse, PathFindRequest}
+import type {DacdAmount} from '../common/types.js'
+import type {GetPaths, PathFind, DacdPathsResponse, PathFindRequest}
   from './pathfind-types.js'
 
 
-function addParams(request: PathFindRequest, result: ChainsqldPathsResponse) {
+function addParams(request: PathFindRequest, result: DacdPathsResponse) {
   return _.defaults(_.assign({}, result, {
     source_account: request.source_account,
     source_currencies: request.source_currencies
@@ -26,12 +26,12 @@ function requestPathFind(connection: Connection, pathfind: PathFind): Promise {
     command: 'ripple_path_find',
     source_account: pathfind.source.address,
     destination_account: pathfind.destination.address,
-    destination_amount: toChainsqldAmount(destinationAmount)
+    destination_amount: toDacdAmount(destinationAmount)
   }
   if (typeof request.destination_amount === 'object'
       && !request.destination_amount.issuer) {
     // Convert blank issuer to sender's address
-    // (Chainsql convention for 'any issuer')
+    // (Dac convention for 'any issuer')
     // https://ripple.com/build/transactions/
     //     #special-issuer-values-for-sendmax-and-amount
     // https://ripple.com/build/ripple-rest/#counterparties-in-payments
@@ -39,14 +39,14 @@ function requestPathFind(connection: Connection, pathfind: PathFind): Promise {
   }
   if (pathfind.source.currencies && pathfind.source.currencies.length > 0) {
     request.source_currencies = pathfind.source.currencies.map(amount =>
-      _.omit(toChainsqldAmount(amount), 'value'))
+      _.omit(toDacdAmount(amount), 'value'))
   }
   if (pathfind.source.amount) {
     if (pathfind.destination.amount.value !== undefined) {
       throw new ValidationError('Cannot specify both source.amount'
         + ' and destination.amount.value in getPaths')
     }
-    request.send_max = toChainsqldAmount(pathfind.source.amount)
+    request.send_max = toDacdAmount(pathfind.source.amount)
     if (request.send_max.currency && !request.send_max.issuer) {
       request.send_max.issuer = pathfind.source.address
     }
@@ -55,11 +55,11 @@ function requestPathFind(connection: Connection, pathfind: PathFind): Promise {
   return connection.request(request).then(paths => addParams(request, paths))
 }
 
-function addDirectZxcPath(paths: ChainsqldPathsResponse, zxcBalance: string
-): ChainsqldPathsResponse {
-  // Add ZXC "path" only if the source acct has enough ZXC to make the payment
+function addDirectDACPath(paths: DacdPathsResponse, DACBalance: string
+): DacdPathsResponse {
+  // Add DAC "path" only if the source acct has enough DAC to make the payment
   const destinationAmount = paths.destination_amount
-  if ((new BigNumber(zxcBalance)).greaterThanOrEqualTo(destinationAmount)) {
+  if ((new BigNumber(DACBalance)).greaterThanOrEqualTo(destinationAmount)) {
     paths.alternatives.unshift({
       paths_computed: [],
       source_amount: paths.destination_amount
@@ -68,26 +68,26 @@ function addDirectZxcPath(paths: ChainsqldPathsResponse, zxcBalance: string
   return paths
 }
 
-function isChainsqldIOUAmount(amount: ChainsqldAmount) {
-  // rippled ZXC amounts are specified as decimal strings
+function isDacdIOUAmount(amount: DacdAmount) {
+  // rippled DAC amounts are specified as decimal strings
   return (typeof amount === 'object') &&
-    amount.currency && (amount.currency !== 'ZXC')
+    amount.currency && (amount.currency !== 'DAC')
 }
 
-function conditionallyAddDirectZXCPath(connection: Connection, address: string,
-  paths: ChainsqldPathsResponse
+function conditionallyAddDirectDACPath(connection: Connection, address: string,
+  paths: DacdPathsResponse
 ): Promise {
-  if (isChainsqldIOUAmount(paths.destination_amount)
-      || !_.includes(paths.destination_currencies, 'ZXC')) {
+  if (isDacdIOUAmount(paths.destination_amount)
+      || !_.includes(paths.destination_currencies, 'DAC')) {
     return Promise.resolve(paths)
   }
-  return utils.getZXCBalance(connection, address, undefined).then(
-    zxcBalance => addDirectZxcPath(paths, zxcBalance))
+  return utils.getDACBalance(connection, address, undefined).then(
+    DACBalance => addDirectDACPath(paths, DACBalance))
 }
 
 function filterSourceFundsLowPaths(pathfind: PathFind,
-                                   paths: ChainsqldPathsResponse
-): ChainsqldPathsResponse {
+                                   paths: DacdPathsResponse
+): DacdPathsResponse {
   if (pathfind.source.amount &&
       pathfind.destination.amount.value === undefined && paths.alternatives) {
     paths.alternatives = _.filter(paths.alternatives, alt => {
@@ -99,7 +99,7 @@ function filterSourceFundsLowPaths(pathfind: PathFind,
   return paths
 }
 
-function formatResponse(pathfind: PathFind, paths: ChainsqldPathsResponse) {
+function formatResponse(pathfind: PathFind, paths: DacdPathsResponse) {
   if (paths.alternatives && paths.alternatives.length > 0) {
     return parsePathfind(paths)
   }
@@ -129,7 +129,7 @@ function getPaths(pathfind: PathFind): Promise<GetPaths> {
 
   const address = pathfind.source.address
   return requestPathFind(this.connection, pathfind).then(paths =>
-    conditionallyAddDirectZXCPath(this.connection, address, paths)
+    conditionallyAddDirectDACPath(this.connection, address, paths)
   )
   .then(paths => filterSourceFundsLowPaths(pathfind, paths))
   .then(paths => formatResponse(pathfind, paths))

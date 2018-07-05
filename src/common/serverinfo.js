@@ -23,10 +23,10 @@ export type GetServerInfoResponse = {
   serverState: string,
   validatedLedger: {
     age: number,
-    baseFeeZXC: string,
+    baseFeeDac: string,
     hash: string,
-    reserveBaseZXC: string,
-    reserveIncrementZXC: string,
+    reserveBaseDac: string,
+    reserveIncrementDac: string,
     ledgerVersion: number
   },
   validationQuorum: number
@@ -45,17 +45,15 @@ function getServerInfo(connection: Connection): Promise<GetServerInfoResponse> {
     renameKeys(info, {hostid: 'hostID'})
     if (info.validatedLedger) {
       renameKeys(info.validatedLedger, {
-        baseFeeZxc: 'baseFeeZXC',
-        reserveBaseZxc: 'reserveBaseZXC',
-        reserveIncZxc: 'reserveIncrementZXC',
+        reserveIncDac: 'reserveIncrementDac',
         seq: 'ledgerVersion'
       })
-      info.validatedLedger.baseFeeZXC =
-        info.validatedLedger.baseFeeZXC.toString()
-      info.validatedLedger.reserveBaseZXC =
-        info.validatedLedger.reserveBaseZXC.toString()
-      info.validatedLedger.reserveIncrementZXC =
-        info.validatedLedger.reserveIncrementZXC.toString()
+      info.validatedLedger.baseFeeDac =
+        info.validatedLedger.baseFeeDac.toString()
+      info.validatedLedger.reserveBaseDac =
+        info.validatedLedger.reserveBaseDac.toString()
+      info.validatedLedger.reserveIncrementDac =
+        info.validatedLedger.reserveIncrementDac.toString()
     }
     return info
   })
@@ -64,7 +62,7 @@ function getServerInfo(connection: Connection): Promise<GetServerInfoResponse> {
 function computeFeeFromServerInfo(cushion: number,
     serverInfo: GetServerInfoResponse
 ): number {
-  return (Number(serverInfo.validatedLedger.baseFeeZXC)
+  return (Number(serverInfo.validatedLedger.baseFeeDac)
        * Number(serverInfo.loadFactor) * cushion).toString()
 }
 

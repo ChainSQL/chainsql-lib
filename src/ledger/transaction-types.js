@@ -44,12 +44,12 @@ type Settings = {
   passwordSpent?: boolean,
   requireDestinationTag?: boolean,
   requireAuthorization?: boolean,
-  disallowIncomingZXC?: boolean,
+  disallowIncomingDAC?: boolean,
   disableMasterKey?: boolean,
   enableTransactionIDTracking?: boolean,
   noFreeze?: boolean,
   globalFreeze?: boolean,
-  defaultChainsql?: boolean,
+  defaultDac?: boolean,
   emailHash?: string,
   messageKey?: string,
   domain?: string,
@@ -70,7 +70,7 @@ type Payment = {
   memos?: Array<Memo>,
   invoiceID?: string,
   allowPartialPayment?: boolean,
-  noDirectChainsql?: boolean,
+  noDirectDac?: boolean,
   limitQuality?: boolean
 }
 

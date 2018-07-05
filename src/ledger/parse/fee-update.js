@@ -1,14 +1,14 @@
 'use strict' // eslint-disable-line strict
 const BigNumber = require('bignumber.js')
-const {dropsToZxc} = require('./utils')
+const {dropsToDAC} = require('./utils')
 
 function parseFeeUpdate(tx: Object) {
   const baseFeeDrops = (new BigNumber(tx.BaseFee, 16)).toString()
   return {
-    baseFeeZXC: dropsToZxc(baseFeeDrops),
+    baseFeeDac: dropsToDAC(baseFeeDrops),
     referenceFeeUnits: tx.ReferenceFeeUnits,
-    reserveBaseZXC: dropsToZxc(tx.ReserveBase),
-    reserveIncrementZXC: dropsToZxc(tx.ReserveIncrement)
+    reserveBaseDac: dropsToDAC(tx.ReserveBase),
+    reserveIncrementDac: dropsToDAC(tx.ReserveIncrement)
   }
 }
 

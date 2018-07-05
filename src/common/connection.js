@@ -5,9 +5,9 @@ const {EventEmitter} = require('events')
 const WebSocket = require('ws')
 const parseURL = require('url').parse
 const RangeSet = require('./rangeset').RangeSet
-const {ChainsqldError, DisconnectedError, NotConnectedError,
+const {DacdError, DisconnectedError, NotConnectedError,
   TimeoutError, ResponseFormatError, ConnectionError,
-  ChainsqldNotInitializedError} = require('./errors')
+  DacdNotInitializedError} = require('./errors')
 
 function isStreamMessageType(type) {
   return type === 'ledgerClosed' ||
@@ -178,7 +178,7 @@ class Connection extends EventEmitter {
       if (_.isEmpty(data) || !data.ledger_index) {
         // rippled instance doesn't have validated ledgers
         return this._disconnect(false).then(() => {
-          throw new ChainsqldNotInitializedError('Chainsqld not initialized')
+          throw new DacdNotInitializedError('Dacd not initialized')
         })
       }
 
@@ -426,7 +426,7 @@ class Connection extends EventEmitter {
 
       this.once(eventName, response => {
         if (response.status === 'error') {
-          _reject(new ChainsqldError(response.error))
+          _reject(new DacdError(response.error))
         } else if (response.status === 'success') {
           _resolve(response.result)
         } else {

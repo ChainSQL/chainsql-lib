@@ -41,7 +41,7 @@
     },
     "totalDrops": {
       "$ref": "value",
-      "description": "Total number of drops (1/1,000,000th of an ZXC) in the network, as a quoted integer. (This decreases as transaction fees cause ZXC to be destroyed.)"
+      "description": "Total number of drops (1/1,000,000th of an DAC) in the network, as a quoted integer. (This decreases as transaction fees cause DAC to be destroyed.)"
     },
     "transactionHash": {
       "$ref": "hash256",

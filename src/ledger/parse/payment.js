@@ -6,8 +6,8 @@ const utils = require('./utils')
 const parseAmount = require('./amount')
 const txFlags = utils.txFlags
 
-function isNoDirectChainsql(tx) {
-  return (tx.Flags & txFlags.Payment.NoChainsqlDirect) !== 0
+function isNoDirectDac(tx) {
+  return (tx.Flags & txFlags.Payment.NoDacDirect) !== 0
 }
 
 function isQualityLimited(tx) {
@@ -42,7 +42,7 @@ function parsePayment(tx: Object): Object {
     invoiceID: tx.InvoiceID,
     paths: tx.Paths ? JSON.stringify(tx.Paths) : undefined,
     allowPartialPayment: utils.isPartialPayment(tx) || undefined,
-    noDirectChainsql: isNoDirectChainsql(tx) || undefined,
+    noDirectDac: isNoDirectDac(tx) || undefined,
     limitQuality: isQualityLimited(tx) || undefined
   })
 }

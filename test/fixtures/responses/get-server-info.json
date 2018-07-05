@@ -13,10 +13,10 @@
   "serverState": "full",
   "validatedLedger": {
     "age": 5,
-    "baseFeeZXC": "0.00001",
+    "baseFeeDac": "0.00001",
     "hash": "4482DEE5362332F54A4036ED57EE1767C9F33CF7CE5A6670355C16CECE381D46",
-    "reserveBaseZXC": "20",
-    "reserveIncrementZXC": "5",
+    "reserveBaseDac": "20",
+    "reserveIncrementDac": "5",
     "ledgerVersion": 6595042
   },
   "validationQuorum": 3

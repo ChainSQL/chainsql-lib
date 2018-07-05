@@ -21,7 +21,7 @@ function formatSubmitResponse(response) {
     resultMessage: response.engine_result_message
   }
   if (isImmediateRejection(response.engine_result)) {
-    throw new utils.common.errors.ChainsqldError('Submit failed', data)
+    throw new utils.common.errors.DacdError('Submit failed', data)
   }
   return data
 }

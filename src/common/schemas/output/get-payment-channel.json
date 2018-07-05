@@ -9,19 +9,19 @@
     },
     "destination": {
       "$ref": "address",
-      "description": "Address to receive ZXC claims against this channel."
+      "description": "Address to receive DAC claims against this channel."
     },
     "amount": {
       "$ref": "value",
-      "description": "The total amount of ZXC funded in this channel."
+      "description": "The total amount of DAC funded in this channel."
     },
     "balance": {
       "$ref": "value",
-      "description": "The total amount of ZXC delivered by this channel."
+      "description": "The total amount of DAC delivered by this channel."
     },
     "settleDelay": {
       "type": "number",
-      "description": "Amount of seconds the source address must wait before closing the channel if it has unclaimed ZXC."
+      "description": "Amount of seconds the source address must wait before closing the channel if it has unclaimed DAC."
     },
     "expiration": {
       "type": "string",

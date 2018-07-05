@@ -2,8 +2,8 @@
 /* eslint-disable max-params */
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
-const binary = require('chainsql-binary-codec')
-const {computeTransactionHash} = require('chainsql-hashes')
+const binary = require('dac-binary-codec')
+const {computeTransactionHash} = require('dac-hashes')
 const utils = require('./utils')
 const parseTransaction = require('./parse/transaction')
 const getTransaction = require('./transaction')

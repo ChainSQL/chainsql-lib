@@ -1,9 +1,9 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const utils = require('./utils')
-const keypairs = require('chainsql-keypairs')
-const binary = require('chainsql-binary-codec')
-const {computeBinaryTransactionHash} = require('chainsql-hashes')
+const keypairs = require('dac-keypairs')
+const binary = require('dac-binary-codec')
+const {computeBinaryTransactionHash} = require('dac-hashes')
 const validate = utils.common.validate
 
 function computeSignature(tx: Object, privateKey: string, signAs: ?string) {

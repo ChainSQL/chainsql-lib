@@ -5,7 +5,7 @@ const _ = require('lodash')
 const assert = require('assert')
 const Validator = require('jsonschema').Validator
 const ValidationError = require('./errors').ValidationError
-const {isValidAddress} = require('chainsql-address-codec')
+const {isValidAddress} = require('dac-address-codec')
 const {isValidSecret} = require('./utils')
 
 function loadSchemas() {

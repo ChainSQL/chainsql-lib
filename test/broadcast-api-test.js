@@ -5,8 +5,8 @@ const assert = require('assert-diff');
 const setupAPI = require('./setup-api');
 const responses = require('./fixtures').responses;
 const ledgerClosed = require('./fixtures/rippled/ledger-close');
-const ChainsqlAPI = require('ripple-api').ChainsqlAPI;
-const schemaValidator = ChainsqlAPI._PRIVATE.schemaValidator;
+const DacAPI = require('ripple-api').DacAPI;
+const schemaValidator = DacAPI._PRIVATE.schemaValidator;
 
 const TIMEOUT = process.browser ? 25000 : 10000;
 
@@ -22,7 +22,7 @@ function checkResult(expected, schemaName, response) {
   return response;
 }
 
-describe('ChainsqlAPIBroadcast', function() {
+describe('DacAPIBroadcast', function() {
   this.timeout(TIMEOUT);
   beforeEach(setupAPI.setupBroadcast);
   afterEach(setupAPI.teardown);

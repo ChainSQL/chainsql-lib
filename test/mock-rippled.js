@@ -47,7 +47,7 @@ function createLedgerResponse(request, response) {
   return JSON.stringify(newResponse);
 }
 
-module.exports = function createMockChainsqld(port) {
+module.exports = function createMockDacd(port) {
   const mock = new WebSocketServer({port: port});
   _.assign(mock, EventEmitter2.prototype);
 
@@ -115,7 +115,7 @@ module.exports = function createMockChainsqld(port) {
       setTimeout(conn.terminate.bind(conn), request.data.disconnectIn);
     } else if (request.data.openOnOtherPort) {
       getFreePort().then(newPort => {
-        createMockChainsqld(newPort);
+        createMockDacd(newPort);
         conn.send(createResponse(request, {status: 'success', type: 'response',
           result: {port: newPort}}
         ));
@@ -125,7 +125,7 @@ module.exports = function createMockChainsqld(port) {
         conn.terminate();
         close.call(mock, () => {
           setTimeout(() => {
-            createMockChainsqld(port);
+            createMockDacd(port);
           }, request.data.closeServerAndReopen);
         });
       }, 10);
@@ -375,10 +375,10 @@ module.exports = function createMockChainsqld(port) {
 
   mock.on('request_book_offers', function(request, conn) {
     if (request.taker_pays.issuer === 'rp8rJYTpodf8qbSCHVTNacf8nSW8mRakFw') {
-      conn.send(createResponse(request, fixtures.book_offers.zxc_usd));
+      conn.send(createResponse(request, fixtures.book_offers.DAC_usd));
     } else if (request.taker_gets.issuer
         === 'rp8rJYTpodf8qbSCHVTNacf8nSW8mRakFw') {
-      conn.send(createResponse(request, fixtures.book_offers.usd_zxc));
+      conn.send(createResponse(request, fixtures.book_offers.usd_DAC));
     } else if (isBTC(request.taker_gets.currency)
         && isUSD(request.taker_pays.currency)) {
       conn.send(
@@ -404,7 +404,7 @@ module.exports = function createMockChainsqld(port) {
     } else if (request.source_account === addresses.OTHER_ACCOUNT) {
       response = createResponse(request, fixtures.path_find.sendUSD);
     } else if (request.source_account === addresses.THIRD_ACCOUNT) {
-      response = createResponse(request, fixtures.path_find.ZxcToZxc, {
+      response = createResponse(request, fixtures.path_find.DACToDAC, {
         destination_amount: request.destination_amount,
         destination_address: request.destination_address
       });

@@ -3,7 +3,7 @@
 
 const port = 34371;
 
-const createMockChainsqld = require('./mock-rippled');
+const createMockDacd = require('./mock-rippled');
 
 function main() {
   if (global.describe) {
@@ -11,9 +11,9 @@ function main() {
     return;
   }
   console.log('starting server on port ' + port);
-  createMockChainsqld(port);
+  createMockDacd(port);
   console.log('starting server on port ' + String(port + 1));
-  createMockChainsqld(port + 1);
+  createMockDacd(port + 1);
 }
 
 main();

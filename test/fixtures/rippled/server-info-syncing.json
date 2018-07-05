@@ -18,10 +18,10 @@
       "server_state": "syncing",
       "validated_ledger": {
         "age": 5,
-        "base_fee_zxc": 0.00001,
+        "base_fee_DAC": 0.00001,
         "hash": "4482DEE5362332F54A4036ED57EE1767C9F33CF7CE5A6670355C16CECE381D46",
-        "reserve_base_zxc": 20,
-        "reserve_inc_zxc": 5,
+        "reserve_base_DAC": 20,
+        "reserve_inc_DAC": 5,
         "seq": 6595042
       },
       "validation_quorum": 3

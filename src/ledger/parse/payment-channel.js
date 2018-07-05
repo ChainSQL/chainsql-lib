@@ -20,8 +20,8 @@ type PaymentChannelResponse = {
 function parsePaymentChannel(data: Object): PaymentChannelResponse {
   return utils.removeUndefined({
     account: data.Account,
-    amount: utils.dropsToZxc(data.Amount),
-    balance: utils.dropsToZxc(data.Balance),
+    amount: utils.dropsToDAC(data.Amount),
+    balance: utils.dropsToDAC(data.Balance),
     destination: data.Destination,
     publicKey: data.PublicKey,
     settleDelay: data.SettleDelay,

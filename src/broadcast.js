@@ -1,13 +1,13 @@
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
-const ChainsqlAPI = require('./api').ChainsqlAPI
+const DacAPI = require('./api').DacAPI
 
-class ChainsqlAPIBroadcast extends ChainsqlAPI {
+class DacAPIBroadcast extends DacAPI {
   constructor(servers, options) {
     super(options)
     this.ledgerVersion = 0
 
-    const apis = servers.map(server => new ChainsqlAPI(
+    const apis = servers.map(server => new DacAPI(
       _.assign({}, options, {server})
     ))
 
@@ -54,9 +54,9 @@ class ChainsqlAPIBroadcast extends ChainsqlAPI {
 
   getMethodNames() {
     const methodNames = []
-    for (const name in ChainsqlAPI.prototype) {
-      if (ChainsqlAPI.prototype.hasOwnProperty(name)) {
-        if (typeof ChainsqlAPI.prototype[name] === 'function') {
+    for (const name in DacAPI.prototype) {
+      if (DacAPI.prototype.hasOwnProperty(name)) {
+        if (typeof DacAPI.prototype[name] === 'function') {
           methodNames.push(name)
         }
       }
@@ -66,5 +66,5 @@ class ChainsqlAPIBroadcast extends ChainsqlAPI {
 }
 
 module.exports = {
-  ChainsqlAPIBroadcast
+  DacAPIBroadcast
 }

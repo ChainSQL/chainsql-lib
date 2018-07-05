@@ -1,12 +1,12 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
-const binary = require('chainsql-binary-codec')
+const binary = require('dac-binary-codec')
 const utils = require('./utils')
 const BigNumber = require('bignumber.js')
-const {decodeAddress} = require('chainsql-address-codec')
+const {decodeAddress} = require('dac-address-codec')
 const {validate} = utils.common
-const {computeBinaryTransactionHash} = require('chainsql-hashes')
+const {computeBinaryTransactionHash} = require('dac-hashes')
 
 function addressToBigNumber(address) {
   const hex = (new Buffer(decodeAddress(address))).toString('hex')

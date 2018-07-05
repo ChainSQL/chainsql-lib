@@ -32,7 +32,7 @@ type AccountInfoOptions = {
 
 type AccountInfoResponse = {
   sequence: number,
-  zxcBalance: string,
+  DACBalance: string,
   ownerCount: number,
   previousInitiatedTransactionID: string,
   previousAffectingTransactionID: string,
@@ -43,7 +43,7 @@ function formatAccountInfo(response: AccountDataResponse) {
   const data = response.account_data
   return removeUndefined({
     sequence: data.Sequence,
-    zxcBalance: utils.common.dropsToZxc(data.Balance),
+    DACBalance: utils.common.dropsToDAC(data.Balance),
     ownerCount: data.OwnerCount,
     transferFeeMin: data.TransferFeeMin,
     transferFeeMax: data.TransferFeeMax,

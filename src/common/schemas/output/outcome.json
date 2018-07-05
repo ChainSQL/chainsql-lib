@@ -15,7 +15,7 @@
     },
     "fee": {
       "$ref": "value",
-      "description": "The ZXC fee that was charged for the transaction."
+      "description": "The DAC fee that was charged for the transaction."
     },
     "deliveredAmount": {
       "$ref": "amount",

@@ -3,7 +3,7 @@
     "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
     "amount": {
       "value": "0.01",
-      "currency": "ZXC",
+      "currency": "DAC",
       "counterparty": "rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM"
     }
   },
@@ -11,7 +11,7 @@
     "address": "rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo",
     "minAmount": {
       "value": "0.01",
-      "currency": "ZXC"
+      "currency": "DAC"
     }
   }
 }

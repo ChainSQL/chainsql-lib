@@ -203,7 +203,7 @@
     "specification": {
       "direction": "buy",
       "quantity": {
-        "currency": "ZXC",
+        "currency": "DAC",
         "value": "115760.19"
       },
       "totalPrice": {
@@ -307,7 +307,7 @@
         "counterparty": "r9Dr5xwkeLegBeXq6ujinjSBLQzQ1zQGjH"
       },
       "totalPrice": {
-        "currency": "ZXC",
+        "currency": "DAC",
         "value": "2229.229447"
       }
     },

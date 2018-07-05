@@ -1,17 +1,17 @@
 'use strict'; // eslint-disable-line 
 
-const ChainsqlAPI = require('ripple-api').ChainsqlAPI;
-const ChainsqlAPIBroadcast = require('ripple-api').ChainsqlAPIBroadcast;
+const DacAPI = require('ripple-api').DacAPI;
+const DacAPIBroadcast = require('ripple-api').DacAPIBroadcast;
 const ledgerClosed = require('./fixtures/rippled/ledger-close');
-const createMockChainsqld = require('./mock-rippled');
+const createMockDacd = require('./mock-rippled');
 const {getFreePort} = require('./utils/net-utils');
 
 
-function setupMockChainsqldConnection(testcase, port) {
+function setupMockDacdConnection(testcase, port) {
   return new Promise((resolve, reject) => {
-    testcase.mockChainsqld = createMockChainsqld(port);
+    testcase.mockDacd = createMockDacd(port);
     testcase._mockedServerPort = port;
-    testcase.api = new ChainsqlAPI({server: 'ws://localhost:' + port});
+    testcase.api = new DacAPI({server: 'ws://localhost:' + port});
     testcase.api.connect().then(() => {
       testcase.api.once('ledger', () => resolve());
       testcase.api.connection._ws.emit('message', JSON.stringify(ledgerClosed));
@@ -19,11 +19,11 @@ function setupMockChainsqldConnection(testcase, port) {
   });
 }
 
-function setupMockChainsqldConnectionForBroadcast(testcase, ports) {
+function setupMockDacdConnectionForBroadcast(testcase, ports) {
   return new Promise((resolve, reject) => {
     const servers = ports.map(port => 'ws://localhost:' + port);
-    testcase.mocks = ports.map(port => createMockChainsqld(port));
-    testcase.api = new ChainsqlAPIBroadcast(servers);
+    testcase.mocks = ports.map(port => createMockDacd(port));
+    testcase.api = new DacAPIBroadcast(servers);
     testcase.api.connect().then(() => {
       testcase.api.once('ledger', () => resolve());
       testcase.mocks[0].socket.send(JSON.stringify(ledgerClosed));
@@ -33,20 +33,20 @@ function setupMockChainsqldConnectionForBroadcast(testcase, ports) {
 
 function setup() {
   return getFreePort().then(port => {
-    return setupMockChainsqldConnection(this, port);
+    return setupMockDacdConnection(this, port);
   });
 }
 
 function setupBroadcast() {
   return Promise.all([getFreePort(), getFreePort()]).then(ports => {
-    return setupMockChainsqldConnectionForBroadcast(this, ports);
+    return setupMockDacdConnectionForBroadcast(this, ports);
   });
 }
 
 function teardown(done) {
   this.api.disconnect().then(() => {
-    if (this.mockChainsqld !== undefined) {
-      this.mockChainsqld.close();
+    if (this.mockDacd !== undefined) {
+      this.mockDacd.close();
     } else {
       this.mocks.forEach(mock => mock.close());
     }
@@ -58,5 +58,5 @@ module.exports = {
   setup: setup,
   teardown: teardown,
   setupBroadcast: setupBroadcast,
-  createMockChainsqld: createMockChainsqld
+  createMockDacd: createMockDacd
 };

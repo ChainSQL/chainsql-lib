@@ -24,7 +24,7 @@
   ],
   "invoiceID": "A98FD36C17BE2B8511AD36DC335478E7E89F06262949F36EB88E2D683BBCC50A",
   "allowPartialPayment": true,
-  "noDirectChainsql": true,
+  "noDirectDac": true,
   "limitQuality": true,
   "paths": "[[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\",\"currency\":\"USD\",\"issuer\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"LTC\",\"issuer\":\"rfYv1TXnwgDDK4WQNbFALykYuEBnrR4pDX\"},{\"account\":\"rfYv1TXnwgDDK4WQNbFALykYuEBnrR4pDX\",\"currency\":\"LTC\",\"issuer\":\"rfYv1TXnwgDDK4WQNbFALykYuEBnrR4pDX\"}]]"
 }

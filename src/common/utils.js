@@ -2,9 +2,9 @@
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
 const BigNumber = require('bignumber.js')
-const {deriveKeypair} = require('chainsql-keypairs')
+const {deriveKeypair} = require('dac-keypairs')
 
-import type {Amount, ChainsqldAmount} from './types.js'
+import type {Amount, DacdAmount} from './types.js'
 
 function isValidSecret(secret: string): boolean {
   try {
@@ -15,17 +15,17 @@ function isValidSecret(secret: string): boolean {
   }
 }
 
-function dropsToZxc(drops: string): string {
+function dropsToDAC(drops: string): string {
   return (new BigNumber(drops)).dividedBy(1000000.0).toString()
 }
 
-function zxcToDrops(zxc: string): string {
-  return (new BigNumber(zxc)).times(1000000.0).floor().toString()
+function DACToDrops(DAC: string): string {
+  return (new BigNumber(DAC)).times(1000000.0).floor().toString()
 }
 
-function toChainsqldAmount(amount: Amount): ChainsqldAmount {
-  if (amount.currency === 'ZXC') {
-    return zxcToDrops(amount.value)
+function toDacdAmount(amount: Amount): DacdAmount {
+  if (amount.currency === 'DAC') {
+    return DACToDrops(amount.value)
   }
   return {
     currency: amount.currency,
@@ -69,7 +69,7 @@ function rippleToUnixTimestamp(rpepoch: number): number {
  * @param {Number|Date} timestamp (ms since unix epoch)
  * @return {Number} seconds since ripple epoch ( 1/1/2000 GMT)
  */
-function unixToChainsqlTimestamp(timestamp: number): number {
+function unixToDacTimestamp(timestamp: number): number {
   return Math.round(timestamp / 1000) - 0x386D4380
 }
 
@@ -77,17 +77,17 @@ function rippleTimeToISO8601(rippleTime: number): string {
   return new Date(rippleToUnixTimestamp(rippleTime)).toISOString()
 }
 
-function iso8601ToChainsqlTime(iso8601: string): number {
-  return unixToChainsqlTimestamp(Date.parse(iso8601))
+function iso8601ToDacTime(iso8601: string): number {
+  return unixToDacTimestamp(Date.parse(iso8601))
 }
 
 module.exports = {
-  dropsToZxc,
-  zxcToDrops,
-  toChainsqldAmount,
+  dropsToDAC,
+  DACToDrops,
+  toDacdAmount,
   convertKeysFromSnakeCaseToCamelCase,
   removeUndefined,
   rippleTimeToISO8601,
-  iso8601ToChainsqlTime,
+  iso8601ToDacTime,
   isValidSecret
 }

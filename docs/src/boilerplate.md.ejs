@@ -1,12 +1,12 @@
 ## Boilerplate
 
-Use the following [boilerplate code](https://en.wikipedia.org/wiki/Boilerplate_code) to wrap your custom code using ChainsqlAPI.
+Use the following [boilerplate code](https://en.wikipedia.org/wiki/Boilerplate_code) to wrap your custom code using DacAPI.
 
 ```javascript
-const ChainsqlAPI = require('ripple-lib').ChainsqlAPI;
+const DacAPI = require('ripple-lib').DacAPI;
 
-const api = new ChainsqlAPI({
-  server: 'wss://s1.ripple.com' // Public rippled server hosted by Chainsql, Inc.
+const api = new DacAPI({
+  server: 'wss://s1.ripple.com' // Public rippled server hosted by Dac, Inc.
 });
 api.on('error', (errorCode, errorMessage) => {
   console.log(errorCode + ': ' + errorMessage);
@@ -26,9 +26,9 @@ api.connect().then(() => {
 }).catch(console.error);
 ```
 
-ChainsqlAPI is designed to work in [Node.js](https://nodejs.org) version **6.11.3**. ChainsqlAPI may work on older Node.js versions if you use [Babel](https://babeljs.io/) for [ECMAScript 6](https://babeljs.io/docs/learn-es2015/) support.
+DacAPI is designed to work in [Node.js](https://nodejs.org) version **6.11.3**. DacAPI may work on older Node.js versions if you use [Babel](https://babeljs.io/) for [ECMAScript 6](https://babeljs.io/docs/learn-es2015/) support.
 
-The code samples in this documentation are written with ECMAScript 6 (ES6) features, but `ChainsqlAPI` also works with ECMAScript 5 (ES5). Regardless of whether you use ES5 or ES6, the methods that return Promises return [ES6-style promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+The code samples in this documentation are written with ECMAScript 6 (ES6) features, but `DacAPI` also works with ECMAScript 5 (ES5). Regardless of whether you use ES5 or ES6, the methods that return Promises return [ES6-style promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 <aside class="notice">
 All the code snippets in this documentation assume that you have surrounded them with this boilerplate.
@@ -44,17 +44,17 @@ The "error" event is emitted whenever an error occurs that cannot be associated 
 
 ### Parameters
 
-The ChainsqlAPI constructor optionally takes one argument, an object with the following options:
+The DacAPI constructor optionally takes one argument, an object with the following options:
 
 <%- renderSchema('input/api-options.json') %>
 
-If you omit the `server` parameter, ChainsqlAPI operates [offline](#offline-functionality).
+If you omit the `server` parameter, DacAPI operates [offline](#offline-functionality).
 
 
 ### Installation ###
 
 1. Install [Node.js](https://nodejs.org) and the Node Package Manager (npm). Most Linux distros have a package for Node.js; check that it's the version you want.
-2. Use npm to install ChainsqlAPI:
+2. Use npm to install DacAPI:
       `npm install ripple-lib`
 
 After you have installed ripple-lib, you can create scripts using the [boilerplate](#boilerplate) and run them using the Node.js executable, typically named `node`:

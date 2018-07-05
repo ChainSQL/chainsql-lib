@@ -1,6 +1,6 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-# ChainsqlAPI Reference
+# DacAPI Reference
 
 - [Introduction](#introduction)
   - [Boilerplate](#boilerplate)
@@ -77,26 +77,26 @@
 
 # Introduction
 
-ChainsqlAPI is the official client library to the ZXC Ledger. Currently, ChainsqlAPI is only available in JavaScript.
-Using ChainsqlAPI, you can:
+DacAPI is the official client library to the DAC Ledger. Currently, DacAPI is only available in JavaScript.
+Using DacAPI, you can:
 
-* [Query transactions from the ZXC Ledger history](#gettransaction)
+* [Query transactions from the DAC Ledger history](#gettransaction)
 * [Sign](#sign) transactions securely without connecting to any server
-* [Submit](#submit) transactions to the ZXC Ledger, including [Payments](#payment), [Orders](#order), [Settings changes](#settings), and [other types](#transaction-types)
-* [Generate a new ZXC Ledger Address](#generateaddress)
+* [Submit](#submit) transactions to the DAC Ledger, including [Payments](#payment), [Orders](#order), [Settings changes](#settings), and [other types](#transaction-types)
+* [Generate a new DAC Ledger Address](#generateaddress)
 * ... and [much more](#api-methods).
 
-ChainsqlAPI only provides access to *validated*, *immutable* transaction data.
+DacAPI only provides access to *validated*, *immutable* transaction data.
 
 ## Boilerplate
 
-Use the following [boilerplate code](https://en.wikipedia.org/wiki/Boilerplate_code) to wrap your custom code using ChainsqlAPI.
+Use the following [boilerplate code](https://en.wikipedia.org/wiki/Boilerplate_code) to wrap your custom code using DacAPI.
 
 ```javascript
-const ChainsqlAPI = require('chainsql-lib').ChainsqlAPI;
+const DacAPI = require('dac-lib').DacAPI;
 
-const api = new ChainsqlAPI({
-  server: 'wss://s1.ripple.com' // Public rippled server hosted by Chainsql, Inc.
+const api = new DacAPI({
+  server: 'wss://s1.ripple.com' // Public rippled server hosted by Dac, Inc.
 });
 api.on('error', (errorCode, errorMessage) => {
   console.log(errorCode + ': ' + errorMessage);
@@ -116,9 +116,9 @@ api.connect().then(() => {
 }).catch(console.error);
 ```
 
-ChainsqlAPI is designed to work in [Node.js](https://nodejs.org) version **6.11.3**. ChainsqlAPI may work on older Node.js versions if you use [Babel](https://babeljs.io/) for [ECMAScript 6](https://babeljs.io/docs/learn-es2015/) support.
+DacAPI is designed to work in [Node.js](https://nodejs.org) version **6.11.3**. DacAPI may work on older Node.js versions if you use [Babel](https://babeljs.io/) for [ECMAScript 6](https://babeljs.io/docs/learn-es2015/) support.
 
-The code samples in this documentation are written with ECMAScript 6 (ES6) features, but `ChainsqlAPI` also works with ECMAScript 5 (ES5). Regardless of whether you use ES5 or ES6, the methods that return Promises return [ES6-style promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+The code samples in this documentation are written with ECMAScript 6 (ES6) features, but `DacAPI` also works with ECMAScript 5 (ES5). Regardless of whether you use ES5 or ES6, the methods that return Promises return [ES6-style promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 
 <aside class="notice">
 All the code snippets in this documentation assume that you have surrounded them with this boilerplate.
@@ -134,7 +134,7 @@ The "error" event is emitted whenever an error occurs that cannot be associated 
 
 ### Parameters
 
-The ChainsqlAPI constructor optionally takes one argument, an object with the following options:
+The DacAPI constructor optionally takes one argument, an object with the following options:
 
 Name | Type | Description
 ---- | ---- | -----------
@@ -150,33 +150,33 @@ timeout | integer | *Optional* Timeout in milliseconds before considering a requ
 trace | boolean | *Optional* If true, log rippled requests and responses to stdout.
 trustedCertificates | array\<string\> | *Optional* Array of PEM-formatted SSL certificates to trust when connecting to a proxy. This is useful if you want to use a self-signed certificate on the proxy server. Note: Each element must contain a single certificate; concatenated certificates are not valid.
 
-If you omit the `server` parameter, ChainsqlAPI operates [offline](#offline-functionality).
+If you omit the `server` parameter, DacAPI operates [offline](#offline-functionality).
 
 
 ### Installation ###
 
 1. Install [Node.js](https://nodejs.org) and the Node Package Manager (npm). Most Linux distros have a package for Node.js; check that it's the version you want.
-2. Use npm to install ChainsqlAPI:
-      `npm install chainsql-lib`
+2. Use npm to install DacAPI:
+      `npm install dac-lib`
 
-After you have installed chainsql-lib, you can create scripts using the [boilerplate](#boilerplate) and run them using the Node.js executable, typically named `node`:
+After you have installed dac-lib, you can create scripts using the [boilerplate](#boilerplate) and run them using the Node.js executable, typically named `node`:
 
       `node script.js`
 
 ## Offline functionality
 
-ChainsqlAPI can also function without internet connectivity. This can be useful in order to generate secrets and sign transactions from a secure, isolated machine.
+DacAPI can also function without internet connectivity. This can be useful in order to generate secrets and sign transactions from a secure, isolated machine.
 
-To instantiate ChainsqlAPI in offline mode, use the following boilerplate code:
+To instantiate DacAPI in offline mode, use the following boilerplate code:
 
 ```javascript
-const ChainsqlAPI = require('chainsql-lib').ChainsqlAPI;
+const DacAPI = require('dac-lib').DacAPI;
 
-const api = new ChainsqlAPI();
+const api = new DacAPI();
 /* insert code here */
 ```
 
-Methods that depend on the state of the ZXC Ledger are unavailable in offline mode. To prepare transactions offline, you **must** specify  the `fee`, `sequence`, and `maxLedgerVersion` parameters in the [transaction instructions](#transaction-instructions). You can use the following methods while offline:
+Methods that depend on the state of the DAC Ledger are unavailable in offline mode. To prepare transactions offline, you **must** specify  the `fee`, `sequence`, and `maxLedgerVersion` parameters in the [transaction instructions](#transaction-instructions). You can use the following methods while offline:
 
 * [preparePayment](#preparepayment)
 * [prepareTrustline](#preparetrustline)
@@ -198,22 +198,22 @@ Methods that depend on the state of the ZXC Ledger are unavailable in offline mo
 "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59"
 ```
 
-Every ZXC Ledger account has an *address*, which is a base58-encoding of a hash of the account's public key. ZXC Ledger addresses always start with the lowercase letter `r`.
+Every DAC Ledger account has an *address*, which is a base58-encoding of a hash of the account's public key. DAC Ledger addresses always start with the lowercase letter `r`.
 
 ## Account Sequence Number
 
-Every ZXC Ledger account has a *sequence number* that is used to keep transactions in order. Every transaction must have a sequence number. A transaction can only be executed if it has the next sequence number in order, of the account sending it. This prevents one transaction from executing twice and transactions executing out of order. The sequence number starts at `1` and increments for each transaction that the account makes.
+Every DAC Ledger account has a *sequence number* that is used to keep transactions in order. Every transaction must have a sequence number. A transaction can only be executed if it has the next sequence number in order, of the account sending it. This prevents one transaction from executing twice and transactions executing out of order. The sequence number starts at `1` and increments for each transaction that the account makes.
 
 ## Currency
 
-Currencies are represented as either 3-character currency codes or 40-character uppercase hexadecimal strings. We recommend using uppercase [ISO 4217 Currency Codes](http://www.xe.com/iso4217.php) only. The string "ZXC" is disallowed on trustlines because it is reserved for the ZXC Ledger's native currency. The following characters are permitted: all uppercase and lowercase letters, digits, as well as the symbols `?`, `!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `<`, `>`, `(`, `)`, `{`, `}`, `[`, `]`, and `|`.
+Currencies are represented as either 3-character currency codes or 40-character uppercase hexadecimal strings. We recommend using uppercase [ISO 4217 Currency Codes](http://www.xe.com/iso4217.php) only. The string "DAC" is disallowed on trustlines because it is reserved for the DAC Ledger's native currency. The following characters are permitted: all uppercase and lowercase letters, digits, as well as the symbols `?`, `!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `<`, `>`, `(`, `)`, `{`, `}`, `[`, `]`, and `|`.
 
 ## Value
-A *value* is a quantity of a currency represented as a decimal string. Be careful: JavaScript's native number format does not have sufficient precision to represent all values. ZXC has different precision from other currencies.
+A *value* is a quantity of a currency represented as a decimal string. Be careful: JavaScript's native number format does not have sufficient precision to represent all values. DAC has different precision from other currencies.
 
-**ZXC** has 6 significant digits past the decimal point. In other words, ZXC cannot be divided into positive values smaller than `0.000001` (1e-6). ZXC has a maximum value of `100000000000` (1e11).
+**DAC** has 6 significant digits past the decimal point. In other words, DAC cannot be divided into positive values smaller than `0.000001` (1e-6). DAC has a maximum value of `100000000000` (1e11).
 
-**Non-ZXC values** have 16 decimal digits of precision, with a maximum value of `9999999999999999e80`. The smallest positive non-ZXC value is `1e-81`.
+**Non-DAC values** have 16 decimal digits of precision, with a maximum value of `9999999999999999e80`. The smallest positive non-DAC value is `1e-81`.
 
 
 ## Amount
@@ -228,15 +228,15 @@ Example amount:
 }
 ```
 
-Example ZXC amount:
+Example DAC amount:
 ```json
 {
-  "currency": "ZXC",
+  "currency": "DAC",
   "value": "2000"
 }
 ```
 
-An *amount* is data structure representing a currency, a quantity of that currency, and the counterparty on the trustline that holds the value. For ZXC, there is no counterparty.
+An *amount* is data structure representing a currency, a quantity of that currency, and the counterparty on the trustline that holds the value. For DAC, there is no counterparty.
 
 A *lax amount* allows the counterparty to be omitted for all currencies. If the counterparty is not specified in an amount within a transaction specification, then any counterparty may be used for that amount.
 
@@ -247,7 +247,7 @@ A *balance* is an amount than can have a negative value.
 Name | Type | Description
 ---- | ---- | -----------
 currency | [currency](#currency) | The three-character code or hexadecimal string used to denote currencies
-counterparty | [address](#address) | *Optional* The Chainsql address of the account that owes or is owed the funds (omitted if `currency` is "ZXC")
+counterparty | [address](#address) | *Optional* The Dac address of the account that owes or is owed the funds (omitted if `currency` is "DAC")
 value | [value](#value) | *Optional* The quantity of the currency, denoted as a string to retain floating point precision
 
 # Transaction Overview
@@ -259,17 +259,17 @@ A transaction type is specified by the strings in the first column in the table 
 Type | Description
 ---- | -----------
 [payment](#payment) | A `payment` transaction represents a transfer of value from one account to another. Depending on the [path](https://ripple.com/build/paths/) taken, additional exchanges of value may occur atomically to facilitate the payment.
-[order](#order) | An `order` transaction creates a limit order. It defines an intent to exchange currencies, and creates an order in the ZXC Ledger's order book if not completely fulfilled when placed. Orders can be partially fulfilled.
-[orderCancellation](#order-cancellation) | An `orderCancellation` transaction cancels an order in the ZXC Ledger's order book.
+[order](#order) | An `order` transaction creates a limit order. It defines an intent to exchange currencies, and creates an order in the DAC Ledger's order book if not completely fulfilled when placed. Orders can be partially fulfilled.
+[orderCancellation](#order-cancellation) | An `orderCancellation` transaction cancels an order in the DAC Ledger's order book.
 [trustline](#trustline) | A `trustline` transactions creates or modifies a trust line between two accounts.
-[settings](#settings) | A `settings` transaction modifies the settings of an account in the ZXC Ledger.
-[escrowCreation](#escrow-creation) | An `escrowCreation` transaction creates an escrow on the ledger, which locks ZXC until a cryptographic condition is met or it expires. It is like an escrow service where the ZXC Ledger acts as the escrow agent.
+[settings](#settings) | A `settings` transaction modifies the settings of an account in the DAC Ledger.
+[escrowCreation](#escrow-creation) | An `escrowCreation` transaction creates an escrow on the ledger, which locks DAC until a cryptographic condition is met or it expires. It is like an escrow service where the DAC Ledger acts as the escrow agent.
 [escrowCancellation](#escrow-cancellation) | An `escrowCancellation` transaction unlocks the funds in an escrow and sends them back to the creator of the escrow, but it will only work after the escrow expires.
 [escrowExecution](#escrow-execution) | An `escrowExecution` transaction unlocks the funds in an escrow and sends them to the destination of the escrow, but it will only work if the cryptographic condition is provided.
 
 ## Transaction Flow
 
-Executing a transaction with `ChainsqlAPI` requires the following four steps:
+Executing a transaction with `DacAPI` requires the following four steps:
 
 1. Prepare - Create an unsigned transaction based on a [specification](#transaction-specifications) and [instructions](#transaction-instructions). There is a method to prepare each type of transaction:
     * [preparePayment](#preparepayment)
@@ -286,7 +286,7 @@ Executing a transaction with `ChainsqlAPI` requires the following four steps:
 
 ## Transaction Fees
 
-Every transaction must destroy a small amount of ZXC as a cost to send the transaction. This is also called a *transaction fee*. The transaction cost is designed to increase along with the load on the ZXC Ledger, making it very expensive to deliberately or inadvertently overload the peer-to-peer network that powers the ZXC Ledger.
+Every transaction must destroy a small amount of DAC as a cost to send the transaction. This is also called a *transaction fee*. The transaction cost is designed to increase along with the load on the DAC Ledger, making it very expensive to deliberately or inadvertently overload the peer-to-peer network that powers the DAC Ledger.
 
 You can choose the size of the fee you want to pay or let a default be used. You can get an estimate of the fee required to be included in the next ledger closing with the [getFee](#getfee) method.
 
@@ -303,7 +303,7 @@ maxLedgerVersionOffset | integer | *Optional* Offset from current validated legd
 sequence | [sequence](#account-sequence-number) | *Optional* The initiating account's sequence number for this transaction.
 signersCount | integer | *Optional* Number of signers that will be signing this transaction.
 
-We recommended that you specify a `maxLedgerVersion` so that you can quickly determine that a failed transaction will never succeeed in the future. It is impossible for a transaction to succeed after the ZXC Ledger's consensus-validated ledger version exceeds the transaction's `maxLedgerVersion`. If you omit `maxLedgerVersion`, the "prepare*" method automatically supplies a `maxLedgerVersion` equal to the current ledger plus 3, which it includes in the return value from the "prepare*" method.
+We recommended that you specify a `maxLedgerVersion` so that you can quickly determine that a failed transaction will never succeeed in the future. It is impossible for a transaction to succeed after the DAC Ledger's consensus-validated ledger version exceeds the transaction's `maxLedgerVersion`. If you omit `maxLedgerVersion`, the "prepare*" method automatically supplies a `maxLedgerVersion` equal to the current ledger plus 3, which it includes in the return value from the "prepare*" method.
 
 ## Transaction ID
 
@@ -338,19 +338,19 @@ Name | Type | Description
 source | object | The source of the funds to be sent.
 *source.* address | [address](#address) | The address to send from.
 *source.* amount | [laxAmount](#amount) | An exact amount to send. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with source.maxAmount)
-*source.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Chainsql account.
+*source.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Dac account.
 *source.* maxAmount | [laxAmount](#amount) | The maximum amount to send. (This field is exclusive with source.amount)
 destination | object | The destination of the funds to be sent.
 *destination.* address | [address](#address) | The address to receive at.
 *destination.* amount | [laxAmount](#amount) | An exact amount to deliver to the recipient. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with destination.minAmount).
-*destination.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Chainsql account.
+*destination.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Dac account.
 *destination.* address | [address](#address) | The address to send to.
 *destination.* minAmount | [laxAmount](#amount) | The minimum amount to be delivered. (This field is exclusive with destination.amount)
 allowPartialPayment | boolean | *Optional* A boolean that, if set to true, indicates that this payment should go through even if the whole amount cannot be delivered because of a lack of liquidity or funds in the source account account
 invoiceID | string | *Optional* A 256-bit hash that can be used to identify a particular payment.
 limitQuality | boolean | *Optional* Only take paths where all the conversions have an input:output ratio that is equal or better than the ratio of destination.amount:source.maxAmount.
 memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the transaction.
-noDirectChainsql | boolean | *Optional* A boolean that can be set to true if paths are specified and the sender would like the Chainsql Network to disregard any direct paths from the source account to the destination account. This may be used to take advantage of an arbitrage opportunity or by gateways wishing to issue balances from a hot wallet to a user who has mistakenly set a trustline directly to the hot wallet
+noDirectDac | boolean | *Optional* A boolean that can be set to true if paths are specified and the sender would like the Dac Network to disregard any direct paths from the source account to the destination account. This may be used to take advantage of an arbitrage opportunity or by gateways wishing to issue balances from a hot wallet to a user who has mistakenly set a trustline directly to the hot wallet
 paths | string | *Optional* The paths of trustlines and orders to use in executing the payment.
 
 ### Example
@@ -445,7 +445,7 @@ passive | boolean | *Optional* If enabled, the offer will not consume offers tha
     "value": "10.1"
   },
   "totalPrice": {
-    "currency": "ZXC",
+    "currency": "DAC",
     "value": "2"
   },
   "passive": true,
@@ -479,15 +479,15 @@ See [Transaction Types](#transaction-types) for a description.
 
 Name | Type | Description
 ---- | ---- | -----------
-defaultChainsql | boolean | *Optional* Enable [rippling](https://ripple.com/knowledge_center/understanding-the-noripple-flag/) on this account’s trust lines by default. (New in [rippled 0.27.3](https://github.com/ripple/rippled/releases/tag/0.27.3))
+defaultDac | boolean | *Optional* Enable [rippling](https://ripple.com/knowledge_center/understanding-the-noripple-flag/) on this account’s trust lines by default. (New in [rippled 0.27.3](https://github.com/ripple/rippled/releases/tag/0.27.3))
 disableMasterKey | boolean | *Optional* Disallows use of the master key to sign transactions for this account.
-disallowIncomingZXC | boolean | *Optional* Indicates that client applications should not send ZXC to this account. Not enforced by rippled.
+disallowIncomingDAC | boolean | *Optional* Indicates that client applications should not send DAC to this account. Not enforced by rippled.
 domain | string | *Optional*  The domain that owns this account, as a hexadecimal string representing the ASCII for the domain in lowercase.
 emailHash | string,null | *Optional* Hash of an email address to be used for generating an avatar image. Conventionally, clients use Gravatar to display this image. Use `null` to clear.
 enableTransactionIDTracking | boolean | *Optional* Track the ID of this account’s most recent transaction.
 globalFreeze | boolean | *Optional* Freeze all assets issued by this account.
 memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the transaction.
-messageKey | string | *Optional* Public key for sending encrypted messages to this account. Conventionally, it should be a secp256k1 key, the same encryption that is used by the rest of Chainsql.
+messageKey | string | *Optional* Public key for sending encrypted messages to this account. Conventionally, it should be a secp256k1 key, the same encryption that is used by the rest of Dac.
 noFreeze | boolean | *Optional* Permanently give up the ability to freeze individual trust lines. This flag can never be disabled after being enabled.
 passwordSpent | boolean | *Optional* Indicates that the account has used its free SetRegularKey transaction.
 regularKey | [address](#address),null | *Optional* The public key of a new keypair, to use as the regular key to this account, as a base-58-encoded string in the same format as an account address. Use `null` to remove the regular key.
@@ -497,7 +497,7 @@ signers | object | *Optional* Settings that determine what sets of accounts can 
 *signers.* threshold | integer | *Optional* A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is equal or greater than this value. To delete the signers setting, use the value `0`.
 *signers.* weights | array | *Optional* Weights of signatures for each signer.
 *signers.* weights[] | object | An association of an address and a weight.
-*signers.weights[].* address | [address](#address) | A Chainsql account address
+*signers.weights[].* address | [address](#address) | A Dac account address
 *signers.weights[].* weight | integer | The weight that the signature of this account counts as towards the threshold.
 transferRate | number,null | *Optional*  The fee to charge when users transfer this account’s issuances, as the decimal amount that must be sent to deliver 1 unit. Has precision up to 9 digits beyond the decimal point. Use `null` to set no fee.
 
@@ -524,8 +524,8 @@ See [Transaction Types](#transaction-types) for a description.
 
 Name | Type | Description
 ---- | ---- | -----------
-amount | [value](#value) | Amount of ZXC for sender to escrow.
-destination | [address](#address) | Address to receive escrowed ZXC.
+amount | [value](#value) | Amount of DAC for sender to escrow.
+destination | [address](#address) | Address to receive escrowed DAC.
 allowCancelAfter | date-time string | *Optional* If present, the escrow may be cancelled after this time.
 allowExecuteAfter | date-time string | *Optional* If present, the escrow can not be executed before this time.
 condition | string | *Optional* A hex value representing a [PREIMAGE-SHA-256 crypto-condition](https://tools.ietf.org/html/draft-thomas-crypto-conditions-02#section-8.1). If present, `fulfillment` is required upon execution.
@@ -597,9 +597,9 @@ See [Transaction Types](#transaction-types) for a description.
 
 Name | Type | Description
 ---- | ---- | -----------
-amount | [value](#value) | Amount of ZXC for sender to set aside in this channel.
-destination | [address](#address) | Address to receive ZXC claims against this channel.
-settleDelay | number | Amount of seconds the source address must wait before closing the channel if it has unclaimed ZXC.
+amount | [value](#value) | Amount of DAC for sender to set aside in this channel.
+destination | [address](#address) | Address to receive DAC claims against this channel.
+settleDelay | number | Amount of seconds the source address must wait before closing the channel if it has unclaimed DAC.
 publicKey | string | Public key of the key pair the source will use to sign claims against this channel.
 cancelAfter | date-time string | *Optional* Time when this channel expires.
 destinationTag | integer | *Optional* Destination tag.
@@ -624,7 +624,7 @@ See [Transaction Types](#transaction-types) for a description.
 
 Name | Type | Description
 ---- | ---- | -----------
-amount | [value](#value) | Amount of ZXC to fund the channel with.
+amount | [value](#value) | Amount of DAC to fund the channel with.
 channel | string | 256-bit hexadecimal channel identifier.
 expiration | date-time string | *Optional* New expiration for this channel.
 
@@ -646,8 +646,8 @@ See [Transaction Types](#transaction-types) for a description.
 Name | Type | Description
 ---- | ---- | -----------
 channel | string | 256-bit hexadecimal channel identifier.
-amount | [value](#value) | *Optional* ZXC balance of this channel after claim is processed.
-balance | [value](#value) | *Optional* Amount of ZXC authorized by signature.
+amount | [value](#value) | *Optional* DAC balance of this channel after claim is processed.
+balance | [value](#value) | *Optional* Amount of DAC authorized by signature.
 close | boolean | *Optional* Request to close the channel.
 publicKey | string | *Optional* Public key of the channel's sender
 renew | boolean | *Optional* Clear the channel's expiration time.
@@ -669,7 +669,7 @@ signature | string | *Optional* Signature of this claim.
 
 `connect(): Promise<void>`
 
-Tells the ChainsqlAPI instance to connect to its rippled server.
+Tells the DacAPI instance to connect to its rippled server.
 
 ### Parameters
 
@@ -687,7 +687,7 @@ See [Boilerplate](#boilerplate) for code sample.
 
 `disconnect(): Promise<void>`
 
-Tells the ChainsqlAPI instance to disconnect from its rippled server.
+Tells the DacAPI instance to disconnect from its rippled server.
 
 ### Parameters
 
@@ -705,7 +705,7 @@ See [Boilerplate](#boilerplate) for code sample
 
 `isConnected(): boolean`
 
-Checks if the ChainsqlAPI instance is connected to its rippled server.
+Checks if the DacAPI instance is connected to its rippled server.
 
 ### Parameters
 
@@ -729,7 +729,7 @@ true
 
 `getServerInfo(): Promise<object>`
 
-Get status information about the server that the ChainsqlAPI instance is connected to.
+Get status information about the server that the DacAPI instance is connected to.
 
 ### Parameters
 
@@ -754,15 +754,15 @@ pubkeyNode | string | Public key used to verify this node for internal communica
 serverState | string | A string indicating to what extent the server is participating in the network. See [Possible Server States](https://ripple.com/build/rippled-apis/#possible-server-states) for more details.
 validatedLedger | object | Information about the fully-validated ledger with the highest sequence number (the most recent).
 *validatedLedger.* age | integer | The time since the ledger was closed, in seconds.
-*validatedLedger.* baseFeeZXC | [value](#value) | Base fee, in ZXC. This may be represented in scientific notation such as 1e-05 for 0.00005.
+*validatedLedger.* baseFeeDac | [value](#value) | Base fee, in DAC. This may be represented in scientific notation such as 1e-05 for 0.00005.
 *validatedLedger.* hash | string | Unique hash for the ledger, as an uppercase hexadecimal string.
-*validatedLedger.* reserveBaseZXC | [value](#value) | Minimum amount of ZXC necessary for every account to keep in reserve.
-*validatedLedger.* reserveIncrementZXC | [value](#value) | Amount of ZXC added to the account reserve for each object an account is responsible for in the ledger.
+*validatedLedger.* reserveBaseDac | [value](#value) | Minimum amount of DAC necessary for every account to keep in reserve.
+*validatedLedger.* reserveIncrementDac | [value](#value) | Amount of DAC added to the account reserve for each object an account is responsible for in the ledger.
 *validatedLedger.* ledgerVersion | integer | Identifying sequence number of this ledger version.
 validationQuorum | number | Minimum number of trusted validations required in order to validate a ledger version. Some circumstances may cause the server to require more validations.
 load | object | *Optional* *(Admin only)* Detailed information about the current load state of the server.
 *load.* jobTypes | array\<object\> | *(Admin only)* Information about the rate of different types of jobs being performed by the server and how much time it spends on each.
-*load.* threads | number | *(Admin only)* The number of threads in the server’s main job pool, performing various Chainsql Network operations.
+*load.* threads | number | *(Admin only)* The number of threads in the server’s main job pool, performing various Dac Network operations.
 pubkeyValidator | string | *Optional* *(Admin only)* Public key used by this node to sign ledger validations.
 
 ### Example
@@ -788,10 +788,10 @@ return api.getServerInfo().then(info => {/* ... */});
   "serverState": "full",
   "validatedLedger": {
     "age": 5,
-    "baseFeeZXC": "0.00001",
+    "baseFeeDac": "0.00001",
     "hash": "4482DEE5362332F54A4036ED57EE1767C9F33CF7CE5A6670355C16CECE381D46",
-    "reserveBaseZXC": "20",
-    "reserveIncrementZXC": "5",
+    "reserveBaseDac": "20",
+    "reserveIncrementDac": "5",
     "ledgerVersion": 6595042
   },
   "validationQuorum": 3
@@ -803,7 +803,7 @@ return api.getServerInfo().then(info => {/* ... */});
 
 `getFee(): Promise<number>`
 
-Returns the estimated transaction fee for the rippled server the ChainsqlAPI instance is connected to.
+Returns the estimated transaction fee for the rippled server the DacAPI instance is connected to.
 
 ### Parameters
 
@@ -811,7 +811,7 @@ This method has no parameters.
 
 ### Return Value
 
-This method returns a promise that resolves with a string encoded floating point value representing the estimated fee to submit a transaction, expressed in ZXC.
+This method returns a promise that resolves with a string encoded floating point value representing the estimated fee to submit a transaction, expressed in DAC.
 
 ### Example
 
@@ -878,7 +878,7 @@ type | [transactionType](#transaction-types) | The type of the transaction.
 specification | object | A specification that would produce the same outcome as this transaction. The structure of the specification depends on the value of the `type` field (see [Transaction Types](#transaction-types) for details). *Note:* This is **not** necessarily the same as the original specification.
 outcome | object | The outcome of the transaction (what effects it had).
 *outcome.* result | string | Result code returned by rippled. See [Transaction Results](https://ripple.com/build/transactions/#full-transaction-response-list) for a complete list.
-*outcome.* fee | [value](#value) | The ZXC fee that was charged for the transaction.
+*outcome.* fee | [value](#value) | The DAC fee that was charged for the transaction.
 *outcome.balanceChanges.* \* | array\<[balance](#amount)\> | Key is the ripple address; value is an array of signed amounts representing changes of balances for that address.
 *outcome.orderbookChanges.* \* | array | Key is the maker's ripple address; value is an array of changes
 *outcome.orderbookChanges.* \*[] | object | A change to an order.
@@ -914,7 +914,7 @@ return api.getTransaction(id).then(transaction => {
     "source": {
       "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
       "maxAmount": {
-        "currency": "ZXC",
+        "currency": "DAC",
         "value": "1.112209"
       }
     },
@@ -958,13 +958,13 @@ return api.getTransaction(id).then(transaction => {
       ],
       "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59": [
         {
-          "currency": "ZXC",
+          "currency": "DAC",
           "value": "-1.101208"
         }
       ],
       "r9tGqzZgKxVFvzKFdUqXAqTzazWBUia8Qr": [
         {
-          "currency": "ZXC",
+          "currency": "DAC",
           "value": "1.101198"
         },
         {
@@ -979,7 +979,7 @@ return api.getTransaction(id).then(transaction => {
         {
           "direction": "buy",
           "quantity": {
-            "currency": "ZXC",
+            "currency": "DAC",
             "value": "1.101198"
           },
           "totalPrice": {
@@ -1054,7 +1054,7 @@ return api.getTransactions(address).then(transaction => {
       "source": {
         "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
         "maxAmount": {
-          "currency": "ZXC",
+          "currency": "DAC",
           "value": "1.112209"
         }
       },
@@ -1097,13 +1097,13 @@ return api.getTransactions(address).then(transaction => {
         ],
         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59": [
           {
-            "currency": "ZXC",
+            "currency": "DAC",
             "value": "-1.101208"
           }
         ],
         "r9tGqzZgKxVFvzKFdUqXAqTzazWBUia8Qr": [
           {
-            "currency": "ZXC",
+            "currency": "DAC",
             "value": "1.101198"
           },
           {
@@ -1118,7 +1118,7 @@ return api.getTransactions(address).then(transaction => {
           {
             "direction": "buy",
             "quantity": {
-              "currency": "ZXC",
+              "currency": "DAC",
               "value": "1.101198"
             },
             "totalPrice": {
@@ -1151,7 +1151,7 @@ return api.getTransactions(address).then(transaction => {
       "source": {
         "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
         "maxAmount": {
-          "currency": "ZXC",
+          "currency": "DAC",
           "value": "1.112209"
         }
       },
@@ -1194,13 +1194,13 @@ return api.getTransactions(address).then(transaction => {
         ],
         "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59": [
           {
-            "currency": "ZXC",
+            "currency": "DAC",
             "value": "-1.101208"
           }
         ],
         "r9tGqzZgKxVFvzKFdUqXAqTzazWBUia8Qr": [
           {
-            "currency": "ZXC",
+            "currency": "DAC",
             "value": "1.101198"
           },
           {
@@ -1215,7 +1215,7 @@ return api.getTransactions(address).then(transaction => {
           {
             "direction": "buy",
             "quantity": {
-              "currency": "ZXC",
+              "currency": "DAC",
               "value": "1.101198"
             },
             "totalPrice": {
@@ -1406,7 +1406,7 @@ Name | Type | Description
 ---- | ---- | -----------
 currency | [currency](#currency) | The three-character code or hexadecimal string used to denote currencies
 value | [signedValue](#value) | The balance on the trustline
-counterparty | [address](#address) | *Optional* The Chainsql address of the account that owes or is owed the funds.
+counterparty | [address](#address) | *Optional* The Dac address of the account that owes or is owed the funds.
 
 ### Example
 
@@ -1421,7 +1421,7 @@ return api.getBalances(address).then(balances =>
 [
   {
     "value": "922.913243",
-    "currency": "ZXC"
+    "currency": "DAC"
   },
   {
     "value": "0",
@@ -1557,7 +1557,7 @@ Returns aggregate balances by currency plus a breakdown of assets and obligation
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#address) | The Chainsql address of the account to get the balance sheet of.
+address | [address](#address) | The Dac address of the account to get the balance sheet of.
 options | object | *Optional* Options to determine how the balances will be calculated.
 *options.* excludeAddresses | array\<[address](#address)\> | *Optional* Addresses to exclude from the balance totals.
 *options.* ledgerVersion | integer | *Optional* Get the balance sheet as of this historical ledger version.
@@ -1654,7 +1654,7 @@ Name | Type | Description
 ---- | ---- | -----------
 pathfind | object | Specification of a pathfind request.
 *pathfind.* source | object | Properties of the source of funds.
-*pathfind.source.* address | [address](#address) | The Chainsql address of the account where funds will come from.
+*pathfind.source.* address | [address](#address) | The Dac address of the account where funds will come from.
 *pathfind.source.* amount | [laxAmount](#amount) | *Optional* The amount of funds to send.
 *pathfind.source.* currencies | array | *Optional* An array of currencies (with optional counterparty) that may be used in the payment paths.
 *pathfind.source.* currencies[] | object | A currency with optional counterparty.
@@ -1673,12 +1673,12 @@ Name | Type | Description
 source | object | Properties of the source of the payment.
 *source.* address | [address](#address) | The address to send from.
 *source.* amount | [laxAmount](#amount) | An exact amount to send. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with source.maxAmount)
-*source.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Chainsql account.
+*source.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Dac account.
 *source.* maxAmount | [laxAmount](#amount) | The maximum amount to send. (This field is exclusive with source.amount)
 destination | object | Properties of the destination of the payment.
 *destination.* address | [address](#address) | The address to receive at.
 *destination.* amount | [laxAmount](#amount) | An exact amount to deliver to the recipient. If the counterparty is not specified, amounts with any counterparty may be used. (This field is exclusive with destination.minAmount).
-*destination.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Chainsql account.
+*destination.* tag | integer | *Optional* An arbitrary unsigned 32-bit integer that identifies a reason for payment or a non-Dac account.
 *destination.* address | [address](#address) | The address to send to.
 *destination.* minAmount | [laxAmount](#amount) | The minimum amount to be delivered. (This field is exclusive with destination.amount)
 paths | string | The paths of trustlines and orders to use in executing the payment.
@@ -1722,7 +1722,7 @@ return api.getPaths(pathfind)
         "value": "100"
       }
     },
-    "paths": "[[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"ZXC\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"ZXC\"},{\"currency\":\"USD\",\"issuer\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"ZXC\"},{\"currency\":\"USD\",\"issuer\":\"rHHa9t2kLQyXRbdLkSzEgkzwf9unmFgZs9\"},{\"account\":\"rHHa9t2kLQyXRbdLkSzEgkzwf9unmFgZs9\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}]]"
+    "paths": "[[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"DAC\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"DAC\"},{\"currency\":\"USD\",\"issuer\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMAz5ZnK73nyNUL4foAvaxdreczCkG3vA6\"},{\"currency\":\"DAC\"},{\"currency\":\"USD\",\"issuer\":\"rHHa9t2kLQyXRbdLkSzEgkzwf9unmFgZs9\"},{\"account\":\"rHHa9t2kLQyXRbdLkSzEgkzwf9unmFgZs9\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}]]"
   },
   {
     "source": {
@@ -1740,13 +1740,13 @@ return api.getPaths(pathfind)
         "value": "100"
       }
     },
-    "paths": "[[{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"ZXC\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"ZXC\"},{\"currency\":\"USD\",\"issuer\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}]]"
+    "paths": "[[{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"DAC\"},{\"currency\":\"USD\",\"issuer\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}],[{\"account\":\"rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q\"},{\"currency\":\"DAC\"},{\"currency\":\"USD\",\"issuer\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rpHgehzdpfWRXKvSv6duKvVuo1aZVimdaT\"},{\"account\":\"rMH4UxPrbuMa1spCBR98hLLyNJp4d8p4tM\"}]]"
   },
   {
     "source": {
       "address": "r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59",
       "maxAmount": {
-        "currency": "ZXC",
+        "currency": "DAC",
         "value": "0.207669"
       }
     },
@@ -1774,7 +1774,7 @@ Returns open orders for the specified account. Open orders are orders that have 
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#address) | The Chainsql address of the account to get open orders for.
+address | [address](#address) | The Dac address of the account to get open orders for.
 options | object | *Optional* Options that determine what orders will be returned.
 *options.* ledgerVersion | integer | *Optional* Return orders as of this historical ledger version.
 *options.* limit | integer | *Optional* At most this many orders will be returned.
@@ -2006,7 +2006,7 @@ return api.getOrders(address).then(orders =>
     "specification": {
       "direction": "buy",
       "quantity": {
-        "currency": "ZXC",
+        "currency": "DAC",
         "value": "115760.19"
       },
       "totalPrice": {
@@ -2110,7 +2110,7 @@ return api.getOrders(address).then(orders =>
         "counterparty": "r9Dr5xwkeLegBeXq6ujinjSBLQzQ1zQGjH"
       },
       "totalPrice": {
-        "currency": "ZXC",
+        "currency": "DAC",
         "value": "2229.229447"
       }
     },
@@ -2156,8 +2156,8 @@ Name | Type | Description
 ---- | ---- | -----------
 address | [address](#address) | Address of an account to use as point-of-view. (This affects which unfunded offers are returned.)
 orderbook | object | The order book to get.
-*orderbook.* base | object | A currency-counterparty pair, or just currency if it's ZXC
-*orderbook.* counter | object | A currency-counterparty pair, or just currency if it's ZXC
+*orderbook.* base | object | A currency-counterparty pair, or just currency if it's DAC
+*orderbook.* counter | object | A currency-counterparty pair, or just currency if it's DAC
 options | object | *Optional* Options to determine what to return.
 *options.* ledgerVersion | integer | *Optional* Return the order book as of this historical ledger version.
 *options.* limit | integer | *Optional* Return at most this many orders from the order book.
@@ -2717,15 +2717,15 @@ This method returns a promise that resolves with an array of objects with the fo
 
 Name | Type | Description
 ---- | ---- | -----------
-defaultChainsql | boolean | *Optional* Enable [rippling](https://ripple.com/knowledge_center/understanding-the-noripple-flag/) on this account’s trust lines by default. (New in [rippled 0.27.3](https://github.com/ripple/rippled/releases/tag/0.27.3))
+defaultDac | boolean | *Optional* Enable [rippling](https://ripple.com/knowledge_center/understanding-the-noripple-flag/) on this account’s trust lines by default. (New in [rippled 0.27.3](https://github.com/ripple/rippled/releases/tag/0.27.3))
 disableMasterKey | boolean | *Optional* Disallows use of the master key to sign transactions for this account.
-disallowIncomingZXC | boolean | *Optional* Indicates that client applications should not send ZXC to this account. Not enforced by rippled.
+disallowIncomingDAC | boolean | *Optional* Indicates that client applications should not send DAC to this account. Not enforced by rippled.
 domain | string | *Optional*  The domain that owns this account, as a hexadecimal string representing the ASCII for the domain in lowercase.
 emailHash | string,null | *Optional* Hash of an email address to be used for generating an avatar image. Conventionally, clients use Gravatar to display this image. Use `null` to clear.
 enableTransactionIDTracking | boolean | *Optional* Track the ID of this account’s most recent transaction.
 globalFreeze | boolean | *Optional* Freeze all assets issued by this account.
 memos | [memos](#transaction-memos) | *Optional* Array of memos to attach to the transaction.
-messageKey | string | *Optional* Public key for sending encrypted messages to this account. Conventionally, it should be a secp256k1 key, the same encryption that is used by the rest of Chainsql.
+messageKey | string | *Optional* Public key for sending encrypted messages to this account. Conventionally, it should be a secp256k1 key, the same encryption that is used by the rest of Dac.
 noFreeze | boolean | *Optional* Permanently give up the ability to freeze individual trust lines. This flag can never be disabled after being enabled.
 passwordSpent | boolean | *Optional* Indicates that the account has used its free SetRegularKey transaction.
 regularKey | [address](#address),null | *Optional* The public key of a new keypair, to use as the regular key to this account, as a base-58-encoded string in the same format as an account address. Use `null` to remove the regular key.
@@ -2735,7 +2735,7 @@ signers | object | *Optional* Settings that determine what sets of accounts can 
 *signers.* threshold | integer | *Optional* A target number for the signer weights. A multi-signature from this list is valid only if the sum weights of the signatures provided is equal or greater than this value. To delete the signers setting, use the value `0`.
 *signers.* weights | array | *Optional* Weights of signatures for each signer.
 *signers.* weights[] | object | An association of an address and a weight.
-*signers.weights[].* address | [address](#address) | A Chainsql account address
+*signers.weights[].* address | [address](#address) | A Dac account address
 *signers.weights[].* weight | integer | The weight that the signature of this account counts as towards the threshold.
 transferRate | number,null | *Optional*  The fee to charge when users transfer this account’s issuances, as the decimal amount that must be sent to deliver 1 unit. Has precision up to 9 digits beyond the decimal point. Use `null` to set no fee.
 
@@ -2751,7 +2751,7 @@ return api.getSettings(address).then(settings =>
 ```json
 {
   "requireDestinationTag": true,
-  "disallowIncomingZXC": true,
+  "disallowIncomingDAC": true,
   "emailHash": "23463B99B62A72F26ED677CC556C44E8",
   "domain": "example.com",
   "transferRate": 1.002
@@ -2780,7 +2780,7 @@ This method returns a promise that resolves with an object with the following st
 Name | Type | Description
 ---- | ---- | -----------
 sequence | [sequence](#account-sequence-number) | The next (smallest unused) sequence number for this account.
-zxcBalance | [value](#value) | The ZXC balance owned by the account.
+DACBalance | [value](#value) | The DAC balance owned by the account.
 ownerCount | integer | Number of other ledger entries (specifically, trust lines and offers) attributed to this account. This is used to calculate the total reserve required to use the account.
 previousAffectingTransactionID | string | Hash value representing the most recent transaction that affected this account node directly. **Note:** This does not include changes to the account’s trust lines and offers.
 previousAffectingTransactionLedgerVersion | integer | The ledger version that the transaction identified by the `previousAffectingTransactionID` was validated in.
@@ -2798,7 +2798,7 @@ return api.getAccountInfo(address).then(info =>
 ```json
 {
   "sequence": 23,
-  "zxcBalance": "922.913243",
+  "DACBalance": "922.913243",
   "ownerCount": 1,
   "previousAffectingTransactionID": "19899273706A9E040FDB5885EE991A1DC2BAD878A0D6E7DBCFB714E63BF737F7",
   "previousAffectingTransactionLedgerVersion": 6614625
@@ -2825,10 +2825,10 @@ This method returns a promise that resolves with an object with the following st
 Name | Type | Description
 ---- | ---- | -----------
 account | [address](#address) | Address that created the payment channel.
-destination | [address](#address) | Address to receive ZXC claims against this channel.
-amount | [value](#value) | The total amount of ZXC funded in this channel.
-balance | [value](#value) | The total amount of ZXC delivered by this channel.
-settleDelay | number | Amount of seconds the source address must wait before closing the channel if it has unclaimed ZXC.
+destination | [address](#address) | Address to receive DAC claims against this channel.
+amount | [value](#value) | The total amount of DAC funded in this channel.
+balance | [value](#value) | The total amount of DAC delivered by this channel.
+settleDelay | number | Amount of seconds the source address must wait before closing the channel if it has unclaimed DAC.
 previousAffectingTransactionID | string | Hash value representing the most recent transaction that affected this payment channel.
 previousAffectingTransactionLedgerVersion | integer | The ledger version that the transaction identified by the `previousAffectingTransactionID` was validated in.
 cancelAfter | date-time string | *Optional* Time when this channel expires as specified at creation.
@@ -2891,7 +2891,7 @@ ledgerHash | string | Unique identifying hash of the entire ledger.
 ledgerVersion | integer | The ledger version of this ledger.
 parentLedgerHash | string | Unique identifying hash of the ledger that came immediately before this one.
 parentCloseTime | date-time string | The time at which the previous ledger was closed.
-totalDrops | [value](#value) | Total number of drops (1/1,000,000th of an ZXC) in the network, as a quoted integer. (This decreases as transaction fees cause ZXC to be destroyed.)
+totalDrops | [value](#value) | Total number of drops (1/1,000,000th of an DAC) in the network, as a quoted integer. (This decreases as transaction fees cause DAC to be destroyed.)
 transactionHash | string | Hash of the transaction information included in this ledger.
 rawState | string | *Optional* A JSON string containing all state data for this ledger in rippled JSON format.
 rawTransactions | string | *Optional* A JSON string containing rippled format transaction JSON for all transactions that were validated in this ledger.
@@ -3101,7 +3101,7 @@ const order = {
     "value": "10.1"
   },
   "totalPrice": {
-    "currency": "ZXC",
+    "currency": "DAC",
     "value": "2"
   },
   "passive": true,
@@ -3694,7 +3694,7 @@ return api.submit(signedTransaction)
 
 `generateAddress(): {address: string, secret: string}`
 
-Generate a new ZXC Ledger address and corresponding secret.
+Generate a new DAC Ledger address and corresponding secret.
 
 ### Parameters
 
@@ -3710,7 +3710,7 @@ This method returns an object with the following structure:
 
 Name | Type | Description
 ---- | ---- | -----------
-address | [address](#address) | A randomly generated Chainsql account address.
+address | [address](#address) | A randomly generated Dac account address.
 secret | secret string | The secret corresponding to the `address`.
 
 ### Example
@@ -3739,7 +3739,7 @@ Sign a payment channel claim. The signature can be submitted in a subsequent [Pa
 Name | Type | Description
 ---- | ---- | -----------
 channel | string | 256-bit hexadecimal channel identifier.
-amount | [value](#value) | Amount of ZXC authorized by the claim.
+amount | [value](#value) | Amount of DAC authorized by the claim.
 privateKey | string | The private key to sign the payment channel claim.
 
 ### Return Value
@@ -3778,7 +3778,7 @@ Verify a payment channel claim signature.
 Name | Type | Description
 ---- | ---- | -----------
 channel | string | 256-bit hexadecimal channel identifier.
-amount | [value](#value) | Amount of ZXC authorized by the claim.
+amount | [value](#value) | Amount of DAC authorized by the claim.
 signature | string | Signature of this claim.
 publicKey | string | Public key of the channel's sender
 
@@ -3829,7 +3829,7 @@ ledger | object | The ledger header to hash.
 *ledger.* ledgerVersion | integer | The ledger version of this ledger.
 *ledger.* parentLedgerHash | string | Unique identifying hash of the ledger that came immediately before this one.
 *ledger.* parentCloseTime | date-time string | The time at which the previous ledger was closed.
-*ledger.* totalDrops | [value](#value) | Total number of drops (1/1,000,000th of an ZXC) in the network, as a quoted integer. (This decreases as transaction fees cause ZXC to be destroyed.)
+*ledger.* totalDrops | [value](#value) | Total number of drops (1/1,000,000th of an DAC) in the network, as a quoted integer. (This decreases as transaction fees cause DAC to be destroyed.)
 *ledger.* transactionHash | string | Hash of the transaction information included in this ledger.
 *ledger.* rawState | string | *Optional* A JSON string containing all state data for this ledger in rippled JSON format.
 *ledger.* rawTransactions | string | *Optional* A JSON string containing rippled format transaction JSON for all transactions that were validated in this ledger.
@@ -3872,11 +3872,11 @@ This event is emitted whenever a new ledger version is validated on the connecte
 
 Name | Type | Description
 ---- | ---- | -----------
-baseFeeZXC | [value](#value) | Base fee, in ZXC.
+baseFeeDac | [value](#value) | Base fee, in DAC.
 ledgerHash | string | Unique hash of the ledger that was closed, as hex.
 ledgerTimestamp | date-time string | The time at which this ledger closed.
-reserveBaseZXC | [value](#value) | The minimum reserve, in ZXC, that is required for an account.
-reserveIncrementZXC | [value](#value) | The increase in account reserve that is added for each item the account owns, such as offers or trust lines.
+reserveBaseDac | [value](#value) | The minimum reserve, in DAC, that is required for an account.
+reserveIncrementDac | [value](#value) | The increase in account reserve that is added for each item the account owns, such as offers or trust lines.
 transactionCount | integer | Number of new transactions included in this ledger.
 ledgerVersion | integer | Ledger version of the ledger that closed.
 validatedLedgerVersions | string | Range of ledgers that the server has available. This may be discontiguous.
@@ -3892,12 +3892,12 @@ api.on('ledger', ledger => {
 
 ```json
 {
-  "baseFeeZXC": "0.00001",
+  "baseFeeDac": "0.00001",
   "ledgerVersion": 14804627,
   "ledgerHash": "9141FA171F2C0CE63E609466AF728FF66C12F7ACD4B4B50B0947A7F3409D593A",
   "ledgerTimestamp": "2015-07-23T05:50:40.000Z",
-  "reserveBaseZXC": "20",
-  "reserveIncrementZXC": "5",
+  "reserveBaseDac": "20",
+  "reserveIncrementDac": "5",
   "transactionCount": 19,
   "validatedLedgerVersions": "13983423-14804627"
 }

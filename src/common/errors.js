@@ -12,7 +12,7 @@ function extendableBuiltin(cls) {
   return ExtendableBuiltin
 }
 
-class ChainsqlError extends extendableBuiltin(Error) {
+class DacError extends extendableBuiltin(Error) {
   constructor(message, data) {
     super(message)
 
@@ -41,39 +41,39 @@ class ChainsqlError extends extendableBuiltin(Error) {
   }
 }
 
-class ChainsqldError extends ChainsqlError {}
+class DacdError extends DacError {}
 
-class UnexpectedError extends ChainsqlError {}
+class UnexpectedError extends DacError {}
 
-class LedgerVersionError extends ChainsqlError {}
+class LedgerVersionError extends DacError {}
 
-class ConnectionError extends ChainsqlError {}
+class ConnectionError extends DacError {}
 
 class NotConnectedError extends ConnectionError {}
 
 class DisconnectedError extends ConnectionError {}
 
-class ChainsqldNotInitializedError extends ConnectionError {}
+class DacdNotInitializedError extends ConnectionError {}
 
 class TimeoutError extends ConnectionError {}
 
 class ResponseFormatError extends ConnectionError {}
 
-class ValidationError extends ChainsqlError {}
+class ValidationError extends DacError {}
 
-class NotFoundError extends ChainsqlError {
+class NotFoundError extends DacError {
   constructor(message) {
     super(message || 'Not found')
   }
 }
 
-class MissingLedgerHistoryError extends ChainsqlError {
+class MissingLedgerHistoryError extends DacError {
   constructor(message) {
     super(message || 'Server is missing ledger history in the specified range')
   }
 }
 
-class PendingLedgerVersionError extends ChainsqlError {
+class PendingLedgerVersionError extends DacError {
   constructor(message) {
     super(message || 'maxLedgerVersion is greater than server\'s'
       + ' most recent validated ledger')
@@ -81,13 +81,13 @@ class PendingLedgerVersionError extends ChainsqlError {
 }
 
 module.exports = {
-  ChainsqlError,
+  DacError,
   UnexpectedError,
   ConnectionError,
-  ChainsqldError,
+  DacdError,
   NotConnectedError,
   DisconnectedError,
-  ChainsqldNotInitializedError,
+  DacdNotInitializedError,
   TimeoutError,
   ResponseFormatError,
   ValidationError,

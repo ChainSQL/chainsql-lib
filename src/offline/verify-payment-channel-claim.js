@@ -1,9 +1,9 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const common = require('../common')
-const keypairs = require('chainsql-keypairs')
-const binary = require('chainsql-binary-codec')
-const {validate, zxcToDrops} = common
+const keypairs = require('dac-keypairs')
+const binary = require('dac-binary-codec')
+const {validate, DACToDrops} = common
 
 function verifyPaymentChannelClaim(channel: string, amount: string,
   signature: string, publicKey: string
@@ -12,7 +12,7 @@ function verifyPaymentChannelClaim(channel: string, amount: string,
 
   const signingData = binary.encodeForSigningClaim({
     channel: channel,
-    amount: zxcToDrops(amount),
+    amount: DACToDrops(amount),
   })
   return keypairs.verify(signingData, signature, publicKey)
 }

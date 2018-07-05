@@ -711,7 +711,7 @@ module.exports.requestBookOffersAsksResponse = function(request, options={}) {
  });
 };
 
-module.exports.requestBookOffersZXCBaseResponse = function(request) {
+module.exports.requestBookOffersDACBaseResponse = function(request) {
   return JSON.stringify({
     id: request.id,
     status: 'success',
@@ -953,7 +953,7 @@ module.exports.requestBookOffersZXCBaseResponse = function(request) {
  });
 };
 
-module.exports.requestBookOffersZXCCounterResponse = function(request) {
+module.exports.requestBookOffersDACCounterResponse = function(request) {
   return JSON.stringify({
     id: request.id,
     status: 'success',

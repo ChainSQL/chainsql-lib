@@ -1,10 +1,10 @@
 'use strict';
-const ChainsqlAPI = require('../../src').ChainsqlAPI; // require('ripple-lib')
+const DacAPI = require('../../src').DacAPI; // require('ripple-lib')
 
 const address = 'INSERT ADDRESS HERE';
 const secret = 'INSERT SECRET HERE';
 
-const api = new ChainsqlAPI({server: 'wss://s1.ripple.com:443'});
+const api = new DacAPI({server: 'wss://s1.ripple.com:443'});
 const instructions = {maxLedgerVersionOffset: 5};
 
 const payment = {
@@ -12,14 +12,14 @@ const payment = {
     address: address,
     maxAmount: {
       value: '0.01',
-      currency: 'ZXC'
+      currency: 'DAC'
     }
   },
   destination: {
     address: 'rKmBGxocj9Abgy25J51Mk1iqFzW9aVF9Tc',
     amount: {
       value: '0.01',
-      currency: 'ZXC'
+      currency: 'DAC'
     }
   }
 };

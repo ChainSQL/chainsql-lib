@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "address",
-  "description": "A Chainsql account address",
+  "description": "A Dac account address",
   "type": "string",
   "format": "address",
   "link": "address",

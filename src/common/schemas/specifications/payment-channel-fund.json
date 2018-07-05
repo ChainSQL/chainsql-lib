@@ -6,7 +6,7 @@
   "properties": {
     "amount": {
       "$ref": "value",
-      "description": "Amount of ZXC to fund the channel with."
+      "description": "Amount of DAC to fund the channel with."
     },
     "channel": {
       "$ref": "hash256",

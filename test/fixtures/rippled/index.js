@@ -30,8 +30,8 @@ module.exports = {
   gateway_balances: require('./gateway-balances'),
   book_offers: {
     fabric: require('./book-offers'),
-    usd_zxc: require('./book-offers-usd-zxc'),
-    zxc_usd: require('./book-offers-zxc-usd')
+    usd_DAC: require('./book-offers-usd-DAC'),
+    DAC_usd: require('./book-offers-DAC-usd')
   },
   ledger_entry: {
     error: require('./ledger-entry-error')
@@ -46,7 +46,7 @@ module.exports = {
     generate: require('./path-find'),
     sendUSD: require('./path-find-send-usd'),
     sendAll: require('./path-find-send-all'),
-    ZxcToZxc: require('./path-find-zxc-to-zxc'),
+    DACToDAC: require('./path-find-DAC-to-DAC'),
     srcActNotFound: require('./path-find-srcActNotFound'),
     sourceAmountLow: require('./path-find-srcAmtLow')
   },

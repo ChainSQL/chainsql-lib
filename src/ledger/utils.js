@@ -3,7 +3,7 @@
 const _ = require('lodash')
 const assert = require('assert')
 const common = require('../common')
-const dropsToZxc = common.dropsToZxc
+const dropsToDAC = common.dropsToDAC
 import type {TransactionType} from './transaction-types'
 import type {Issue} from '../common/types.js'
 import type {Connection} from '../common/connection'
@@ -20,7 +20,7 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
 }
 
-function getZXCBalance(connection: Connection, address: string,
+function getDACBalance(connection: Connection, address: string,
   ledgerVersion?: number
 ): Promise<number> {
   const request = {
@@ -29,7 +29,7 @@ function getZXCBalance(connection: Connection, address: string,
     ledger_index: ledgerVersion
   }
   return connection.request(request).then(data =>
-    dropsToZxc(data.account_data.Balance))
+    dropsToDAC(data.account_data.Balance))
 }
 
 // If the marker is omitted from a response, you have reached the end
@@ -123,7 +123,7 @@ function ensureLedgerVersion(options: Object
 }
 
 module.exports = {
-  getZXCBalance,
+  getDACBalance,
   ensureLedgerVersion,
   compareTransactions,
   renameCounterpartyToIssuerInOrder,

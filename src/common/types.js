@@ -1,13 +1,13 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 
-export type ChainsqldAmountIOU = {
+export type DacdAmountIOU = {
   currency: string,
   value: string,
   issuer?: string
 }
 
-export type ChainsqldAmount = string | ChainsqldAmountIOU
+export type DacdAmount = string | DacdAmountIOU
 
 
 export type Amount = {
@@ -24,7 +24,7 @@ export type LaxLaxAmount = {
   counterparty?: string
 }
 
-// A currency-counterparty pair, or just currency if it's ZXC
+// A currency-counterparty pair, or just currency if it's DAC
 export type Issue = {
   currency: string,
   counterparty?: string

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "amount",
   "link": "amount",
-  "description": "An Amount on the Chainsql Protocol",
+  "description": "An Amount on the Dac Protocol",
   "allOf": [
     {"$ref": "amountbase"},
     {"required": ["value"]}
