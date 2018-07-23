@@ -5,5 +5,5 @@ module.exports = {
   // Broadcast api is experimental
   ChainsqlAPIBroadcast: require('./broadcast').ChainsqlAPIBroadcast,
   ChainsqlLibCommon:require('./common'),
-  ChainsqlLibUtil:require('transaction/utils')
+  ChainsqlLibUtil:require('./transaction/utils')
 }
