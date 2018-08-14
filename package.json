@@ -21,7 +21,7 @@
     "babel-polyfill": "^6.3.14",
     "babel-runtime": "^6.3.19",
     "bignumber.js": "^2.0.3",
-    "https-proxy-agent": "^1.0.0",
+    "https-proxy-agent": "^2.2.0",
     "jsonschema": "1.2.2",
     "lodash": "^4.17.4",
     "chainsql-address-codec": "^2.0.3",
