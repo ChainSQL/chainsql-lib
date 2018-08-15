@@ -9,7 +9,7 @@ function parseEscrowCreation(tx: Object): Object {
   assert(tx.TransactionType === 'EscrowCreate')
 
   return utils.removeUndefined({
-    amount: parseAmount(tx.Amount).value,
+    amount: parseAmount(tx.Amount),
     destination: tx.Destination,
     memos: utils.parseMemos(tx),
     condition: tx.Condition,
