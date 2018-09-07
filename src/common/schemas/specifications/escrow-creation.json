@@ -5,12 +5,12 @@
   "type": "object",
   "properties": {
     "amount": {
-      "$ref": "value",
-      "description": "Amount of ZXC for sender to escrow."
+      "$ref": "laxAmount",
+      "description": "Amount for sender to escrow."
     },
     "destination": {
       "$ref": "address",
-      "description": "Address to receive escrowed ZXC."
+      "description": "Address to receive escrowed currency."
     },
     "memos": {"$ref": "memos"},
     "condition": {
