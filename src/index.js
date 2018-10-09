@@ -3,5 +3,7 @@
 module.exports = {
   ChainsqlLibAPI: require('./api').ChainsqlAPI,
   // Broadcast api is experimental
-  ChainsqlAPIBroadcast: require('./broadcast').ChainsqlAPIBroadcast
+  ChainsqlAPIBroadcast: require('./broadcast').ChainsqlAPIBroadcast,
+  ChainsqlLibCommon:require('./common'),
+  ChainsqlLibUtil:require('./transaction/utils')
 }
