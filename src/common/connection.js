@@ -48,7 +48,7 @@ class Connection extends EventEmitter {
 
   _updateLedgerVersions(data) {
     this._ledgerVersion = Number(data.ledger_index)
-    if (data.validated_ledgers) {
+    if (data.validated_ledgers && data.validated_ledgers != 'empty') {
       this._availableLedgerVersions.reset()
       this._availableLedgerVersions.parseAndAddRanges(
         data.validated_ledgers)
