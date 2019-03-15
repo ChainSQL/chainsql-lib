@@ -426,7 +426,7 @@ class Connection extends EventEmitter {
 
       this.once(eventName, response => {
         if (response.status === 'error') {
-          _reject(new ChainsqldError(response.error))
+          _reject(new ChainsqldError(response.error_message))
         } else if (response.status === 'success') {
           _resolve(response.result)
         } else {
