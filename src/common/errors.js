@@ -41,7 +41,18 @@ class ChainsqlError extends extendableBuiltin(Error) {
   }
 }
 
-class ChainsqldError extends ChainsqlError {}
+class ChainsqldError extends ChainsqlError {
+  constructor(name,message, data) {
+    super(message)
+
+    this.name = name;
+    this.message = message
+    this.data = data
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor.name)
+    }
+  }
+}
 
 class UnexpectedError extends ChainsqlError {}
 
