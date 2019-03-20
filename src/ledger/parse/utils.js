@@ -118,7 +118,7 @@ function parseOutcome(tx: Object): ?Object {
 }
 
 function hexToString(hex: string): ?string {
-  return hex ? new Buffer(hex, 'hex').toString('utf-8') : undefined
+  return hex ? Buffer.from(hex, 'hex').toString('utf-8') : undefined
 }
 
 function parseMemos(tx: Object): ?Array<Object> {
