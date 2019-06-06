@@ -56,6 +56,9 @@ function getServerInfo(connection: Connection): Promise<GetServerInfoResponse> {
         info.validatedLedger.reserveBaseZXC.toString()
       info.validatedLedger.reserveIncrementZXC =
         info.validatedLedger.reserveIncrementZXC.toString()
+      info.validatedLedger.dropsPerByte =
+        info.validatedLedger.dropsPerByte.toString()
+      
     }
     return info
   })
