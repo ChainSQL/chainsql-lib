@@ -17,8 +17,10 @@ class ChainsqlError extends extendableBuiltin(Error) {
     super(message)
 
     this.name = browserHacks.getConstructorName(this)
-    this.message = message
-    this.data = data
+	this.message = message
+	if (data !== undefined) {
+		this.data = data
+	}
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor.name)
     }
@@ -46,8 +48,10 @@ class ChainsqldError extends ChainsqlError {
     super(message)
 
     this.name = name;
-    this.message = message
-    this.data = data
+	this.message = message
+	if( data !== undefined) {
+		this.data = data
+	}
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor.name)
     }
