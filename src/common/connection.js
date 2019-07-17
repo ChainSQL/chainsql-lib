@@ -48,7 +48,7 @@ class Connection extends EventEmitter {
 
   _updateLedgerVersions(data) {
     this._ledgerVersion = Number(data.ledger_index)
-    if (data.validated_ledgers) {
+    if (data.validated_ledgers && data.validated_ledgers != 'empty') {
       this._availableLedgerVersions.reset()
       this._availableLedgerVersions.parseAndAddRanges(
         data.validated_ledgers)
@@ -78,7 +78,7 @@ class Connection extends EventEmitter {
       return [data.type, data]
     } else if (data.type === undefined && data.error) {
       return ['error', data.error, data.error_message, data]  // e.g. slowDown
-    }else if(data.type === 'table' || data.type === 'singleTransaction'){
+    }else if(data.type === 'table' || data.type === 'singleTransaction' || data.type === "contract_event"){
       return {};
     }
     throw new ResponseFormatError('unrecognized message type: ' + data.type)
@@ -249,7 +249,7 @@ class Connection extends EventEmitter {
       options.agent = new HttpsProxyAgent(proxyOptions)
     }
     if (this._authorization !== undefined) {
-      const base64 = new Buffer(this._authorization).toString('base64')
+      const base64 = Buffer.from(this._authorization).toString('base64')
       options.headers = {Authorization: `Basic ${base64}`}
     }
     const optionsOverrides = _.omitBy({
@@ -426,7 +426,7 @@ class Connection extends EventEmitter {
 
       this.once(eventName, response => {
         if (response.status === 'error') {
-          _reject(new ChainsqldError(response.error))
+          _reject(new ChainsqldError(response.error,response.error_message))
         } else if (response.status === 'success') {
           _resolve(response.result)
         } else {

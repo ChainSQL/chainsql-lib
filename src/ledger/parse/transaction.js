@@ -18,6 +18,7 @@ const parseAmendment = require('./amendment')
 const parseTableListSet = require('./tablelistset');
 const parseSqlStatement = require('./sqlstatement')
 const parseSqlTransaction = require('./sql-transaction')
+const parseContract = require('./contract');
 
 
 function parseTransactionType(type) {
@@ -39,7 +40,8 @@ function parseTransactionType(type) {
     EnableAmendment: 'amendment', // pseudo-transaction
     TableListSet: 'tableListSet',
     SQLStatement: 'sqlStatement',
-    SQLTransaction:'sqlTransaction'
+    SQLTransaction:'sqlTransaction',
+    Contract: 'contract'
   }
   return mapping[type] || null
 }
@@ -62,7 +64,8 @@ function parseTransaction(tx: Object): Object {
     'amendment': parseAmendment,
     'tableListSet':parseTableListSet,
     'sqlStatement':parseSqlStatement,
-    'sqlTransaction':parseSqlTransaction
+    'sqlTransaction':parseSqlTransaction,
+    'contract': parseContract
   }
   const parser = mapping[type]
   assert(parser !== undefined, 'Unrecognized transaction type')

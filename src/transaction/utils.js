@@ -68,7 +68,7 @@ function prepareTransaction(txJSON: Object, api: Object,
           (txJSON.TransactionType !== 'EscrowFinish' ||
             txJSON.Fulfillment === undefined) ? 0 :
           (cushion * feeRef * (32 + Math.floor(
-            new Buffer(txJSON.Fulfillment, 'hex').length / 16)))
+            Buffer.from(txJSON.Fulfillment, 'hex').length / 16)))
         const feeDrops = common.zxcToDrops(fee)
         if (instructions.maxFee !== undefined) {
           const maxFeeDrops = common.zxcToDrops(instructions.maxFee)
@@ -105,7 +105,7 @@ function prepareTransaction(txJSON: Object, api: Object,
 }
 
 function convertStringToHex(string: string) {
-  return string ? (new Buffer(string, 'utf8')).toString('hex').toUpperCase() :
+  return string ? (Buffer.from(string, 'utf8')).toString('hex').toUpperCase() :
     undefined
 }
 

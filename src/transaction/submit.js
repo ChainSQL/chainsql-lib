@@ -20,6 +20,9 @@ function formatSubmitResponse(response) {
     resultCode: response.engine_result,
     resultMessage: response.engine_result_message
   }
+  if(response.hasOwnProperty("engine_result_message_detail") && response.engine_result_message_detail !== ""){
+	  data.resultMessageDetail = response.engine_result_message_detail;
+  }
   if (isImmediateRejection(response.engine_result)) {
     throw new utils.common.errors.ChainsqldError('Submit failed', data)
   }
