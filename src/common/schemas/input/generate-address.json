@@ -18,7 +18,7 @@
         },
         "algorithm": {
           "type": "string",
-          "enum": ["ecdsa-secp256k1", "ed25519"],
+          "enum": ["ecdsa-secp256k1", "ed25519", "gmAlg"],
           "description": "The digital signature algorithm to generate an address for. Can be `ecdsa-secp256k1` (default) or `ed25519`."
         }
       },
