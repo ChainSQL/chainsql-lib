@@ -1,18 +1,18 @@
 'use strict' // eslint-disable-line strict
 
 const _ = require('lodash')
-const {EventEmitter} = require('events')
+const { EventEmitter } = require('events')
 const WebSocket = require('ws')
 const parseURL = require('url').parse
 const RangeSet = require('./rangeset').RangeSet
-const {ChainsqldError, DisconnectedError, NotConnectedError,
+const { ChainsqldError, DisconnectedError, NotConnectedError,
   TimeoutError, ResponseFormatError, ConnectionError,
-  ChainsqldNotInitializedError} = require('./errors')
+  ChainsqldNotInitializedError } = require('./errors')
 
 function isStreamMessageType(type) {
   return type === 'ledgerClosed' ||
-         type === 'transaction' ||
-         type === 'path_find'
+    type === 'transaction' ||
+    type === 'path_find'
 }
 
 class Connection extends EventEmitter {
@@ -69,6 +69,7 @@ class Connection extends EventEmitter {
       if (!(Number.isInteger(data.id) && data.id >= 0)) {
         throw new ResponseFormatError('valid id not found in response')
       }
+      this._updateLedgerVersions(data.result);
       return [data.id.toString(), data]
     } else if (isStreamMessageType(data.type)) {
       if (data.type === 'ledgerClosed') {
@@ -78,7 +79,7 @@ class Connection extends EventEmitter {
       return [data.type, data]
     } else if (data.type === undefined && data.error) {
       return ['error', data.error, data.error_message, data]  // e.g. slowDown
-    }else if(data.type === 'table' || data.type === 'singleTransaction' || data.type === "contract_event"){
+    } else if (data.type === 'table' || data.type === 'singleTransaction' || data.type === "contract_event") {
       return {};
     }
     throw new ResponseFormatError('unrecognized message type: ' + data.type)
@@ -250,7 +251,7 @@ class Connection extends EventEmitter {
     }
     if (this._authorization !== undefined) {
       const base64 = Buffer.from(this._authorization).toString('base64')
-      options.headers = {Authorization: `Basic ${base64}`}
+      options.headers = { Authorization: `Basic ${base64}` }
     }
     const optionsOverrides = _.omitBy({
       ca: this._trustedCertificates,
@@ -426,7 +427,7 @@ class Connection extends EventEmitter {
 
       this.once(eventName, response => {
         if (response.status === 'error') {
-          _reject(new ChainsqldError(response.error,response.error_message))
+          _reject(new ChainsqldError(response.error, response.error_message))
         } else if (response.status === 'success') {
           _resolve(response.result)
         } else {
@@ -438,7 +439,7 @@ class Connection extends EventEmitter {
       this._ws.once('close', onDisconnect)
 
       // JSON.stringify automatically removes keys with value of 'undefined'
-      const message = JSON.stringify(Object.assign({}, request, {id}))
+      const message = JSON.stringify(Object.assign({}, request, { id }))
 
       this._whenReady(this._send(message)).then(() => {
         const delay = timeout || this._timeout
