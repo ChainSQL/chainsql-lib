@@ -106,6 +106,9 @@ class ChainsqlAPI extends EventEmitter {
       this.connection.on('disconnected', code => {
         this.emit('disconnected', code)
       })
+      this.on('error',function (errorCode, errorMessage, data) {
+        console.error('error',errorCode, errorMessage, data);
+      });
     } else {
       // use null object pattern to provide better error message if user
       // tries to call a method that requires a connection

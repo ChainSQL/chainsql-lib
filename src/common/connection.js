@@ -69,6 +69,12 @@ class Connection extends EventEmitter {
       if (!(Number.isInteger(data.id) && data.id >= 0)) {
         throw new ResponseFormatError('valid id not found in response')
       }
+
+      // update LedgerVersion When the chainsql's version is not to generate an empty block
+      if(data.result && data.result.ledger_index && data.result.validated_ledgers){
+        this._updateLedgerVersions(data.result);
+      }
+
       return [data.id.toString(), data]
     } else if (isStreamMessageType(data.type)) {
       if (data.type === 'ledgerClosed') {
