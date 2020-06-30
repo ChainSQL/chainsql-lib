@@ -8,7 +8,7 @@ const validate = utils.common.validate
 
 function computeSignature(tx: Object, privateKey: string, signAs: ?string) {
   const signingData = signAs ?
-    binary.encodeForMultisigningByte(tx, signAs) : binary.encodeForSigningByte(tx)
+    binary.encodeForMultiSigningByte(tx, signAs) : binary.encodeForSigningByte(tx)
   return keypairs.signBytes(signingData, privateKey)
 }
 
