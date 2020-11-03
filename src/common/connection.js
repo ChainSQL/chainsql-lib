@@ -44,6 +44,7 @@ class Connection extends EventEmitter {
     this._onUnexpectedCloseBound = null
     this._fee_base = null
     this._fee_ref = null
+    this._schema_id = "";
   }
 
   _updateLedgerVersions(data) {
@@ -403,6 +404,7 @@ class Connection extends EventEmitter {
       let timer = null
       const self = this
       const id = this._nextRequestID
+      const schema_id = this._schema_id;
       this._nextRequestID += 1
       const eventName = id.toString()
 
@@ -444,7 +446,7 @@ class Connection extends EventEmitter {
       this._ws.once('close', onDisconnect)
 
       // JSON.stringify automatically removes keys with value of 'undefined'
-      const message = JSON.stringify(Object.assign({}, request, {id}))
+      const message = JSON.stringify(Object.assign({}, request, { id: id,schema_id:schema_id }))
 
       this._whenReady(this._send(message)).then(() => {
         const delay = timeout || this._timeout
