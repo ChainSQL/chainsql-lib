@@ -26,8 +26,8 @@
     "lodash": "^4.17.4",
     "chainsql-address-codec": "^2.0.3",
     "chainsql-binary-codec": "~1.0.0",
-    "chainsql-hashes": "^0.3.2",
-    "chainsql-keypairs": "^0.10.4",
+    "chainsql-hashes": "^0.4.0",
+    "chainsql-keypairs": "^0.11.1",
     "chainsql-lib-transactionparser": "^0.6.1",
     "ws": "^1.0.1"
   },
