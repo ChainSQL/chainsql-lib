@@ -53,13 +53,13 @@ function prepareTransaction(txJSON: Object, api: Object,
         schema_id: api.connection._schema_id
       };
       return api.connection.request(request).then(function (response) {
-        txJSON.LastLedgerSequence = response.ledger_current_index + 5;
+        txJSON.LastLedgerSequence = response.ledger_current_index + 8;
         return txJSON;
       });
     }
 
     const offset = instructions.maxLedgerVersionOffset !== undefined ?
-      instructions.maxLedgerVersionOffset : 3
+      instructions.maxLedgerVersionOffset : 8
     return api.connection.getLedgerVersion().then(ledgerVersion => {
       txJSON.LastLedgerSequence = ledgerVersion + offset
       return txJSON
