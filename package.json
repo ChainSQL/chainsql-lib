@@ -1,6 +1,6 @@
 {
   "name": "chainsql-lib",
-  "version": "1.0.3",
+  "version": "1.0.8",
   "license": "ISC",
   "description": "A JavaScript API for interacting with Chainsql in Node.js and the browser",
   "files": [
@@ -18,18 +18,15 @@
     "ws": "./dist/npm/common/wswrapper.js"
   },
   "dependencies": {
-    "babel-polyfill": "^6.3.14",
-    "babel-runtime": "^6.3.19",
     "bignumber.js": "^2.0.3",
-    "https-proxy-agent": "^2.2.0",
     "jsonschema": "1.2.2",
     "lodash": "^4.17.4",
     "chainsql-address-codec": "^2.0.3",
     "chainsql-binary-codec": "~1.0.0",
     "chainsql-hashes": "^0.4.0",
-    "chainsql-keypairs": "^0.11.1",
+    "chainsql-keypairs": "^0.11.2",
     "chainsql-lib-transactionparser": "^0.6.1",
-    "ws": "^1.0.1"
+    "ws": "^7.2.0"
   },
   "devDependencies": {
     "assert-diff": "^1.0.1",

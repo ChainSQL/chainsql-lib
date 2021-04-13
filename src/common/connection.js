@@ -2,7 +2,12 @@
 
 const _ = require('lodash')
 const {EventEmitter} = require('events')
-const WebSocket = require('ws')
+var WebSocket
+if(global.wx){
+  WebSocket = require('./wswrapper')
+}else{
+  WebSocket = require('ws')
+}
 const parseURL = require('url').parse
 const RangeSet = require('./rangeset').RangeSet
 const {ChainsqldError, DisconnectedError, NotConnectedError,
@@ -234,27 +239,31 @@ class Connection extends EventEmitter {
 
   _createWebSocket() {
     const options = {}
-    if (this._proxyURL !== undefined) {
-      const parsedURL = parseURL(this._url)
-      const parsedProxyURL = parseURL(this._proxyURL)
-      const proxyOverrides = _.omitBy({
-        secureEndpoint: (parsedURL.protocol === 'wss:'),
-        secureProxy: (parsedProxyURL.protocol === 'https:'),
-        auth: this._proxyAuthorization,
-        ca: this._trustedCertificates,
-        key: this._key,
-        passphrase: this._passphrase,
-        cert: this._certificate
-      }, _.isUndefined)
-      const proxyOptions = _.assign({}, parsedProxyURL, proxyOverrides)
-      let HttpsProxyAgent
-      try {
-        HttpsProxyAgent = require('https-proxy-agent')
-      } catch (error) {
-        throw new Error('"proxy" option is not supported in the browser')
-      }
-      options.agent = new HttpsProxyAgent(proxyOptions)
-    }
+    // lujinglei:comment for wx small progress
+    // if(!wx){
+    //   if (this._proxyURL !== undefined) {
+    //     const parsedURL = parseURL(this._url)
+    //     const parsedProxyURL = parseURL(this._proxyURL)
+    //     const proxyOverrides = _.omitBy({
+    //       secureEndpoint: (parsedURL.protocol === 'wss:'),
+    //       secureProxy: (parsedProxyURL.protocol === 'https:'),
+    //       auth: this._proxyAuthorization,
+    //       ca: this._trustedCertificates,
+    //       key: this._key,
+    //       passphrase: this._passphrase,
+    //       cert: this._certificate
+    //     }, _.isUndefined)
+    //     const proxyOptions = _.assign({}, parsedProxyURL, proxyOverrides)
+    //     let HttpsProxyAgent
+    //     try {
+    //       HttpsProxyAgent = require('https-proxy-agent')
+    //     } catch (error) {
+    //       throw new Error('"proxy" option is not supported in the browser')
+    //     }
+    //     options.agent = new HttpsProxyAgent(proxyOptions)
+    //   }
+    // }
+    
     if (this._authorization !== undefined) {
       const base64 = Buffer.from(this._authorization).toString('base64')
       options.headers = {Authorization: `Basic ${base64}`}
