@@ -70,7 +70,8 @@ function parseTransaction(tx: Object): Object {
   const parser = mapping[type]
   assert(parser !== undefined, 'Unrecognized transaction type')
   const specification = parser(tx)
-  const outcome = utils.parseOutcome(tx)
+  // const outcome = utils.parseOutcome(tx)
+  const outcome = undefined
   return utils.removeUndefined({
     type: type,
     address: tx.Account,

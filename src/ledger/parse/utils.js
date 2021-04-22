@@ -1,7 +1,7 @@
 /* @flow */
 'use strict' // eslint-disable-line strict
 const _ = require('lodash')
-const transactionParser = require('chainsql-lib-transactionparser')
+// const transactionParser = require('chainsql-lib-transactionparser')
 const utils = require('../utils')
 const BigNumber = require('bignumber.js')
 const parseAmount = require('./amount')
@@ -95,27 +95,27 @@ function parseDeliveredAmount(tx: Object): Amount | void {
   return undefined
 }
 
-function parseOutcome(tx: Object): ?Object {
-  const metadata = tx.meta || tx.metaData
-  if (!metadata) {
-    return undefined
-  }
-  const balanceChanges = transactionParser.parseBalanceChanges(metadata)
-  const orderbookChanges = transactionParser.parseOrderbookChanges(metadata)
-  removeEmptyCounterpartyInBalanceChanges(balanceChanges)
-  removeEmptyCounterpartyInOrderbookChanges(orderbookChanges)
+// function parseOutcome(tx: Object): ?Object {
+//   const metadata = tx.meta || tx.metaData
+//   if (!metadata) {
+//     return undefined
+//   }
+//   const balanceChanges = transactionParser.parseBalanceChanges(metadata)
+//   const orderbookChanges = transactionParser.parseOrderbookChanges(metadata)
+//   removeEmptyCounterpartyInBalanceChanges(balanceChanges)
+//   removeEmptyCounterpartyInOrderbookChanges(orderbookChanges)
 
-  return utils.common.removeUndefined({
-    result: tx.meta.TransactionResult,
-    timestamp: parseTimestamp(tx.date),
-    fee: utils.common.dropsToZxc(tx.Fee),
-    balanceChanges: balanceChanges,
-    orderbookChanges: orderbookChanges,
-    ledgerVersion: tx.ledger_index,
-    indexInLedger: tx.meta.TransactionIndex,
-    deliveredAmount: parseDeliveredAmount(tx)
-  })
-}
+//   return utils.common.removeUndefined({
+//     result: tx.meta.TransactionResult,
+//     timestamp: parseTimestamp(tx.date),
+//     fee: utils.common.dropsToZxc(tx.Fee),
+//     balanceChanges: balanceChanges,
+//     orderbookChanges: orderbookChanges,
+//     ledgerVersion: tx.ledger_index,
+//     indexInLedger: tx.meta.TransactionIndex,
+//     deliveredAmount: parseDeliveredAmount(tx)
+//   })
+// }
 
 function hexToString(hex: string): ?string {
   return hex ? Buffer.from(hex, 'hex').toString('utf-8') : undefined
@@ -136,7 +136,7 @@ function parseMemos(tx: Object): ?Array<Object> {
 
 module.exports = {
   parseQuality,
-  parseOutcome,
+  // parseOutcome,
   parseMemos,
   hexToString,
   parseTimestamp,
