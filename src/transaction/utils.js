@@ -47,17 +47,6 @@ function prepareTransaction(txJSON: Object, api: Object,
       return Promise.resolve(txJSON)
     }
 
-    if(api.connection._schema_id !== "" ){
-      var request = {
-        command: 'ledger_current',
-        schema_id: api.connection._schema_id
-      };
-      return api.connection.request(request).then(function (response) {
-        txJSON.LastLedgerSequence = response.ledger_current_index + 8;
-        return txJSON;
-      });
-    }
-
     const offset = instructions.maxLedgerVersionOffset !== undefined ?
       instructions.maxLedgerVersionOffset : 8
     return api.connection.getLedgerVersion().then(ledgerVersion => {

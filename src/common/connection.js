@@ -182,37 +182,7 @@ class Connection extends EventEmitter {
       this._onOpenErrorBound = null
     }
 
-    const request = {
-      command: 'subscribe',
-      streams: ['ledger']
-    }
-    return this.request(request).then(data => {
-      if (_.isEmpty(data) || !data.ledger_index) {
-        // rippled instance doesn't have validated ledgers
-        return this._disconnect(false).then(() => {
-          throw new ChainsqldNotInitializedError('Chainsqld not initialized')
-        })
-      }
-
-      this._updateLedgerVersions(data)
-      this._updateFees(data)
-      this._rebindOnUnxpectedClose()
-
-      this._retry = 0
-      this._ws.on('error', error => {
-        if (process.browser && error && error.type === 'error') {
-          // we are in browser, ignore error - `close` event will be fired
-          // after error
-          return
-        }
-        this.emit('error', 'websocket', error.message, error)
-      })
-
-      this._isReady = true
-      this.emit('connected')
-
-      return undefined
-    })
+    return this.subscribe()
   }
 
   _rebindOnUnxpectedClose() {
@@ -316,6 +286,56 @@ class Connection extends EventEmitter {
         this._ws.once('close', this._onUnexpectedCloseBound)
         this._ws.once('open', () => this._onOpen().then(resolve, reject))
       }
+    })
+  }
+
+  schemaChanged(schemaid){
+    this.unsubscribe()
+    this._schema_id = schemaid
+    return this.subscribe()
+  }
+
+  unsubscribe(){
+    const request = {
+      command: 'unsubscribe',
+      streams: ['ledger']
+    }
+    return this.request(request).then(data => {
+      return undefined
+    })
+  }
+
+  subscribe(){
+    const request = {
+      command: 'subscribe',
+      streams: ['ledger']
+    }
+    return this.request(request).then(data => {
+      if (_.isEmpty(data) || !data.ledger_index) {
+        // rippled instance doesn't have validated ledgers
+        return this._disconnect(false).then(() => {
+          throw new ChainsqldNotInitializedError('Chainsqld not initialized')
+        })
+      }
+
+      this._updateLedgerVersions(data)
+      this._updateFees(data)
+      this._rebindOnUnxpectedClose()
+
+      this._retry = 0
+      this._ws.on('error', error => {
+        if (process.browser && error && error.type === 'error') {
+          // we are in browser, ignore error - `close` event will be fired
+          // after error
+          return
+        }
+        this.emit('error', 'websocket', error.message, error)
+      })
+
+      this._isReady = true
+      this.emit('connected')
+
+      return undefined
     })
   }
 
