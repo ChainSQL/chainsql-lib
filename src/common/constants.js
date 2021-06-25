@@ -41,7 +41,8 @@ const AccountFields = {
   Domain: {name: 'domain', encoding: 'hex'},
   TransferRate: {name: 'transferRate', defaults: 0, shift: 9},
   TransferFeeMin : {name :"transferFeeMin",encoding:'hex'},
-  TransferFeeMax : {name :"transferFeeMax",encoding:'hex'}
+  TransferFeeMax : {name :"transferFeeMax",encoding:'hex'},
+  SetFlag: {name: 'setFlag', defaults: 0,shift: 9}
 }
 
 module.exports = {
