@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "whitelists",
+  "link": "transaction-whitelists",
+  "description": "Array of whitelists Gateway whitelist .",
+  "type": "array",
+  "items": {
+    "$ref": "whitelist"
+  }
+}

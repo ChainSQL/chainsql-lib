@@ -120,9 +120,18 @@ function convertMemo(memo: Object): Object {
   }
 }
 
+function convertWhiteList(whitelist) {
+  return {
+    WhiteList: common.removeUndefined({
+      User: whitelist.user
+    })
+  };
+}
+
 module.exports = {
   convertStringToHex,
   convertMemo,
+  convertWhiteList,
   prepareTransaction,
   common
 }

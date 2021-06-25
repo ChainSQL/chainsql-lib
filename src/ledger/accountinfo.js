@@ -50,10 +50,10 @@ function formatAccountInfo(response: AccountDataResponse) {
     transferRate: data.TransferRate ? new BigNumber(data.TransferRate).shift(-9).toNumber() : undefined,
     previousInitiatedTransactionID: data.AccountTxnID,
     previousAffectingTransactionID: data.PreviousTxnID,
-    previousAffectingTransactionLedgerVersion: data.PreviousTxnLgrSeq
+    previousAffectingTransactionLedgerVersion: data.PreviousTxnLgrSeq,
+    whiteLists :data.WhiteLists
   })
 }
-
 function getAccountInfo(address: string, options: AccountInfoOptions = {}
 ): Promise<AccountInfoResponse> {
   validate.getAccountInfo({address, options})

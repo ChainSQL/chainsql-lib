@@ -106,7 +106,9 @@ function createSettingsTransactionWithoutMemos(
     TransactionType: 'AccountSet',
     Account: account
   }
-
+  if (settings.whitelists!== undefined) {
+    txJSON.WhiteLists = _.map(settings.whitelists, utils.convertWhiteList);
+  }
   setTransactionFlags(txJSON, _.omit(settings, 'memos'))
   setTransactionFields(txJSON, settings)
 

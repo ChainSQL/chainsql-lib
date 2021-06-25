@@ -109,7 +109,9 @@ function loadSchemas() {
     require('./schemas/input/generate-address.json'),
     require('./schemas/input/sign-payment-channel-claim.json'),
     require('./schemas/input/verify-payment-channel-claim.json'),
-    require('./schemas/input/combine.json')
+    require('./schemas/input/combine.json'),
+    require('./schemas/objects/whitelist.json'), 
+    require('./schemas/objects/whitelists.json')
   ]
   const titles = _.map(schemas, schema => schema.title)
   const duplicates = _.keys(_.pick(_.countBy(titles), count => count > 1))

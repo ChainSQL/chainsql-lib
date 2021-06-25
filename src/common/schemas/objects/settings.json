@@ -105,7 +105,13 @@
         }
       }
     },
-    "memos": {"$ref": "memos"}
+    "memos": {"$ref": "memos"},
+    "whitelists": { "$ref": "whitelists" },
+    "setFlag": {
+      "type": "number",
+      "description": " Operation type."
+      
+    }
   },
   "additionalProperties": false
 }

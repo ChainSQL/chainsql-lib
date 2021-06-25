@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "whitelist",
+  "description": "whitelist objects represent The gateway does not charge a fee ",
+  "type": "object",
+  "properties": {
+    "user": {
+      "$ref": "address",
+      "description": "The address of the account that is creating the transaction."
+    }
+  },
+  "additionalProperties": false,
+   "required": [ "user" ] 
+}
