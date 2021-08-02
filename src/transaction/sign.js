@@ -4,8 +4,12 @@ const utils = require('./utils')
 const keypairs = require('chainsql-keypairs')
 const binary = require('chainsql-binary-codec')
 const {computeBinaryTransactionHash} = require('chainsql-hashes')
+var LRU = require("lru-cache")
 const validate = utils.common.validate
-
+var cache = new LRU({
+  max: 50,
+  maxAge: 1000 * 60 * 5
+})
 function computeSignature(tx: Object, privateKey: string, signAs: ?string) {
   const signingData = signAs ?
     binary.encodeForMultiSigningByte(tx, signAs) : binary.encodeForSigningByte(tx)
@@ -24,7 +28,12 @@ function sign(txJSON: string, secret: string, options: Object = {}
       'txJSON must not contain "TxnSignature" or "Signers" properties')
   }
 
-  const keypair = keypairs.deriveKeypair(secret)
+  var keypair = cache.get(secret)
+  if(keypair == undefined){
+    keypair = keypairs.deriveKeypair(secret);
+    cache.set(secret, keypair);
+  }
+  
   tx.SigningPubKey = options.signAs ? '' : keypair.publicKey
 
   if (options.signAs) {

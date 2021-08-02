@@ -8,7 +8,7 @@ import type {Amount, ChainsqldAmount} from './types.js'
 
 function isValidSecret(secret: string): boolean {
   try {
-    deriveKeypair(secret)
+   // deriveKeypair(secret)
     return true
   } catch (err) {
     return false
