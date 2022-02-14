@@ -210,29 +210,29 @@ class Connection extends EventEmitter {
   _createWebSocket() {
     const options = {}
     // lujinglei:comment for wx small progress
-    // if(!wx){
-    //   if (this._proxyURL !== undefined) {
-    //     const parsedURL = parseURL(this._url)
-    //     const parsedProxyURL = parseURL(this._proxyURL)
-    //     const proxyOverrides = _.omitBy({
-    //       secureEndpoint: (parsedURL.protocol === 'wss:'),
-    //       secureProxy: (parsedProxyURL.protocol === 'https:'),
-    //       auth: this._proxyAuthorization,
-    //       ca: this._trustedCertificates,
-    //       key: this._key,
-    //       passphrase: this._passphrase,
-    //       cert: this._certificate
-    //     }, _.isUndefined)
-    //     const proxyOptions = _.assign({}, parsedProxyURL, proxyOverrides)
-    //     let HttpsProxyAgent
-    //     try {
-    //       HttpsProxyAgent = require('https-proxy-agent')
-    //     } catch (error) {
-    //       throw new Error('"proxy" option is not supported in the browser')
-    //     }
-    //     options.agent = new HttpsProxyAgent(proxyOptions)
-    //   }
-    // }
+    if(!global.wx){
+      if (this._proxyURL !== undefined) {
+        const parsedURL = parseURL(this._url)
+        const parsedProxyURL = parseURL(this._proxyURL)
+        const proxyOverrides = _.omitBy({
+          secureEndpoint: (parsedURL.protocol === 'wss:'),
+          secureProxy: (parsedProxyURL.protocol === 'https:'),
+          auth: this._proxyAuthorization,
+          ca: this._trustedCertificates,
+          key: this._key,
+          passphrase: this._passphrase,
+          cert: this._certificate
+        }, _.isUndefined)
+        const proxyOptions = _.assign({}, parsedProxyURL, proxyOverrides)
+        let HttpsProxyAgent
+        try {
+          HttpsProxyAgent = require('https-proxy-agent')
+        } catch (error) {
+          throw new Error('"proxy" option is not supported in the browser')
+        }
+        options.agent = new HttpsProxyAgent(proxyOptions)
+      }
+    }
     
     if (this._authorization !== undefined) {
       const base64 = Buffer.from(this._authorization).toString('base64')
@@ -244,6 +244,18 @@ class Connection extends EventEmitter {
       passphrase: this._passphrase,
       cert: this._certificate
     }, _.isUndefined)
+    if(this._trustedCertificates !== undefined)
+    {
+      try {
+        const cert = forgePki.certificateFromPem(this._trustedCertificates);
+      } catch (error) {
+        if(error.message.indexOf("OID is not RSA"))
+        {
+          optionsOverrides.secureProtocol = "TLSv1_2_method";
+          optionsOverrides.ecdhCurve = "secp256k1";
+        }
+      }
+    }
     const websocketOptions = _.assign({}, options, optionsOverrides)
     const websocket = new WebSocket(this._url, null, websocketOptions)
     // we will have a listener for each outstanding request,
