@@ -210,29 +210,29 @@ class Connection extends EventEmitter {
   _createWebSocket() {
     const options = {}
     // lujinglei:comment for wx small progress
-    if(!global.wx){
-      if (this._proxyURL !== undefined) {
-        const parsedURL = parseURL(this._url)
-        const parsedProxyURL = parseURL(this._proxyURL)
-        const proxyOverrides = _.omitBy({
-          secureEndpoint: (parsedURL.protocol === 'wss:'),
-          secureProxy: (parsedProxyURL.protocol === 'https:'),
-          auth: this._proxyAuthorization,
-          ca: this._trustedCertificates,
-          key: this._key,
-          passphrase: this._passphrase,
-          cert: this._certificate
-        }, _.isUndefined)
-        const proxyOptions = _.assign({}, parsedProxyURL, proxyOverrides)
-        let HttpsProxyAgent
-        try {
-          HttpsProxyAgent = require('https-proxy-agent')
-        } catch (error) {
-          throw new Error('"proxy" option is not supported in the browser')
-        }
-        options.agent = new HttpsProxyAgent(proxyOptions)
-      }
-    }
+    // if(!global.wx){
+    //   if (this._proxyURL !== undefined) {
+    //     const parsedURL = parseURL(this._url)
+    //     const parsedProxyURL = parseURL(this._proxyURL)
+    //     const proxyOverrides = _.omitBy({
+    //       secureEndpoint: (parsedURL.protocol === 'wss:'),
+    //       secureProxy: (parsedProxyURL.protocol === 'https:'),
+    //       auth: this._proxyAuthorization,
+    //       ca: this._trustedCertificates,
+    //       key: this._key,
+    //       passphrase: this._passphrase,
+    //       cert: this._certificate
+    //     }, _.isUndefined)
+    //     const proxyOptions = _.assign({}, parsedProxyURL, proxyOverrides)
+    //     let HttpsProxyAgent
+    //     try {
+    //       HttpsProxyAgent = require('https-proxy-agent')
+    //     } catch (error) {
+    //       throw new Error('"proxy" option is not supported in the browser')
+    //     }
+    //     options.agent = new HttpsProxyAgent(proxyOptions)
+    //   }
+    // }
     
     if (this._authorization !== undefined) {
       const base64 = Buffer.from(this._authorization).toString('base64')
