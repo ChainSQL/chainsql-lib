@@ -8,7 +8,8 @@ var LRU = require("lru-cache")
 const validate = utils.common.validate
 var cache = new LRU({
   max: 50,
-  maxAge: 1000 * 60 * 5
+  ttl: 1000 * 60 * 5,
+  ttlAutopurge: true,
 })
 function computeSignature(tx: Object, privateKey: string, signAs: ?string) {
   const signingData = signAs ?
