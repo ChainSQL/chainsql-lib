@@ -20,7 +20,7 @@ const parseSqlStatement = require('./sqlstatement')
 const parseSqlTransaction = require('./sql-transaction')
 const parseContract = require('./contract');
 const parseSchemaCreate = require('./schema-create');
-
+const parseAuthorize = require('./authorize');
 
 function parseTransactionType(type) {
   const mapping = {
@@ -44,6 +44,7 @@ function parseTransactionType(type) {
     SQLTransaction:'sqlTransaction',
     Contract: 'contract',
     SchemaCreate: 'schemaCreate',
+    Authorize:'authorize',
   }
   return mapping[type] || null
 }
@@ -69,6 +70,7 @@ function parseTransaction(tx: Object): Object {
     'sqlTransaction':parseSqlTransaction,
     'contract': parseContract,
     'schemaCreate': parseSchemaCreate,
+    'authorize': parseAuthorize,
   }
   const parser = mapping[type]
   assert(parser !== undefined, 'Unrecognized transaction type')

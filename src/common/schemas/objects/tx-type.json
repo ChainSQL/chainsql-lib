@@ -9,5 +9,5 @@
            "escrowExecution", "paymentChannelCreate",
            "paymentChannelFund", "paymentChannelClaim",
            "sqlStatement","tableListSet","sqlTransaction",
-           "contract"]
+           "contract","schemaCreate","authorize"]
 }
