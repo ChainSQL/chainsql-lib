@@ -20,6 +20,9 @@ const parseSqlStatement = require('./sqlstatement')
 const parseSqlTransaction = require('./sql-transaction')
 const parseContract = require('./contract');
 const parseSchemaCreate = require('./schema-create');
+const parseSchemaModify = require('./schema-modify');
+const parseFreezeAccount = require('./freeze-account');
+const parseSchemaDelete = require('./schema-delete');
 const parseAuthorize = require('./authorize');
 
 function parseTransactionType(type) {
@@ -44,6 +47,9 @@ function parseTransactionType(type) {
     SQLTransaction:'sqlTransaction',
     Contract: 'contract',
     SchemaCreate: 'schemaCreate',
+    SchemaModify: 'schemaModify',
+    FreezeAccount: 'freezeAccount',
+    SchemaDelete: 'schemaDelete',
     Authorize:'authorize',
   }
   return mapping[type] || null
@@ -70,6 +76,9 @@ function parseTransaction(tx: Object): Object {
     'sqlTransaction':parseSqlTransaction,
     'contract': parseContract,
     'schemaCreate': parseSchemaCreate,
+    'schemaModify': parseSchemaModify,
+    'freezeAccount': parseFreezeAccount,
+    'schemaDelete': parseSchemaDelete,
     'authorize': parseAuthorize,
   }
   const parser = mapping[type]
