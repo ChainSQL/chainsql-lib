@@ -24,9 +24,9 @@ function sign(txJSON: string, secret: string, options: Object = {}
   // the secret could correspond to the regular key
 
   const tx = JSON.parse(txJSON)
-  if (tx.TxnSignature || tx.Signers) {
+  if (tx.TxnSignature) {
     throw new utils.common.errors.ValidationError(
-      'txJSON must not contain "TxnSignature" or "Signers" properties')
+      'txJSON must not contain "TxnSignature" properties')
   }
 
   var keypair = cache.get(secret)
@@ -43,7 +43,10 @@ function sign(txJSON: string, secret: string, options: Object = {}
       SigningPubKey: keypair.publicKey,
       TxnSignature: computeSignature(tx, keypair.privateKey, options.signAs)
     }
-    tx.Signers = [{Signer: signer}]
+    if(tx.Signers)
+      tx.Signers.push({Signer: signer});
+    else
+      tx.Signers = [{Signer: signer}];
   } else {
     tx.TxnSignature = computeSignature(tx, keypair.privateKey)
   }
@@ -51,7 +54,8 @@ function sign(txJSON: string, secret: string, options: Object = {}
   const serialized = binary.encode(tx)
   return {
     signedTransaction: serialized,
-    id: computeBinaryTransactionHash(serialized)
+    id: computeBinaryTransactionHash(serialized),
+    tx_json:tx
   }
 }
 
