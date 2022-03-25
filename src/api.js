@@ -26,6 +26,7 @@ const isConnected = server.isConnected
 const getLedgerVersion = server.getLedgerVersion
 const getTransaction = require('./ledger/transaction')
 const getTransactions = require('./ledger/transactions')
+const getContractTransactions = require('./ledger/contractTransactions')
 const getTrustlines = require('./ledger/trustlines')
 const getBalances = require('./ledger/balances')
 const getBalanceSheet = require('./ledger/balance-sheet')
@@ -129,6 +130,7 @@ _.assign(ChainsqlAPI.prototype, {
 
   getTransaction,
   getTransactions,
+  getContractTransactions,
   getTrustlines,
   getBalances,
   getBalanceSheet,
