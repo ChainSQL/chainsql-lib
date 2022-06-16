@@ -98,6 +98,7 @@ class Connection extends EventEmitter {
   }
 
   _onMessage(message) {
+    this._heartbeat();
     let parameters
     if (this._trace) {
       this._console.log(message)
@@ -507,7 +508,9 @@ class Connection extends EventEmitter {
     clearTimeout(this._pingTimeoutFun);
 
     this._pingTimeoutFun = setTimeout(() => {
-      this._console.log("ping timeout, begin to terminate connection");
+      if (this._trace) {
+        this._console.log("ping timeout, begin to terminate connection");
+      }
       this._ws.terminate();
       this.emit('disconnected', 1002);
       this._retryConnect();
