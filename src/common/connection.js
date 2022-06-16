@@ -50,6 +50,7 @@ class Connection extends EventEmitter {
     this._fee_base = null
     this._fee_ref = null
     this._schema_id = "";
+    this._pingTimeout = 50000;
   }
 
   _updateLedgerVersions(data) {
@@ -289,6 +290,7 @@ class Connection extends EventEmitter {
         this._onOpenErrorBound = this._onOpenError.bind(this, reject)
         this._ws.once('error', this._onOpenErrorBound)
         this._ws.on('message', this._onMessage.bind(this))
+        this._ws.on('ping', this._heartbeat.bind(this));
         // in browser close event can came before open event, so we must
         // resolve connect's promise after reconnect in that case.
         // after open event we will rebound _onUnexpectedCloseBound
@@ -296,7 +298,11 @@ class Connection extends EventEmitter {
         this._onUnexpectedCloseBound = this._onUnexpectedClose.bind(this, true,
           resolve, reject)
         this._ws.once('close', this._onUnexpectedCloseBound)
-        this._ws.once('open', () => this._onOpen().then(resolve, reject))
+        this._ws.once('open', () => {
+          if("127.0.0.1" === this._ws._socket.remoteAddress) {
+            this._pingTimeout = 5000;
+          }
+          this._onOpen().then(resolve, reject)})
       }
     })
   }
@@ -433,6 +439,7 @@ class Connection extends EventEmitter {
           resolve(result)
         }
       })
+      this._heartbeat();
     })
   }
 
@@ -494,6 +501,17 @@ class Connection extends EventEmitter {
         timer = setTimeout(() => _reject(new TimeoutError()), delay)
       }).catch(_reject)
     })
+  }
+
+  _heartbeat() {
+    clearTimeout(this._pingTimeoutFun);
+
+    this._pingTimeoutFun = setTimeout(() => {
+      this._console.log("ping timeout, begin to terminate connection");
+      this._ws.terminate();
+      this.emit('disconnected', 1002);
+      this._retryConnect();
+    }, pingTimeout);
   }
 }
 
