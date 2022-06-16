@@ -511,7 +511,7 @@ class Connection extends EventEmitter {
       this._ws.terminate();
       this.emit('disconnected', 1002);
       this._retryConnect();
-    }, pingTimeout);
+    }, this._pingTimeout);
   }
 }
 
