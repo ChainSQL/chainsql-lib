@@ -133,6 +133,7 @@ class Connection extends EventEmitter {
     }
     // just in case
     this._ws.removeAllListeners('open')
+    clearTimeout(this._pingTimeoutFun);
     this._ws = null
     this._isReady = false
     if (beforeOpen) {
@@ -385,6 +386,7 @@ class Connection extends EventEmitter {
           }
           resolve()
         })
+        clearTimeout(this._pingTimeoutFun)
         this._ws.close()
       }
     })
@@ -511,7 +513,10 @@ class Connection extends EventEmitter {
       if (this._trace) {
         this._console.log("ping timeout, begin to terminate connection");
       }
-      this._ws.terminate();
+      if(this._ws !== null ) {
+        this._ws.terminate();
+      }
+
       this.emit('disconnected', 1002);
       this._retryConnect();
     }, this._pingTimeout);
