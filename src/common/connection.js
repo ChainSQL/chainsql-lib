@@ -301,7 +301,9 @@ class Connection extends EventEmitter {
           resolve, reject)
         this._ws.once('close', this._onUnexpectedCloseBound)
         this._ws.once('open', () => {
-          if("127.0.0.1" === this._ws._socket.remoteAddress) {
+          const parsedURL = parseURL(this._url)
+          // if ("127.0.0.1" === _this3._ws._socket.remoteAddress) {
+          if ("127.0.0.1" === parsedURL.hostname || "localhost" === parsedURL.hostname) {
             this._pingTimeout = 5000;
           }
           this._onOpen().then(resolve, reject)})
