@@ -88,6 +88,13 @@ function getTransaction(id: string, options: TransactionOptions = {}
     binary: false
   }
 
+  if(options.meta != undefined){
+    request.meta = options.meta;
+  }
+  if(options.meta_chain != undefined){
+    request.meta_chain = options.meta_chain;
+  }
+
   return utils.ensureLedgerVersion.call(this, options).then(_options => {
     return this.connection.request(request).then(tx =>
       attachTransactionDate(this.connection, tx)

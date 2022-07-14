@@ -130,7 +130,9 @@ type SettingsTransaction = {
 
 export type TransactionOptions = {
   minLedgerVersion?: number,
-  maxLedgerVersion?: number
+  maxLedgerVersion?: number,
+  meta ?: boolean,
+  meta_chain ?: boolean
 }
 
 export type TransactionType = PaymentTransaction | OrderTransaction |

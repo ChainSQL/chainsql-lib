@@ -15,6 +15,14 @@
         "maxLedgerVersion": {
           "$ref": "ledgerVersion",
           "description": "The highest ledger version to search"
+        },
+        "meta": {
+          "$ref": "meta",
+          "description": "Is need meta data."
+        },
+        "meta_chain": {
+          "$ref": "meta_chain",
+          "description": "Is need meta_chain data."
         }
       },
       "additionalProperties": false
