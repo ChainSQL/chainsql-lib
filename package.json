@@ -44,7 +44,7 @@
     "coveralls": "^2.13.1",
     "doctoc": "^0.15.0",
     "ejs": "^2.3.4",
-    "eslint": "^2.9.0",
+    "eslint": "^7.0.0",
     "eventemitter2": "^0.4.14",
     "gulp": "^3.8.10",
     "gulp-bump": "^0.1.13",
