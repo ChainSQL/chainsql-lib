@@ -1,6 +1,7 @@
 /* @flow */
 
 'use strict' // eslint-disable-line strict
+const addressCodec = require('chainsql-address-codec');
 const utils = require('./utils')
 var BigNumber = require('bignumber.js');
 const {validate, removeUndefined} = utils.common
@@ -56,6 +57,10 @@ function formatAccountInfo(response: AccountDataResponse) {
 }
 function getAccountInfo(address: string, options: AccountInfoOptions = {}
 ): Promise<AccountInfoResponse> {
+  if(address !== undefined && "0x" === address.substr(0,2)) {
+    let hexArray = Buffer.from(address.slice(2),'hex');
+    address = addressCodec.encodeAddress(hexArray);
+  }
   validate.getAccountInfo({address, options})
 
   const request = {
