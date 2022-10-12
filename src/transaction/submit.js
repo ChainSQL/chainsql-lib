@@ -26,14 +26,22 @@ function formatSubmitResponse(response) {
   if (isImmediateRejection(response.engine_result)) {
     throw new utils.common.errors.ChainsqldError('Submit failed', data)
   }
+  if (response.hasOwnProperty("tx_json") && response.tx_json !== "") {
+    data.txJson = response.tx_json;
+  }
   return data
 }
 
 function submit(signedTransaction: string): Promise<Submit> {
   validate.submit({signedTransaction})
-
+  var cmd;
+  if(isNeedPeerSign){
+    cmd = 'submit_peer_sign'
+  }else{
+    cmd = 'submit'
+  }
   const request = {
-    command: 'submit',
+    command: cmd,
     tx_blob: signedTransaction
   }
   return this.connection.request(request).then(formatSubmitResponse)
